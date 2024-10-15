@@ -22,10 +22,23 @@ public class Customer extends Person{
     } 
 
     /**
+     * 
+     * @param number the account number to find
+     * @return the index position the account is in accounts
+     */
+    private int find_account_index(int number){
+        for(int i = 0; i<3; i++){
+            if (accounts[i].get_account_number() == number)
+                return i;
+        }
+        return -1;
+    }
+
+    /**
      * displays all of this customers accounts
      */
     public void display_accounts(){
-        if (this.is_empty()): System.out.println("There are no accounts to display"); //no accounts
+        if (this.number_of_accounts() == 0): System.out.println("There are no accounts to display"); //no accounts
         else{
             for(Account a: accounts)
                 if (a != null)
@@ -39,7 +52,16 @@ public class Customer extends Person{
      * @return the balance of the desired account
      */
     public double get_balance(){
-
+        if (this.number_of_accounts() == 1){ //if just one then find that account and return the balance
+            for(Account a: accounts)
+                if (a != null): return get_balance(a.get_account_number());
+        }else if (this.number_of_accounts() == 0){ //if no accounts display message
+            System.out.println("There is no accounts under this customer.");
+            return 0;
+        }else{ //if multiple accounts ask for more information
+            System.out.println("There are more than one accounts to this customer's name please specify which account you would like to get the balance of");
+            //get user input on the account to get the balance off
+        }
     }
 
     /**
@@ -48,7 +70,11 @@ public class Customer extends Person{
      * @return the balance of the account
      */
     public double get_balance(int account_num){
-
+        int index = find_account_index(account_num);
+        if (index != -1)
+            return (accounts[index].get_balance());
+        System.out.println("No account with such account number was found under this customer");
+        return 0;
     }
 
     /**
@@ -58,8 +84,32 @@ public class Customer extends Person{
      * @return true if it was successful, false otherwise
      */
     public boolean add_account(double balance, String type){
-
+        if (type.equals("Checking") && accounts[0] == null){
+            Account checking = new Checking(balance);
+            accounts[0] = checking;
+            return true;
+        }else if (type.equals("Saving") && accounts[1] == null){
+            Account savings = new Savings(balance);
+            accounts[1] = savings;
+            return true;
+        }else if (type.equals("Credit") && accounts[2] != null){
+            Account credit = new Credit(balance);
+            accounts[2] = credit;
+            return true;
+        }
+        System.out.printf("Account of type %s already exists.\n", type);
+        return false;
     }
+    
+    /**
+     * 
+     * @param type type of account to create
+     * @return true if successful, false otherwise
+     */
+    public boolean add_account(String type){
+        return this.add_account(0, type);
+    }
+
 
     /**
      * deposits money into the specified account number
@@ -68,7 +118,16 @@ public class Customer extends Person{
      * @return true if successful, false otherwise
      */
     public boolean deposit(int account, double amount){
+        int index = find_account_index(account);
+        if (index == -1){
+            System.out.println("No account of such account number found.");
+            return false;
+        }
 
+        if (accounts[index].can_deposit(amount)){
+                    accounts[index].change_balance(amount);
+                    return true;
+                }
     }
 
     /**
@@ -78,7 +137,7 @@ public class Customer extends Person{
      * @return true if successful, false otherwise
      */
     public boolean withdraw(int account, double amount){
-
+        return deposit(account, -amount);
     }
 
     /**
@@ -90,6 +149,21 @@ public class Customer extends Person{
      * @return true if successful, false otherwise
      */
     public boolean transfer(int source , int destination, double amount){
+        int index_source = find_account_index(source);
+        int index_dest = find_account_index(destination);
+
+        if (index_source == -1 || index_dest == -1){
+            System.out.println("One or both of the specified account numbers do not exist under this customer.");
+            return false;
+        }
+        if (accounts[index_source].can_withdraw(amount) && accounts[index_dest].can_deposit(amount)){
+            accounts[index_source].change_balance(-amount);
+            accounts[index_dest].change_balance(amount);
+            return true;
+        }
+        
+        System.out.println("One or both transactions cannot be performed.");
+        return false;
 
     }
 
@@ -103,14 +177,32 @@ public class Customer extends Person{
      * @return true if successful, false otherwise
      */
     public boolean pay(Customer customer, int source, int destination, double amount ){
+        int index_source = find_account_index(source);
+        int index_dest = customer.find_account_index(destination);
+
+        if (index_source == -1 || index_dest == -1){
+            System.out.println("One or both of the specified account numbers do not exist under this customer.");
+            return false;
+        }
+        if (accounts[index_source].can_withdraw(amount) && customer.accounts[index_dest].can_deposit(amount)){
+            accounts[index_source].change_balance(-amount);
+            customer.accounts[index_dest].change_balance(amount);
+            return true;
+        }
+        
+        System.out.println("One or both transactions cannot be performed.");
+        return false;
 
     }
 
     /**
-     * checks if the customer has at least one account
-     * @return true if all of the accounts are null, false if it contains an account
+     * returns the number of active accounts
+     * @return number of non-null accounts
      */
-    public boolean is_empty(){
-
+    public int number_of_accounts(){
+        int count = 0;
+        for(Account a: accounts)
+            if (a != null) count++;
+        return count;
     }
 }
