@@ -1,51 +1,74 @@
+/*
+ * Account class used to be a base for the three account sub categories saving, checking, and credit, used to reduce redudancy through inheritance and polymorphosm
+ * @author Gerardo Sillas
+ */
 public class Account{
-    protected int account_number;
+
+    /*
+     * account_number, balance and account_holder are all base information needed to have an account not including account specific requirements
+     */
+    protected int accountNumber;
     protected double balance;
-    protected Customer account_holder;
+    protected Customer accountHolder;
 
     public Account(){}
 
-    public Account(int account_number, double balance, Customer holder){
-        this.account_number = account_number;
+    //constructor that takes in all the attributes and sets them
+    public Account(int accountNumber, double balance, Customer holder){
+        this.account_number = accountNumber;
         this.balance = balance;
         this.account_holder = holder;
     }
  
-    public void set_account_number(int num){
+    //setters
+    public void setAccountNumber(int num){
         this.account_number = num;
     }
-    public void set_balance(double balance){
+    public void setBalance(double balance){
         this.balance = balance;
     }
-    public void set_account_holder(Customer holder){
+    public void setAccountHolder(Customer holder){
         this.account_holder = holder;
     }
-        
-    public int get_account_number(){
-        return account_number;
+     
+    //getters
+    public int getAccountNumber(){
+        return accountNumber;
     }
-    public double get_balance(){
+    public double getBalance(){
         return balance;
     }
-    public Customer get_account_holder(){
-        return account_holder;
+    public Customer getAccountHolder(){
+        return accountHolder;
     }
 
-    // amount is positive it is a deposit
-    // amount is negative if it is a transfer or withdrawl
-    public boolean change_balance(double amount){
-        if(can_withdraw(amount)){
+    /*
+     * Changes the balance based on the amount given
+     * @param amount is positive if it is for a deposit or negative if withdrawl
+     * @return  wether the transation ws successful
+     */
+
+    public boolean changeBalance(double amount){
+        if(canWithdraw(amount)){
             balance += amount;
             return true;
         }
         return false;
     }
 
-    public void display_account(){
-        System.out.println("The account number for "+ account_holder + "is " + account_number + "with a balance of: " + balance);
+    /*
+     * displays account holder first and last name, account number, and balance
+     */
+    public void displayAccount(){
+        System.out.println("The account number for "+ account_holder.getFirstName() + " " + account_holder.getLastName() + "is " + accountNumber + "with a balance of: " + balance);
     }
 
-    public boolean can_withdraw(double amount){
+    /*
+     * Checks if the withdrawl should be approved based on the uses balance
+     * @peram amount amount that is wan ted to be withdrawn
+     * @return boolean returning true if the customer has eenough money in their balance to 2
+     */
+    public boolean canWithdraw(double amount){
         double checkIfValidBalance = balance + amount;
         if(checkIfValidBalance < 0){
             return false;

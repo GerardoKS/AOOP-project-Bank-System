@@ -1,34 +1,60 @@
+
+/*
+ * Credit class that is extended off Account class to represent Credit Accounts
+ * @author Gerardo Sillas
+ */
+
 public class Credit extends Account{
+    /*
+     * represents the limit to how much the balance can be without being declined
+     */
     private double max;
     
     public Credit(){
         super();
     }
     
-
-    public Credit(int account_number, double balance, Customer holder, double max){
-        super(account_number,balance, holder);
+    //constuctor that sets all the atttributes including max
+    public Credit(int accountNumber, double balance, Customer holder, double max){
+        super(accountNumber,balance, holder);
         this.max = max;
     }
 
-    public void set_max(double max){
+    //max setter
+    public void setMax(double max){
         this.max = max;
     }
-    public double get_max(){
+    //max getter
+    public double getMax(){
         return max;
     }
-    public boolean change_balance(double amount){
-        if(can_deposit(amount)){
+
+    /*
+     * changes the balance based on the amount given
+     * @param amount positive double that shows how much money is tryying to be charged to the credit account
+     * @return boolean that shows wether the charge went through
+     */
+    public boolean changeBalance(double amount){
+        if(canDeposit(amount)){
             balance += amount;
             return true;
         }
         return false;
     }
-    public void display_account(){
-        System.out.println("The account number for "+ account_holder + "is " + account_number + "and this account has a max of:" + max + "and has a used: "+ balance);
+    /*
+     * prints the account holder first name, last name, account number, max, and balance 
+     */
+    public void displayAccount(){
+        System.out.println("The account number for "+ account_holder.getFirstName() + " " + account_holder.getLastName() + "is " + accountNumber + "and this account has a max limit of: $" + max + "and has a used: $"+ balance);
     }
-    public boolean can_deposit(double amount){
-        if(amount > max){
+
+    /*
+     * checks if you the amount will put the users credit total charge past the max amount 
+     * @param amount positive double that shows how much money is trying to be charged to the credit account
+     * @return boolean that tells if the sun of balance and amount will exceeed the max 
+     */
+    public boolean canDeposit(double amount){
+        if(((balance - amount)*-1) > max){
             return false;
         }
         return true;

@@ -1,5 +1,10 @@
+/*
+ * Saving class exteneded off Account class to represent Saving Account
+ * @author Gerardo Sillas
+ */
 public class Saving extends Account{
-    public Saving(int account_number, double balance, Customer holder){
-        super(account_number,balance, holder);
+    //constructor that takes in all the attributes and sets them
+    public Saving(int accountNumber, double balance, Customer holder){
+        super(accountNumber,balance, holder);
     }
 }
