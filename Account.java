@@ -15,20 +15,20 @@ public class Account{
 
     //constructor that takes in all the attributes and sets them
     public Account(int accountNumber, double balance, Customer holder){
-        this.account_number = accountNumber;
+        this.accountNumber = accountNumber;
         this.balance = balance;
-        this.account_holder = holder;
+        this.accountHolder = holder;
     }
  
     //setters
     public void setAccountNumber(int num){
-        this.account_number = num;
+        this.accountNumber = num;
     }
     public void setBalance(double balance){
         this.balance = balance;
     }
     public void setAccountHolder(Customer holder){
-        this.account_holder = holder;
+        this.accountHolder = holder;
     }
      
     //getters
@@ -60,7 +60,7 @@ public class Account{
      * displays account holder first and last name, account number, and balance
      */
     public void displayAccount(){
-        System.out.println("The account number for "+ account_holder.getFirstName() + " " + account_holder.getLastName() + "is " + accountNumber + "with a balance of: " + balance);
+        System.out.println("The account number for "+ accountHolder.getFirstName() + " " + accountHolder.getLastName() + "is " + accountNumber + "with a balance of: " + balance);
     }
 
     /*
@@ -74,5 +74,8 @@ public class Account{
             return false;
         } 
         return true;
+    }
+    public boolean canDeposit(double amount){
+            return true;
     }
 }

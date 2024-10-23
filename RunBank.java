@@ -1,23 +1,22 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
-<<<<<<< HEAD
-=======
+import java.util.Scanner;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.*;
->>>>>>> f470a64106d484b670336e662eba620d5b63f0b8
+
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.Enumeration;
+
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-import java.io.IOException;
 
-import java.util.Map;
-import java.util.HashMap;
 
-import java.util.List;
-import java.util.ArrayList;
+
 /*
  * Driver class containg User Interface and CSV conversion to create the bank system. 
  * @author Gerardo Sillas
@@ -34,27 +33,24 @@ public class RunBank{
 
 
     public static void main(String args[]){
-<<<<<<< HEAD
         //declare file location (file path)
         String filePath = "./CS 3331 - Bank Users.csv";
         //read CSV file and create a list of "Customer"s from the entreis in the file
-        List<Map<?, Customer>> customerList = listOfCustomersFromCSV(filePath);
+        List<Dictionary<?, Customer>> customerList = listOfCustomersFromCSV(filePath);
 
         filePath = "./Result";
         //Update the CSV with any changes made the to the list of "Customer"s
         updateCSVFile(customerList, filePath);
 
     }
+ 
     /*
      * converts the entries given in the CSV to a List of "Customer" building each "Customer" object and their 3 subclass "Account" objects.
      * @param filePath String that shows the location of the file. Put as a parameter for flexibility if needed in a future project.
-     * @return List<Map<Object, Object>> the list of all "Customer" objects fully constructed with all their information and their accounts created as well.The diffrent maps are for quickly looking up the customer based on their name or on their account number
+     * @return List<Dictionary<?, Object>> the list of all "Customer" objects fully constructed with all their information and their accounts created as well.The diffrent Dictionary are for quickly looking up the customer based on their name or on their account number. The wild card(?) is needed in order to have the Dictionary in the list
      */
-    private static List<Map<?,Customer>> listOfCustomersFromCSV(String filePath){
-        List<Map<?,Customer>> customerList = new ArrayList<>();
-        Map<String,Customer> customerNameList = new HashMap<>();
-        Map<Integer,Customer> customerAccountNumberList = new HashMap<>();
-=======
+    
+
         //getting the information from the csv file
         String filePath = "./CS 3331 - Bank Users.csv";
         customerList = listOfCustomersFromCSV(filePath);
@@ -241,9 +237,11 @@ public class RunBank{
         return name;
     }
 
-    private static List<Customer> listOfCustomersFromCSV(String filePath){
-        List<Customer> customerList = new ArrayList<>();
->>>>>>> f470a64106d484b670336e662eba620d5b63f0b8
+
+    private static List<Dictionary<?,Customer>> listOfCustomersFromCSV(String filePath){
+        List<Dictionary<?,Customer>> customerList = new ArrayList<>();
+        Dictionary<String,Customer> customerNameList = new Hashtable<>();
+        Dictionary<Integer,Customer> customerAccountNumberList = new Hashtable<>();
         String line;
         //try to read CSV file
         try(BufferedReader br = new BufferedReader(new FileReader(filePath))){
@@ -279,9 +277,13 @@ public class RunBank{
                 double creditAccountBalance = Double.parseDouble(customerData[12]);
                 Account creditAccount = new Credit(creditAccountNumber,creditAccountBalance, currentAccountHolder, creditMax);
                 //set the accounts in the Customer object
-                Account[] accounts = new Account[] {checkingAccount, savingAccount, creditAccount};
-                currentAccountHolder.set_accounts(accounts);
-                //Store Customer in Map of Customers with the key as the ID
+                Dictionary<String,Account> accounts = new Hashtable<>();
+                accounts.put("checking", checkingAccount);
+                accounts.put("saving", savingAccount);
+                accounts.put("credit", creditAccount);
+                //put accoounts in the Customers accounts Dictionary
+                currentAccountHolder.setAccounts(accounts);
+                //Store Customer in Dictionary of Customers with the key as the ID
                 //wrote with the getter to be more readable
                 customerAccountNumberList.put(checkingAccountNumber, currentAccountHolder);
                 customerAccountNumberList.put(savingAccountNumber, currentAccountHolder);
@@ -304,7 +306,7 @@ public class RunBank{
      * @param List<Customer> list of Customers that are going have there attributes and account attributes convereted into strings and updated in the CSV file
      * @param filePath to increase flexibility, filePath added incase needed again for future project
      */
-    public static void updateCSVFile(List<Map<?,Customer>> customerList, String filePath){
+    public static void updateCSVFile(List<Dictionary<?,Customer>> customerList, String filePath){
         //try to update CSV
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))){
             //write the titles before the data
@@ -312,14 +314,21 @@ public class RunBank{
             writer.write(titles);
             writer.newLine();
             //Update each customer one by one
-            for(Customer currentAccountHolder : customerList.values()){
+
+            // Get the Enumeration of Customers from the second Dictionary
+            Enumeration<Customer> customers = customerList.get(1).elements();
+    
+            // Iterate over each Customer in the second Dictionary
+            while (customers.hasMoreElements()) {
+                Customer currentAccountHolder = customers.nextElement();
                 //turn Customer attribute into a String
                 String data =   Integer.toString(currentAccountHolder.getId())+","+currentAccountHolder.getFirstName()+","+currentAccountHolder.getLastName()+","+ currentAccountHolder.getDOB()+"," currentAccountHolder.getAddress()+","+ currentAccountHolder.getPhoneNumber()+",";
                 //get accounts and store in more descriptive varaibles for readability
-                Account[] accounts = currentAccountHolder.get_accounts();
-                Account checkingAccount = accounts[0];
-                Account savingAccount = accounts[1];
-                Account creditAccount = accounts[2];
+                Dictionary <String, Account> accounts = currentAccountHolder.getAccounts();
+                //get the Acount objects
+                Account checkingAccount = accounts.get("checking");
+                Account savingAccount = accounts.get("saving");
+                Account creditAccount = accounts.get("credit");
                 //turn Accounts' attributes into String and then added them to the end of data
                 data = data + Integer.toString(checkingAccount.getAccountNumber()) + "," + Double.toString(checkingAccount.getBalance()) + "," + Integer.toString(savingAccount.getAccountNumber()) + "," + Double.toString(savingAccount.getBalance()) + "," + Integer.toString(creditAccount.getAccountNumber()) + "," + Double.toString(creditAccount.getMax()) +","+ Double.toString(creditAccount.getBalance());
                 //write Customers data into the CSV file
@@ -327,7 +336,7 @@ public class RunBank{
                 //create the next line for the next entry
                 writer.newLine();
             }
-        }
+        } 
         //catch if update fails
         catch(IOException ex){
             ex.printStackTrace();
