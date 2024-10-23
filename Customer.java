@@ -1,48 +1,72 @@
+import java.util.*;
+
 public class Customer extends Person{
-    private Account[] accounts;
+    private Dictionary <String, Account> accounts;
+    private int id;
 
     public Customer(){
-        accounts = new Account[3];
+        accounts = new Hashtable<>();
+        accounts.put("saving", null);
+        accounts.put("checking", null);
+        accounts.put("credit", null);
+        id = -1;
     }
 
+    public Customer(Dictionary accounts, int id, String firstName, String lastName, String dob, String address, String phone){
+        super(firstName, lastName, dob, address, phone);
+        this.accounts = accounts;
+        this.id = id;
+    }
     /**
      * sets the accounts of the customer
      * @param accounts
      */
-    public void set_accounts(Account[] accounts){
+    public void setAccounts(Dictionary accounts){
         this.accounts = accounts;
+    }
+
+    public void setId(int id){
+        this.id = id;
     }
 
     /**
      * prints and returns the list of accounts of the customer
      * @return list of accounts
      */
-    public Account[] get_accounts(){
+    public Dictionary getAccounts(){
         return accounts;
     } 
+
+    public int getId(){
+        return id;
+    }
+
 
     /**
      * 
      * @param number the account number to find
      * @return the index position the account is in accounts
      */
-    private int find_account_index(int number){
-        for(int i = 0; i<3; i++){
-            if (accounts[i].get_account_number() == number)
-                return i;
+    private String findAccountType(int number){
+        Enumeration keys = accounts.keys();
+        while(keys.hasMoreElements()) {
+            String key = (String) keys.nextElement();
+            if (accounts.get(key).getAccountNumber() == number) return key;
         }
-        return -1;
+        return null;
     }
 
     /**
      * displays all of this customers accounts
      */
-    public void display_accounts(){
-        if (this.number_of_accounts() == 0): System.out.println("There are no accounts to display"); //no accounts
-        else{
-            for(Account a: accounts)
-                if (a != null)
-                    a.display_account();
+    public void displayAccounts(){
+        Enumeration keys = accounts.keys();
+        while(keys.hasMoreElements()) {
+            String key = (String) keys.nextElement();
+            if (accounts.get(key) != null){
+                System.out.printf("Account of type %s balance: ", key);
+                accounts.get(key).displayAccount();
+            }
         }
     }
 
@@ -51,17 +75,48 @@ public class Customer extends Person{
      * else ask for more information, based on which, return the balance of the wanted account
      * @return the balance of the desired account
      */
-    public double get_balance(){
-        if (this.number_of_accounts() == 1){ //if just one then find that account and return the balance
-            for(Account a: accounts)
-                if (a != null): return get_balance(a.get_account_number());
-        }else if (this.number_of_accounts() == 0){ //if no accounts display message
-            System.out.println("There is no accounts under this customer.");
-            return 0;
-        }else{ //if multiple accounts ask for more information
-            System.out.println("There are more than one accounts to this customer's name please specify which account you would like to get the balance of");
-            //get user input on the account to get the balance off
+    public double getBalance(){
+        switch (this.numberOfAccounts()){
+            case(0):
+                System.out.println("There is no accounts under this customer.");
+                return 0;
+            case(1):
+                Enumeration keys = accounts.keys();
+                while(keys.hasMoreElements()) {
+                    String key = (String) keys.nextElement();
+                    if (accounts.get(key) != null) return getBalance(key);
+                }
+                break;
+            default:
+                System.out.println("There are more than one accounts to this customer's name please specify which type of account(checking, saving, or credit) or account number you would like to get the balance of (exit or main menu)");
+                Scanner sc = new Scanner(System.in);
+                String input = sc.next();
+                switch (input.toLowerCase()){
+                    case("e"):
+                    case("exit"):
+                        return -1;
+                    case("m"):
+                    case("main menu"):
+                        return -2;
+                    case ("checking"):
+                        return getBalance("checking");
+                    case ("saving"):
+                        return getBalance("saving");
+                    case ("credit"):
+                        return getBalance("credit");
+                    default:
+                        keys = accounts.keys();
+                        while(keys.hasMoreElements()) {
+                            String key = (String) keys.nextElement();
+                            if (accounts.get(key).getAccountNumber() == Integer.parseInt(input)) return getBalance(key);
+                        }
+                        System.out.println("Couldn't find account of that type or with that account number\nMake sure you are only including the type or account number not both.");
+                        return getBalance();
+                }
+
+                
         }
+ 
     }
 
     /**
@@ -69,12 +124,9 @@ public class Customer extends Person{
      * @param account_num the number of the account to get the balance of
      * @return the balance of the account
      */
-    public double get_balance(int account_num){
-        int index = find_account_index(account_num);
-        if (index != -1)
-            return (accounts[index].get_balance());
-        System.out.println("No account with such account number was found under this customer");
-        return 0;
+    public double getBalance(String accountType){
+        accounts.get(accountType).displayBalance());
+        return (accounts.get(accountType).getBalance());
     }
 
     /**
@@ -83,31 +135,15 @@ public class Customer extends Person{
      * @param type the type of the new account
      * @return true if it was successful, false otherwise
      */
-    public boolean add_account(double balance, String type){
-        if (type.equals("Checking") && accounts[0] == null){
-            Account checking = new Checking(balance);
-            accounts[0] = checking;
-            return true;
-        }else if (type.equals("Saving") && accounts[1] == null){
-            Account savings = new Savings(balance);
-            accounts[1] = savings;
-            return true;
-        }else if (type.equals("Credit") && accounts[2] != null){
-            Account credit = new Credit(balance);
-            accounts[2] = credit;
-            return true;
+    public boolean add_account(String type, Account account){
+        if (accounts.get(type) != null){
+            System.out.printf("Account of type %s already exists.\n", type);
+            return false;
         }
-        System.out.printf("Account of type %s already exists.\n", type);
-        return false;
-    }
+        
+        accounts.put(type, account);
+        return true;
     
-    /**
-     * 
-     * @param type type of account to create
-     * @return true if successful, false otherwise
-     */
-    public boolean add_account(String type){
-        return this.add_account(0, type);
     }
 
 
@@ -117,17 +153,30 @@ public class Customer extends Person{
      * @param amount amount to be deposited
      * @return true if successful, false otherwise
      */
-    public boolean deposit(int account, double amount){
-        int index = find_account_index(account);
-        if (index == -1){
+    public boolean deposit(String accountType, double amount){
+        if (accounts.get(accountType)==null){
             System.out.println("No account of such account number found.");
             return false;
         }
+    
+        if (accountType == "credit" && !accounts.get(accountType).canDeposit(amount)){
+            System.out.printf("Cannot deposit %d into account of type credit", amount);
+            return false;
+        }
+        accounts.get(accountType).changeBalance(amount);
+        return true;
+    }
 
-        if (accounts[index].can_deposit(amount)){
-                    accounts[index].change_balance(amount);
-                    return true;
-                }
+    public boolean deposit(int accountNumber, double amount){
+        String type = findAccountType(accountNumber);
+        switch (type){
+            case (null):
+                System.out.println("Account of account number %d cannot be found in this customer please try again");
+                return false;
+            default:
+                return deposit(type, amount);
+
+        }
     }
 
     /**
@@ -136,8 +185,12 @@ public class Customer extends Person{
      * @param amount amount to withdraw
      * @return true if successful, false otherwise
      */
-    public boolean withdraw(int account, double amount){
-        return deposit(account, -amount);
+    public boolean withdrawal(String accountType, double amount){
+        return deposit(accountType, -amount);
+    }
+
+    public boolean withdrawal(int accountNumber, double amount){
+        return deposit(accountNumber, -amount);
     }
 
     /**
@@ -148,23 +201,27 @@ public class Customer extends Person{
      * @param amount amount to be deposited
      * @return true if successful, false otherwise
      */
-    public boolean transfer(int source , int destination, double amount){
-        int index_source = find_account_index(source);
-        int index_dest = find_account_index(destination);
+    public boolean transfer(int source , int dest, double amount){
+        String sourceType = findAccountType(source);
+        String destType = findAccountType(dest);
+        return transfer(sourceType, destType, amount);
+        
 
-        if (index_source == -1 || index_dest == -1){
+    }
+
+    public boolean transfer(String source, String dest, double amount){
+        if (source == null || dest == null){
             System.out.println("One or both of the specified account numbers do not exist under this customer.");
             return false;
         }
-        if (accounts[index_source].can_withdraw(amount) && accounts[index_dest].can_deposit(amount)){
-            accounts[index_source].change_balance(-amount);
-            accounts[index_dest].change_balance(amount);
+        if (accounts.get(source).canWithdrawal(amount) && accounts.get(dest).canDeposit(amount)){
+            accounts.get(source).changeBalance(-amount);
+            accounts.get(dest).changeBalance(amount);
             return true;
         }
         
         System.out.println("One or both transactions cannot be performed.");
         return false;
-
     }
 
     /**
@@ -176,33 +233,38 @@ public class Customer extends Person{
      * @param amount amount to be paid
      * @return true if successful, false otherwise
      */
-    public boolean pay(Customer customer, int source, int destination, double amount ){
-        int index_source = find_account_index(source);
-        int index_dest = customer.find_account_index(destination);
+    public boolean pay(Customer customer, int source, int dest, double amount ){
+        String sourceType = findAccountType(source);
+        String destType = customer.findAccountType(dest);
+        return pay(customer, sourceType, destType, amount);        
+    }
 
-        if (index_source == -1 || index_dest == -1){
+    public boolean pay(Customer customer, String source, String dest, double amount){
+        if (source == null || dest == null){
             System.out.println("One or both of the specified account numbers do not exist under this customer.");
             return false;
         }
-        if (accounts[index_source].can_withdraw(amount) && customer.accounts[index_dest].can_deposit(amount)){
-            accounts[index_source].change_balance(-amount);
-            customer.accounts[index_dest].change_balance(amount);
+        if (accounts.get(source).canWithdrawal(amount) && customer.accounts.get(dest).canDeposit(amount)){
+            accounts.get(source).changeBalance(-amount);
+            customer.accounts.get(dest).changeBalance(amount);
             return true;
         }
         
         System.out.println("One or both transactions cannot be performed.");
         return false;
-
     }
 
     /**
      * returns the number of active accounts
      * @return number of non-null accounts
      */
-    public int number_of_accounts(){
+    public int numberOfAccounts(){
         int count = 0;
-        for(Account a: accounts)
-            if (a != null) count++;
+        Enumeration keys = accounts.keys();      
+        while(keys.hasMoreElements()) {
+            String str = (String)keys.nextElement();
+            if (accounts.get(str) != null) count++;
+        }  
         return count;
     }
 }
