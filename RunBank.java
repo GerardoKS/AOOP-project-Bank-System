@@ -35,13 +35,24 @@ public class RunBank{
     public static void main(String args[]){
         //declare file location (file path)
         String filePath = "./CS 3331 - Bank Users.csv";
+        System.out.println("--------START-------");
         //read CSV file and create a list of "Customer"s from the entreis in the file
         List<Dictionary<?, Customer>> customerList = listOfCustomersFromCSV(filePath);
-
-        filePath = "./Result";
+        System.out.println("------Read FILE -------");
+        Enumeration<Customer> customers = customerList.get(1).elements();
+        System.out.println("customerList obtained");
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Welcome to El Paso Miners Bank!");
+        while(!exit){ //will continue going to main menu unless the user chooses to exit
+           main_menu(sc); //manager or customer        
+        }
+        System.out.println("Thank you for choosing us!");
+        System.out.println("------FINISHED FILE------");
+        filePath = "./Result.csv";
         //Update the CSV with any changes made the to the list of "Customer"s
+        System.out.println("-------UPDATE--------");
         updateCSVFile(customerList, filePath);
-
+        System.out.println("-------FINISH UPDATE-------");
     }
  
     /*
@@ -50,20 +61,10 @@ public class RunBank{
      * @return List<Dictionary<?, Object>> the list of all "Customer" objects fully constructed with all their information and their accounts created as well.The diffrent Dictionary are for quickly looking up the customer based on their name or on their account number. The wild card(?) is needed in order to have the Dictionary in the list
      */
     
+    
 
-        //getting the information from the csv file
-        String filePath = "./CS 3331 - Bank Users.csv";
-        customerList = listOfCustomersFromCSV(filePath);
-        System.out.println("customerList obtained");
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Welcome to El Paso Miners Bank!");
-        while(!exit){ //will continue going to main menu unless the user chooses to exit
-           main_menu(sc); //manager or customer        
-        }
-        System.out.println("Thank you for choosing us!");
 
-    }
-
+    
     private static void main_menu(Scanner sc){
         int users = typeOfUser(sc); //will get the type of user
            switch (users){
@@ -236,9 +237,9 @@ public class RunBank{
         System.out.println("Welcome, " + customerList.get(name).getName()); //greats customer with full name
         return name;
     }
+    
 
-
-    private static List<Dictionary<?,Customer>> listOfCustomersFromCSV(String filePath){
+    static List<Dictionary<?,Customer>> listOfCustomersFromCSV(String filePath){
         List<Dictionary<?,Customer>> customerList = new ArrayList<>();
         Dictionary<String,Customer> customerNameList = new Hashtable<>();
         Dictionary<Integer,Customer> customerAccountNumberList = new Hashtable<>();
@@ -261,20 +262,20 @@ public class RunBank{
                 currentAccountHolder.setFirstName(customerData[1]);
                 currentAccountHolder.setLastName(customerData[2]);
                 currentAccountHolder.setDOB(customerData[3]);
-                currentAccountHolder.setAddress(customerData[4]);
-                currentAccountHolder.setPhoneNumber(customerData[5]);
+                currentAccountHolder.setAddress(customerData[4]+", "+customerData[5]+", "+ customerData[6]);
+                currentAccountHolder.setPhoneNumber(customerData[7]);
                 //Create the Accounts and set all its attributes
-                int checkingAccountNumber = Integer.parseInt(customerData[6]);
-                double checkingAccountBalance = Double.parseDouble(customerData[7]);
+                int checkingAccountNumber = Integer.parseInt(customerData[8]);
+                double checkingAccountBalance = Double.parseDouble(customerData[9]);
                 Account checkingAccount = new Checking(checkingAccountNumber, checkingAccountBalance, currentAccountHolder);
 
-                int savingAccountNumber = Integer.parseInt(customerData[8]);
-                double savingAccountBalance = Double.parseDouble(customerData[9]);
+                int savingAccountNumber = Integer.parseInt(customerData[10]);
+                double savingAccountBalance = Double.parseDouble(customerData[11]);
                 Account savingAccount = new Saving(savingAccountNumber, savingAccountBalance, currentAccountHolder);
 
-                int creditAccountNumber = Integer.parseInt(customerData[10]);
-                double creditMax = Double.parseDouble(customerData[11]);
-                double creditAccountBalance = Double.parseDouble(customerData[12]);
+                int creditAccountNumber = Integer.parseInt(customerData[12]);
+                double creditMax = Double.parseDouble(customerData[13]);
+                double creditAccountBalance = Double.parseDouble(customerData[14]);
                 Account creditAccount = new Credit(creditAccountNumber,creditAccountBalance, currentAccountHolder, creditMax);
                 //set the accounts in the Customer object
                 Dictionary<String,Account> accounts = new Hashtable<>();
@@ -322,7 +323,7 @@ public class RunBank{
             while (customers.hasMoreElements()) {
                 Customer currentAccountHolder = customers.nextElement();
                 //turn Customer attribute into a String
-                String data =   Integer.toString(currentAccountHolder.getId())+","+currentAccountHolder.getFirstName()+","+currentAccountHolder.getLastName()+","+ currentAccountHolder.getDOB()+"," currentAccountHolder.getAddress()+","+ currentAccountHolder.getPhoneNumber()+",";
+                String data =   Integer.toString(currentAccountHolder.getId())+","+currentAccountHolder.getFirstName()+","+currentAccountHolder.getLastName()+","+ currentAccountHolder.getDOB()+","+currentAccountHolder.getAddress() +","+ currentAccountHolder.getPhoneNumber()+",";
                 //get accounts and store in more descriptive varaibles for readability
                 Dictionary <String, Account> accounts = currentAccountHolder.getAccounts();
                 //get the Acount objects
@@ -330,7 +331,7 @@ public class RunBank{
                 Account savingAccount = accounts.get("saving");
                 Account creditAccount = accounts.get("credit");
                 //turn Accounts' attributes into String and then added them to the end of data
-                data = data + Integer.toString(checkingAccount.getAccountNumber()) + "," + Double.toString(checkingAccount.getBalance()) + "," + Integer.toString(savingAccount.getAccountNumber()) + "," + Double.toString(savingAccount.getBalance()) + "," + Integer.toString(creditAccount.getAccountNumber()) + "," + Double.toString(creditAccount.getMax()) +","+ Double.toString(creditAccount.getBalance());
+                data = data + Integer.toString(checkingAccount.getAccountNumber()) + "," + Double.toString(checkingAccount.getBalance()) + "," + Integer.toString(savingAccount.getAccountNumber()) + "," + Double.toString(savingAccount.getBalance()) + "," + Integer.toString(creditAccount.getAccountNumber()) + "," + Double.toString(((Credit)creditAccount).getMax()) +","+ Double.toString(creditAccount.getBalance());
                 //write Customers data into the CSV file
                 writer.write(data);
                 //create the next line for the next entry
