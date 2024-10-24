@@ -64,6 +64,13 @@ public class Account{
     }
 
     /*
+     * displays balance for the account with the account number ...
+     */
+    public void displayBalance(){
+        System.out.println("The balance for account number: " + accountNumber + " is: $" + balance);
+    }
+
+    /*
      * Checks if the withdrawl should be approved based on the uses balance
      * @peram amount amount that is wan ted to be withdrawn
      * @return boolean returning true if the customer has eenough money in their balance to 2
