@@ -5,10 +5,11 @@ public class Customer extends Person{
     private int id;
 
     public Customer(){
-        accounts = new Hashtable<>();
-        accounts.put("saving", null);
-        accounts.put("checking", null);
-        accounts.put("credit", null);
+        Dictionary <String, Account>accounts = new Hashtable<>();
+        Account a = new Account();
+        accounts.put("saving", a);
+        accounts.put("checking", a);
+        accounts.put("credit", a);
         id = -1;
     }
 
@@ -125,7 +126,7 @@ public class Customer extends Person{
      * @return the balance of the account
      */
     public double getBalance(String accountType){
-        accounts.get(accountType).displayBalance());
+        accounts.get(accountType).displayBalance();
         return (accounts.get(accountType).getBalance());
     }
 
