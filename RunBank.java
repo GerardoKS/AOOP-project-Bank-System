@@ -3,15 +3,18 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Dictionary;
+import java.util.Scanner;
 /*
  * Driver class containg User Interface and CSV conversion to create the bank system. 
  * @author Gerardo Sillas
  * @author Hannah Ayala
  */
-import java.util.*;
 
 public class RunBank{
-    private static Map<String, Customer> customerList; //dictionary with key (firstName lastName) and value Customer
+    private static Dictionary<String, Customer> customerList; //dictionary with key (firstName lastName) and value Customer
     private static boolean exit = false; //customer wants to exit
     private static boolean mainMenu = false; //customer wants to return to main menu
     private static boolean successD = true; //customer deposit was successful
@@ -143,34 +146,35 @@ public class RunBank{
                 return true; //transaction was not unsuccessful
             default:
                 switch (customerList.get(customerName).getAccounts().get(type.toLowerCase())){ //check the dictionary for type 
-                    case("checking"):
-                    case("saving"):
-                    case("credit"):
-                        System.out.printf("How much would you like to %s into the account\n", transaction);
-                        double amount = sc.nextDouble();
-                        switch (transaction){
-                           case("deposit"):
-                                return customerList.get(customerName).deposit(type, amount);
-                            case("withdrawal"):
-                                return customerList.get(customerName).withdrawal(type, amount);
+
+                    case(null): //type is not the accountType, it could be an account number or not correct input
+                        type = customerList.get(customerName).findAccountType(Integer.parseInt(type)); //find the account type
+
+                        if (type == null){ //if there was not an account with that number, it is an invalid account
+                            System.out.println("Account wasn't found please try again or return to main menu");
+                            return false;
+                        }else{ //there was an account with that number, proceed with the transaction
+                            return transactionHelper(sc, transaction, customerName, type);
                         }
-                        break;
-                    default:
-                        type = customerList.get(customerName).findAccountType(Integer.parseInt(type));
-                        switch(type){
-                            case(null):
-                                System.out.println("Account wasn't found please try again or return to main menu");
-                                return false;
-                            default:
-                                System.out.println("How much would you like to deposit into the account");
-                                amount = sc.nextDouble();
-                                return customerList.get(customerName).deposit(type, amount);
-                        }
-                        break;
+
+                    default: //there is an account for customerName of type accountType
+                        return transactionHelper(sc, transaction, customerName, type);
                     }
                 break;
         }
     }
+
+    private static boolean transactionHelper(Scanner sc, String transaction, String customerName, String type){
+        System.out.printf("How much would you like to %s into the account\n", transaction); //gets the amount for the transaction
+        double amount = sc.nextDouble();
+        if (transaction.equals("deposit")){ //if deposit, then run deposit, which will check if it is possible
+            return customerList.get(customerName).deposit(type, amount);
+        }else{ //else it must be withdrawal which will check if it is possible
+            return customerList.get(customerName).withdrawal(type, amount);
+        }
+    }
+
+
     private static int typeOfUser(Scanner sc){
         System.out.println("Will the following transaction be from a manager (m) or a regular user (r)? (exit)");
         String input = sc.next();
@@ -192,7 +196,7 @@ public class RunBank{
 
     private static String getCustomer(Scanner sc){
         System.out.println("Please provide your first and last name  (exit to quit or main menu to return to the main menu)");
-        String name = sc.next();
+        String name = sc.next(); //get name of customer or action to perform
         switch (name.toLowerCase()){
             case ("e"):
             case("exit"):
@@ -203,23 +207,24 @@ public class RunBank{
             case("main menu"):
                 mainMenu = true;
                 return null;
+            default:
+                if (customerList.get(name) == null){ //if the customer doesn't exist rerun the function
+                    System.out.println("Cannot find user in the database\nEnsure that the spelling is correct or that the user is in the database");
+                    return getCustomer(sc);
+                }
+                else{ //else customer does exist in the bank
+                    System.out.println("Welcome, " + customerList.get(name).getName()); //greats customer with full name
+                    return name;
+                }
         }
-
-        if (customerList.get(name) == null){
-            System.out.println("Cannot find user in the database\nEnsure that the spelling is correct or that the user is in the database");
-            return getCustomer(sc, customerList);
-        }
-
-        System.out.println("Welcome, " + customerList.get(name).getName()); //greats customer with full name
-        return name;
     }
 
-       /*
+    /*
      * converts the entries given in the CSV to a List of "Customer" building each "Customer" object and their 3 subclass "Account" objects.
      * @param filePath String that shows the location of the file. Put as a parameter for flexibility if needed in a future project.
      * @return List<Map<Object, Object>> the list of all "Customer" objects fully constructed with all their information and their accounts created as well.The diffrent maps are for quickly looking up the customer based on their name or on their account number
      */
-    private static List<Map<?,Customer>> listOfCustomersFromCSV(String filePath){
+    private static Dictionary <String, Customer> listOfCustomersFromCSV(String filePath){
         List<Map<?,Customer>> customerList = new ArrayList<>();
         Map<String,Customer> customerNameList = new HashMap<>();
         Map<Integer,Customer> customerAccountNumberList = new HashMap<>();
@@ -289,7 +294,7 @@ public class RunBank{
      * @param List<Customer> list of Customers that are going have there attributes and account attributes convereted into strings and updated in the CSV file
      * @param filePath to increase flexibility, filePath added incase needed again for future project
      */
-    public static void updateCSVFile(Map<String,Customer> customerList, String filePath){
+    public static void updateCSVFile(Dictionary<String,Customer> customerList, String filePath){
         //try to update CSV
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))){
             //write the titles before the data
