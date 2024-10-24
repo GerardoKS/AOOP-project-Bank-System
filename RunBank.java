@@ -10,6 +10,8 @@ import java.util.Dictionary;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
+import java.lang.NumberFormatException;
+
 
 /*
  * Driver class containg User Interface and CSV conversion to create the bank system. 
@@ -26,7 +28,7 @@ public class RunBank{
     private static boolean successW = true; //customer withdraw was successful
     private static boolean successT = true; //customer transfer was successful
     private static boolean successP = true; //customer paying someone was successful
-
+    private static Scanner sc = new Scanner(System.in);
 
     public static void main(String args[]){
         //declare file location (file path)
@@ -40,29 +42,31 @@ public class RunBank{
         Files f = new Files("log");
         f.createFile();
 
-        Scanner sc = new Scanner(System.in);
         System.out.println("Welcome to El Paso Miners Bank!");
         while(!exit){ //will continue going to main menu unless the user chooses to exit
-           main_menu(sc, f); //manager or customer        
+           main_menu(f); //manager or customer        
         }
         System.out.println("Thank you for choosing us!");
         //ends
 
         filePath = "./Result.csv";
         //Update the CSV with any changes made the to the list of "Customer"s
-        updateCSVFile(dictionaries, filePath);
+       // updateCSVFile(dictionaries, filePath);
     }
 
-    private static void main_menu(Scanner sc, Files f){
-        int users = typeOfUser(sc); //will get the type of user
+    private static void main_menu(Files f){
+        int users = typeOfUser(); //will get the type of user
            switch (users){
                 case 0: //manager
                     System.out.println("You have chosen Bank Manager access");
+                    exit = true;
+                    break;
                 case 1: //normal user
                     System.out.println("You have chosen regular user.");
-                    String customerName = getCustomer(sc); //will get name of customer and validate it
-                    while (!mainMenu){ //while they do not choose to go back to the main menu
-                        userMenu(sc, customerName, f); //provide the user with transaction options
+                    mainMenu = false;
+                    String customerName = getCustomer(); //will get name of customer and validate it
+                    while (!mainMenu && !exit){ //while they do not choose to go back to the main menu
+                        userMenu(customerName, f); //provide the user with transaction options
                     }
            }
            
@@ -70,43 +74,48 @@ public class RunBank{
 
     
 
-    private static void userMenu(Scanner sc, String customerName, Files f){
-        String customerName2 = null; //prepares for the probablity of having two customers (paying someone)
-        System.out.println("Please input what you transaction you would like to do.\nCheck Balance (B)\nDeposit (D)\nwithdraw (W)\nTransfer (T)\nPay someone (P)\nLogout/Return to Main Menu (L/M)\nExit (E)"); //options for the customer
-        String input = sc.nextLine(); //stores the transaction (or action)
+    private static void userMenu(String customerName, Files f){
+        successD =true;
+        successP = true;
+        successT = true;
+        successW = true;
+        String customerName2 = "";
+        System.out.println("\nPlease input what transaction you would like to do.\nCheck Balance (B)\nDeposit (D)\nwithdraw (W)\nTransfer (T)\nPay someone (P)\nLogout/Return to Main Menu (L/M)\nExit (E)"); //options for the customer
+        String input = sc.next(); //stores the transaction (or action)
+
+        while(input == "") input = sc.nextLine();
         switch (input.toLowerCase()){
             case("b"):
             case("balance"):
             case("check balance"):
-                double status = customerList.get(customerName).getBalance(f); //will get the balance and display it (or action)
-                if (status == -1.0){ //exit
+                int status = customerList.get(customerName).getBalance(f); //will get the balance and display it (or action)
+                if (status == -1){ //exit
                     exit = true;
                     break;
-                }else if (status == -2.0){ //return to main menu
+                }else if (status == -2){ //return to main menu
                     mainMenu = true;
                     break;
                 }
                 break;
             case("d"):
             case("deposit"):
-                successD = transaction(sc, "deposit", customerName, f); //will deposit into one of customerName's accounts
+                successD = transaction("deposit", customerName, f); //will deposit into one of customerName's accounts
                 break;
             case("w"):
             case("withdraw"):
                 //FIX
-                successW = transaction(sc, "withdraw", customerName, f); //will withdraw from one of customerName's acocunts
+                successW = transaction("withdraw", customerName, f); //will withdraw from one of customerName's acocunts
                 break;
             case("t"):
             case("transfer"):
-                //will withdraw and deposit into one of customerName's account 
-                successT = transaction(sc, "withdraw", customerName, f) && transaction(sc, "deposit", customerName, f); 
+                successT = transfer(customerName, customerName, f);
                 break;
             case("p"):
             case("pay"):
             case("pay someone"):
-                customerName2 = getCustomer(sc); //will get the second customer that will partake in this transaction
-                //will withdraw from one of customerName's accounts and deposit into one of customerName2's accounts
-                successP = transaction(sc, "withdraw", customerName, f) && transaction(sc, "deposit", customerName2, f) ;
+                System.out.println("You will be prompted on the person that you will be paying");
+                customerName2 = getCustomer();
+                successP = transfer(customerName2, customerName, f);
                 break;
             case("l"):
             case("logout"):
@@ -126,52 +135,156 @@ public class RunBank{
         //if the transaction wasn't successful, try it again until the user selects to return to main menu or to the user menu
         if(!exit){
             if (!successD){
-                successD = transaction(sc, "deposit", customerName, f);
+                successD = transaction("deposit", customerName, f);
             }
             if (!successW){
-                successW = transaction(sc, "withdraw", customerName, f);
+                successW = transaction("withdraw", customerName, f);
             }
             if (!successT){
-                successT = transaction(sc, "withdraw", customerName, f) && transaction(sc, "deposit", customerName, f);                     
+                successT = transfer(customerName, customerName, f);              
             }
             if (!successP){
-                successP = transaction(sc, "withdraw", customerName, f) && transaction(sc, "deposit", customerName2, f);
+                successP = transfer(customerName2, customerName, f);;
             }
         }
     }
 
-    private static boolean transaction(Scanner sc, String transaction, String customerName, Files f){
-        System.out.printf("What account would you like to %s  into, include the type or the account number (exit (e) or main menu (m) or user menu (u))\n", transaction); //get account number or account type to perform transaction for or action to perform
+    private static boolean transfer(String customerName2, String customerName, Files f){
+                //will get the second customer that will partake in this transaction
+                //will withdraw from one of customerName's accounts and deposit into one of customerName2's accounts
+                System.out.println("How much would you like to pay"); //gets the amount for the transaction
+                Double payAmount = sc.nextDouble();
+                System.out.println("You will be prompted to provide information regarding the account you are paying from");
+                String typeOne = getAccount();
+                int typeOneStat = verifyAccount(customerName, typeOne);
+                while (typeOneStat==0){
+                    typeOne = getAccount();
+                    typeOneStat = verifyAccount(customerName2, typeOne);
+                }
+                if (typeOneStat<0) return true;
+                System.out.println("You will be prompted to provide information regarding the account you are paying");
+                String typeTwo = getAccount();
+                int typeTwoStat = verifyAccount(customerName2, typeTwo);
+                while (typeTwoStat==0){
+                    typeTwo = getAccount();
+                    typeTwoStat = verifyAccount(customerName2, typeTwo);
+                }
+
+                if (typeTwoStat<0) return true;
+                
+                if(typeOneStat == 0 || typeTwoStat == 0){
+                    return false;
+                }
+                if (typeOneStat == 1 && typeOneStat == typeTwoStat){
+                    if (customerName.equals(customerName2)) return customerList.get(customerName).transfer(typeOne, typeTwo, payAmount, f);
+                    else return customerList.get(customerName).pay(customerList.get(customerName2), typeOne, typeTwo, payAmount, f);
+                }else if (typeOneStat ==2 && typeOneStat == typeTwoStat){
+                    if (customerName.equals(customerName2)) return customerList.get(customerName).transfer(Integer.parseInt(typeOne), Integer.parseInt(typeTwo), payAmount, f);
+                    else return customerList.get(customerName).pay(customerList.get(customerName2), Integer.parseInt(typeOne), Integer.parseInt(typeTwo), payAmount, f);
+                }
+                System.out.println("Please provide both types of accounts or both account numbers not mismatch");
+                return false;
+    }
+    /*
+    private static boolean transfer(String customerName, Files f){
+        //will withdraw and deposit into one of customerName's account 
+        System.out.println("How much would you like to transfer from the accounts"); //gets the amount for the transaction
+        double transferAmount = sc.nextDouble();
+        System.out.println("You will be prompted to provide information regarding the account you are paying from");
+        String tTypeOne = getAccount();
+        int tTypeOneStat = verifyAccount(customerName, tTypeOne);
+        while (tTypeOneStat==0){
+            tTypeOne = getAccount();
+            tTypeOneStat = verifyAccount(customerName, tTypeOne);
+        }
+        if (tTypeOneStat<0) return true;
+        System.out.println("You will be prompted to provide information regarding the account you are paying");
+        String tTypeTwo = getAccount();
+        int tTypeTwoStat = verifyAccount(customerName, tTypeTwo);
+        while (tTypeTwoStat==0){
+            tTypeTwo = getAccount();
+            tTypeTwoStat = verifyAccount(customerName, tTypeTwo);
+        }
+        if (tTypeTwoStat<0) return true;
+        
+        if(tTypeOneStat == 0 || tTypeTwoStat == 0){ //CHECK IF POSSIBLE
+            return false;
+        }
+
+        if (tTypeOneStat == 1 && tTypeOneStat == tTypeTwoStat){
+            return customerList.get(customerName).transfer(tTypeOne, tTypeTwo, transferAmount, f);
+        }else if (tTypeOneStat ==2 && tTypeOneStat == tTypeTwoStat){
+            return customerList.get(customerName).transfer(Integer.parseInt(tTypeOne), Integer.parseInt(tTypeTwo), transferAmount, f);
+        }
+        System.out.println("Please provide both types of accounts or both account numbers not mismatch");
+        return false;
+    }*/
+
+    private static boolean transaction(String transaction, String customerName, Files f){
+        String type = getAccount();
+        int state = verifyAccount(customerName, type);
+        switch (state){
+            case(-1):
+            case(-2):
+            case(-3):
+                return true;
+            case(0):
+                return transaction(transaction, customerName, f);
+            case(1):
+                return transactionHelper(transaction, customerName, type, f);
+            case(2):
+                return transactionHelper(transaction, customerName, Integer.parseInt(type), f);
+        }
+        return false;
+    }
+
+    private static String getAccount(){
+        System.out.printf("Please specify which account you would like to perform this transaction to, include the type or the account number (exit (e) or main menu (m) or user menu (u))\n"); //get account number or account type to perform transaction for or action to perform
         String type = sc.nextLine();
+        while(type == "") type = sc.nextLine();
+        return type;
+    }
+
+    private static int verifyAccount(String customerName, String type){
         switch (type){
+            case("u"):
+            case("user menu"):
+                return -3;
             case("e"):
             case("exit"):
+                mainMenu = true;
                 exit = true;
-                return true; //transaction was not unsuccessful
+                return -1; 
             case("m"):
             case("main menu"):
                 mainMenu = true;
-                return true; //transaction was not unsuccessful
+                return -2;
             default:
-                if (customerList.get(customerName).getAccounts().get(type.toLowerCase()) == null){ //check the dictionary for type 
-
-                     //type is not the accountType, it could be an account number or not correct input
-                        type = customerList.get(customerName).findAccountType(Integer.parseInt(type)); //find the account type
-
+                if (customerList.get(customerName).getAccounts().get(type.toLowerCase()) == null){//type is not the accountType, it could be an account number or not correct input
+                try {
+                    String str = customerList.get(customerName).findAccountType(Integer.parseInt(type));
+                    if (str == null) throw new Exception();
+                    return 2;
+                } catch (Exception e) {
+                    System.out.println("No such account found");
+                    return 0;
+                }//check the dictionary for type  
+                        /* 
                         if (type == null){ //if there was not an account with that number, it is an invalid account
                             System.out.println("Account wasn't found please try again or return to main menu");
-                            return false;
-                        }else{ //there was an account with that number, proceed with the transaction
-                            return transactionHelper(sc, transaction, customerName, type, f);
-                        }
+                            return 0;
+                        }else{ //there was an account with that number
+                            return 2;
+                        }*/
                     }else{
                      //there is an account for customerName of type accountType
-                        return transactionHelper(sc, transaction, customerName, type, f);
+                        return 1;
                     }
         }
     }
 
-    private static boolean transactionHelper(Scanner sc, String transaction, String customerName, String type, Files f){
+
+    private static boolean transactionHelper(String transaction, String customerName, String type, Files f){
         System.out.printf("How much would you like to %s into the account\n", transaction); //gets the amount for the transaction
         double amount = sc.nextDouble();
         if (transaction.equals("deposit")){ //if deposit, then run deposit, which will check if it is possible
@@ -180,12 +293,23 @@ public class RunBank{
             return customerList.get(customerName).withdraw(type, amount, f);
         }
     }
+    private static boolean transactionHelper(String transaction, String customerName, int number, Files f){
+        System.out.printf("How much would you like to %s into the account\n", transaction); //gets the amount for the transaction
+        double amount = sc.nextDouble();
+        if (transaction.equals("deposit")){ //if deposit, then run deposit, which will check if it is possible
+            return customerList.get(customerName).deposit(number, amount, f);
+        }else{ //else it must be withdraw which will check if it is possible
+            return customerList.get(customerName).withdraw(number, amount, f);
+        }
+    }
 
 
-    private static int typeOfUser(Scanner sc){
-        System.out.println("Will the following transaction be from a manager (m) or a regular user (r)? (exit)");
+    private static int typeOfUser(){
+        System.out.println("Will the following transaction be from a manager (m) or a regular user (u)? (exit (e))");
         String input = sc.nextLine();
-        switch (input){
+        while(input == "") input = sc.nextLine();
+        switch (input.toLowerCase()){
+            case("e"):
             case("exit"):
                 exit = true;
                 return -1;
@@ -194,15 +318,18 @@ public class RunBank{
                 return 0;
             case("u"):
             case("user"):
+            case("regular user"):
+                return 1;
             default:
                 System.out.println("Please input the correct term");
-                return (typeOfUser(sc));
+                return (typeOfUser());
         }
     }
 
-    private static String getCustomer(Scanner sc){
-        System.out.println("Please provide your first and last name  (exit to quit or main menu to return to the main menu)");
+    private static String getCustomer(){
+        System.out.println("Please provide your first and last name  (exit (e) or main menu (m))");
         String name = sc.nextLine(); //get name of customer or action to perform
+        while(name == "") name = sc.nextLine();
         switch(name){
             case ("e"):
             case("exit"):
@@ -216,7 +343,7 @@ public class RunBank{
             default:
                 if (customerList.get(name) == null){ //if the customer doesn't exist rerun the function
                 System.out.println("Cannot find user in the database\nEnsure that the spelling is correct or that the user is in the database");
-                return getCustomer(sc);
+                return getCustomer();
                 }
                 else{ //else customer does exist in the bank
                 System.out.println("Welcome, " + customerList.get(name).getName()); //greets customer with full name

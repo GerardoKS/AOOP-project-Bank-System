@@ -51,16 +51,30 @@ public class Account{
      */
  
     public boolean changeBalance(double amount, Files f){
-        if(canWithdraw(amount)){
-            balance += amount;
-            if (amount > 0 ){
-                f.writeFile(accountHolder.getName() + " deposited " + amount + " into " + accountNumber + " account");
-            }else{
-                f.writeFile(accountHolder.getName() + " withdrew " + amount + " from " + accountNumber + " account");
+        if(amount>0){
+            if(canDeposit(amount)){
+                balance += amount;
+                //if (amount > 0 ){
+                    String output = "Deposited " + amount + " into " + accountNumber + " account";
+                    System.out.println(output);
+                    f.writeFile(accountHolder.getName() + " " + output);
+                /*}else{
+                   String output = "Withdrew " + -amount + " from " + accountNumber + " account";
+                System.out.println(output);
+                    f.writeFile(accountHolder.getName() + " " + output);*/
+                    return true;
+                }
+            return false;
+        }else{
+            if (canWithdraw(amount)){
+                balance += amount;
+                String output = "Withdrew " + -amount + " from " + accountNumber + " account";
+                System.out.println(output);
+                f.writeFile(accountHolder.getName() + " " + output);
+                return true;
             }
-            return true;
+            return false;
         }
-        return false;
     }
  
     /*
@@ -92,6 +106,6 @@ public class Account{
         return true;
     }
     public boolean canDeposit(double amount){
-            return true;
+        return true;
     }
 }

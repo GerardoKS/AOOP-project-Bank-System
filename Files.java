@@ -9,7 +9,7 @@ public class Files {
   public Files(){
 
   }
-  
+
   public Files(String n){
     name = n;
   }
@@ -30,7 +30,7 @@ public class Files {
 
   public void writeFile(String input){
     try {
-      FileWriter myWriter = new FileWriter(name + ".txt");
+      FileWriter myWriter = new FileWriter(name + ".txt", true);
       myWriter.write(input + "\n");
       myWriter.close();
     } catch (IOException e) {

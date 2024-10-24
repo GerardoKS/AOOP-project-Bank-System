@@ -33,11 +33,21 @@
      * @param amount positive double that shows how much money is tryying to be charged to the credit account
      * @return boolean that shows wether the charge went through
      */
-    public boolean changeBalance(double amount){
+    public boolean changeBalance(double amount, Files f){
         if(canDeposit(amount)){
             balance += amount;
+            String output = "";
+            if (amount > 0 ){
+                output = "Deposited " + amount + " into " + accountNumber + " account";
+               
+            }else{
+                output = "Withdrew " + -amount + " from " + accountNumber + " account";
+            }
+            System.out.println(output);
+            f.writeFile(accountHolder.getName() + " " + output);
             return true;
         }
+        System.out.println("Cannot perform transaction");
         return false;
     }
     /*
@@ -53,17 +63,17 @@
      * @return boolean that tells if the sun of balance and amount will exceeed the max
      */
     public boolean canWithdraw(double amount){
-        if(((balance - amount)*-1) > max){
+        if((balance + amount) < -max){
             return false;
         }
         return true;
     }
+
     public boolean canDeposit(double amount){
-        if((balance + amount) <= 0){
+        if((balance + amount) <= 0 && (balance + amount) > -max){
             return true;
         }
         return false;
     }
- 
  
 }
