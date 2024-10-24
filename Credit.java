@@ -53,10 +53,18 @@ public class Credit extends Account{
      * @param amount positive double that shows how much money is trying to be charged to the credit account
      * @return boolean that tells if the sun of balance and amount will exceeed the max 
      */
-    public boolean canDeposit(double amount){
+    public boolean canWithdraw(double amount){
         if(((balance - amount)*-1) > max){
             return false;
         }
         return true;
     }
+    public boolean canDeposit(double amount){
+        if((balance + amount) <= 0){
+            return true;
+        }
+        return false;
+    }
+
+
 }
