@@ -8,8 +8,19 @@ import java.util.Enumeration;
 
 import java.util.Hashtable;
 import java.util.Dictionary;
+<<<<<<< HEAD
 import java.util.List;
 import java.util.ArrayList;
+=======
+<<<<<<< HEAD
+=======
+
+import java.util.List;
+import java.util.ArrayList;
+
+import java.util.Scanner;
+>>>>>>> abc22a24436ee409fe6bdf884251d6fb83270aee
+>>>>>>> 192a34f3a9c2517382f260f386d8831f04b7dc8b
 /*
  * Driver class containg User Interface and CSV conversion to create the bank system. 
  * @author Gerardo Sillas
@@ -35,6 +46,10 @@ public class RunBank{
         List<Dictionary<?, Customer>> customerList = listOfCustomersFromCSV(filePath);
         System.out.println("------Read FILE -------");
         Enumeration<Customer> customers = customerList.get(1).elements();
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 192a34f3a9c2517382f260f386d8831f04b7dc8b
     
         Scanner sc = new Scanner(System.in);
         System.out.println("Welcome to El Paso Miners Bank!");
@@ -64,6 +79,39 @@ public class RunBank{
      * @param filePath String that shows the location of the file. Put as a parameter for flexibility if needed in a future project.
      * @return List<Dictionary<?, Object>> the list of all "Customer" objects fully constructed with all their information and their accounts created as well.The diffrent Dictionary are for quickly looking up the customer based on their name or on their account number. The wild card(?) is needed in order to have the Dictionary in the list
      */
+<<<<<<< HEAD
+=======
+        //getting the information from the csv file
+        String filePath = "./CS 3331 - Bank Users.csv";
+        customerList = listOfCustomersFromCSV(filePath);
+        System.out.println("customerList obtained");
+=======
+        System.out.println("customerList obtained");
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Welcome to El Paso Miners Bank!");
+        while(!exit){ //will continue going to main menu unless the user chooses to exit
+           main_menu(sc); //manager or customer        
+        }
+        System.out.println("Thank you for choosing us!");
+        System.out.println("------FINISHED FILE------");
+        filePath = "./Result.csv";
+        //Update the CSV with any changes made the to the list of "Customer"s
+        System.out.println("-------UPDATE--------");
+        System.out.println("-------UPDATE--------");
+        updateCSVFile(customerList, filePath);
+        System.out.println("-------FINISH UPDATE-------");
+    }
+ 
+    /*
+     * converts the entries given in the CSV to a List of "Customer" building each "Customer" object and their 3 subclass "Account" objects.
+     * @param filePath String that shows the location of the file. Put as a parameter for flexibility if needed in a future project.
+     * @return List<Dictionary<?, Object>> the list of all "Customer" objects fully constructed with all their information and their accounts created as well.The diffrent Dictionary are for quickly looking up the customer based on their name or on their account number. The wild card(?) is needed in order to have the Dictionary in the list
+     */
+    
+    
+
+>>>>>>> abc22a24436ee409fe6bdf884251d6fb83270aee
+>>>>>>> 192a34f3a9c2517382f260f386d8831f04b7dc8b
 
     private static void main_menu(Scanner sc){
         int users = typeOfUser(sc); //will get the type of user
