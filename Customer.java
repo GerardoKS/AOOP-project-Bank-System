@@ -255,7 +255,7 @@ public class Customer extends Person{
             System.out.println("One or both of the specified account numbers do not exist under this customer.");
             return false;
         }
-        if (accounts.get(source).canWithdraw(amount) && (Credit) customer.accounts.get(dest).canDeposit(amount)){ //if both actions can be performed
+        if (accounts.get(source).canWithdraw(amount) && customer.accounts.get(dest).canDeposit(amount)){ //if both actions can be performed
             accounts.get(source).changeBalance(-amount); //withdraw from the source account
             customer.accounts.get(dest).changeBalance(amount); //deposit into the dest account of customer
             return true;
