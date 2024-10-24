@@ -10,9 +10,9 @@ public class Customer extends Person{
 
     public Customer(){
         accounts = new Hashtable<>();
-        accounts.put("saving", null);
-        accounts.put("checking", null);
-        accounts.put("credit", null);
+        accounts.put("saving", new Account());
+        accounts.put("checking", new Account());
+        accounts.put("credit", new Account());
         id = -1;
     }
 
@@ -63,13 +63,13 @@ public class Customer extends Person{
     /**
      * displays all of this customers accounts
      */
-    public void displayAccounts(){
+    public void displayAccounts(Files f){
         Enumeration<String> keys = accounts.keys();
         while(keys.hasMoreElements()) {
             String key = (String) keys.nextElement();
             if (accounts.get(key) != null){
                 System.out.printf("Account of type %s balance: ", key);
-                accounts.get(key).displayAccount();
+                accounts.get(key).displayAccount(f);
             }
         }
     }
@@ -79,7 +79,7 @@ public class Customer extends Person{
      * else ask for more information, based on which, return the balance of the wanted account
      * @return the balance of the desired account
      */
-    public double getBalance(){
+    public double getBalance(Files f){
         switch (this.numberOfAccounts()){ //count the number of accounts
             case(0): //if there are no accounts
                 System.out.println("There are no accounts under this customer.");
@@ -88,7 +88,7 @@ public class Customer extends Person{
                 Enumeration<String> keys = accounts.keys();
                 while(keys.hasMoreElements()) {
                     String key = (String) keys.nextElement();
-                    if (accounts.get(key) != null) return getBalance(key);
+                    if (accounts.get(key) != null) return getBalance(key, f);
                 }
                 break;
             default: //there are more than one accounts
@@ -103,19 +103,19 @@ public class Customer extends Person{
                     case("main menu"):
                         return -2.0;
                     case ("checking"):
-                        return getBalance("checking");
+                        return getBalance("checking", f);
                     case ("saving"):
-                        return getBalance("saving");
+                        return getBalance("saving", f);
                     case ("credit"):
-                        return getBalance("credit");
+                        return getBalance("credit", f);
                     default: //not an action or account type, must be either an account number or invalid input
                         keys = accounts.keys();
                         while(keys.hasMoreElements()) {
                             String key = (String) keys.nextElement();
-                            if (accounts.get(key).getAccountNumber() == Integer.parseInt(input)) return getBalance(key); //there was a matching account for the account number
+                            if (accounts.get(key).getAccountNumber() == Integer.parseInt(input)) return getBalance(key, f); //there was a matching account for the account number
                         }
                         System.out.println("Couldn't find account of that type or with that account number\nMake sure you are only including the type or account number not both.\n"); //invalid input
-                        return getBalance();
+                        return getBalance(f);
                 }     
         }
         return 0.0;
@@ -127,7 +127,7 @@ public class Customer extends Person{
      * @param account_num the number of the account to get the balance of
      * @return the balance of the account
      */
-    public double getBalance(String accountType){
+    public double getBalance(String accountType, Files f){
         System.out.printf("Balance %d", accounts.get(accountType).getBalance());
         //accounts.get(accountType).displayBalance());  //IF TIME MAKE IT DISPLAY NEATLY
         return (accounts.get(accountType).getBalance());
@@ -139,7 +139,7 @@ public class Customer extends Person{
      * @param type the type of the new account
      * @return true if it was successful, false otherwise
      */
-    public boolean add_account(String type, Account account){
+    public boolean add_account(String type, Account account, Files f){
         if (accounts.get(type) != null){ //if there is already an account with that type
             System.out.printf("Account of type %s already exists.\n", type);
             return false;
@@ -156,7 +156,7 @@ public class Customer extends Person{
      * @param amount amount to be deposited
      * @return true if successful, false otherwise
      */
-    public boolean deposit(String accountType, double amount){
+    public boolean deposit(String accountType, double amount, Files f){
         if (accounts.get(accountType)==null){ //if there is no account of that type
             System.out.println("No account of such account number found.");
             return false;
@@ -170,21 +170,21 @@ public class Customer extends Person{
         }
 
         //else proceed with the transaction
-        accounts.get(accountType).changeBalance(amount);
+        accounts.get(accountType).changeBalance(amount, f);
         return true;
     }
 
 
     //MIGHT BE COMPLETELY USELESS BECAUSE OF THE MAIN FILE
-    public boolean deposit(int accountNumber, double amount){
+    public boolean deposit(int accountNumber, double amount, Files f){
         String type = findAccountType(accountNumber); //find the account type for that number
-        switch (type){
-            case (null): //if it doesn't exist then return false
-                System.out.println("Account of account number %d cannot be found in this customer please try again");
-                return false;
-            default: //else deposit into that accounttype
-                return deposit(type, amount);
-
+        if  (type == null){
+            //if it doesn't exist then return false
+            System.out.println("Account of account number %d cannot be found in this customer please try again");
+            return false;
+        }else{
+             //else deposit into that accounttype
+                return deposit(type, amount, f);
         }
     }
 
@@ -194,12 +194,12 @@ public class Customer extends Person{
      * @param amount amount to withdraw
      * @return true if successful, false otherwise
      */
-    public boolean withdraw(String accountType, double amount){
-        return deposit(accountType, -amount);
+    public boolean withdraw(String accountType, double amount, Files f){
+        return deposit(accountType, -amount, f);
     }
 
-    public boolean withdraw(int accountNumber, double amount){
-        return deposit(accountNumber, -amount);
+    public boolean withdraw(int accountNumber, double amount, Files f){
+        return deposit(accountNumber, -amount, f);
     }
 
     /**
@@ -211,20 +211,21 @@ public class Customer extends Person{
      * @return true if successful, false otherwise
      */
     //MIGHT BE COMPLETELY USELESS BECAUSE OF THE MAIN
-    public boolean transfer(int source , int dest, double amount){
+    public boolean transfer(int source , int dest, double amount, Files f){
         String sourceType = findAccountType(source);
         String destType = findAccountType(dest);
-        return transfer(sourceType, destType, amount);
+        return transfer(sourceType, destType, amount, f);
     }
 
-    public boolean transfer(String source, String dest, double amount){
+    public boolean transfer(String source, String dest, double amount, Files f){
         if (accounts.get(source) == null || accounts.get(dest) == null){ //if either account doesn't exist
             System.out.println("One or both of the specified account numbers do not exist under this customer.");
             return false;
         }
         if (accounts.get(source).canWithdraw(amount) && accounts.get(dest).canDeposit(amount)){ //if you can deposit and you can withdraw proceed with the transaction
-            accounts.get(source).changeBalance(-amount); //withdraw from the source account
-            accounts.get(dest).changeBalance(amount); //deposit into the dest account
+            f.writeFile(this.getName() + " transfered " + amount + " from " +  source + " account to " + dest + " account");
+            accounts.get(source).changeBalance(-amount, f); //withdraw from the source account
+            accounts.get(dest).changeBalance(amount, f); //deposit into the dest account
             return true;
         }
         
@@ -243,21 +244,22 @@ public class Customer extends Person{
      */
 
     //MIGHT BE COMPLETELY USELESS BECAUSE OF MAIN
-    public boolean pay(Customer customer, int source, int dest, double amount ){
+    public boolean pay(Customer customer, int source, int dest, double amount, Files f ){
         String sourceType = findAccountType(source);
         String destType = customer.findAccountType(dest);
-        return pay(customer, sourceType, destType, amount);        
+        return pay(customer, sourceType, destType, amount, f);        
     }
 
 
-    public boolean pay(Customer customer, String source, String dest, double amount){
+    public boolean pay(Customer customer, String source, String dest, double amount, Files f){
         if (accounts.get(source) == null || customer.accounts.get(dest) == null){ //if either of the accounts don't exist
             System.out.println("One or both of the specified account numbers do not exist under this customer.");
             return false;
         }
         if (accounts.get(source).canWithdraw(amount) && customer.accounts.get(dest).canDeposit(amount)){ //if both actions can be performed
-            accounts.get(source).changeBalance(-amount); //withdraw from the source account
-            customer.accounts.get(dest).changeBalance(amount); //deposit into the dest account of customer
+            f.writeFile(this.getName() + " paid " + amount + " from " +  source + " account to " + customer.getName() +  "'s " + dest + " account");
+            accounts.get(source).changeBalance(-amount, f); //withdraw from the source account
+            customer.accounts.get(dest).changeBalance(amount, f); //deposit into the dest account of customer
             return true;
         }
         

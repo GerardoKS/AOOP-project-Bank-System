@@ -2,8 +2,10 @@
  * Account class used to be a base for the three account sub categories saving, checking, and credit, used to reduce redudancy through inheritance and polymorphosm
  * @author Gerardo Sillas
  */
+
+
+
 public class Account{
- 
     /*
      * account_number, balance and account_holder are all base information needed to have an account not including account specific requirements
      */
@@ -48,9 +50,14 @@ public class Account{
      * @return  wether the transation ws successful
      */
  
-    public boolean changeBalance(double amount){
+    public boolean changeBalance(double amount, Files f){
         if(canWithdraw(amount)){
             balance += amount;
+            if (amount > 0 ){
+                f.writeFile(accountHolder.getName() + " deposited " + amount + " into " + accountNumber + " account");
+            }else{
+                f.writeFile(accountHolder.getName() + " withdrew " + amount + " from " + accountNumber + " account");
+            }
             return true;
         }
         return false;
@@ -59,15 +66,17 @@ public class Account{
     /*
      * displays account holder first and last name, account number, and balance
      */
-    public void displayAccount(){
+    public void displayAccount(Files f){
         System.out.println("The account number for "+ accountHolder.getFirstName() + " " + accountHolder.getLastName() + "is " + accountNumber + "with a balance of: " + balance);
+        f.writeFile(accountHolder.getName() + " displayed "  + accountNumber + " account");
     }
  
     /*
      * displays balance for the account with the account number ...
      */
-    public void displayBalance(){
+    public void displayBalance(Files f){
         System.out.println("The balance for account number: " + accountNumber + " is: $" + balance);
+        f.writeFile(accountHolder.getName() + " displayed balance "  + accountNumber + " account");
     }
  
     /*
