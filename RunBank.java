@@ -3,8 +3,22 @@ import java.io.FileReader;
 import java.util.Scanner;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.util.Enumeration;
+
+import java.util.Hashtable;
+import java.util.Dictionary;
+
 import java.util.List;
+import java.util.ArrayList;
+
+import java.util.Scanner;
+/*
+ * Driver class containg User Interface and CSV conversion to create the bank system. 
+ * @author Gerardo Sillas
+ * @author Hannah Ayala
+ */
 
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -23,7 +37,7 @@ import java.io.FileWriter;
  * @author Hannah Ayala
  */
 public class RunBank{
-    private static List<Customer> customerList; //dictionary with key (firstName lastName) and value Customer
+    private static Dictionary<?, Customer> customerList; //dictionary with key (firstName lastName) and value Customer
     private static boolean exit = false; //customer wants to exit
     private static boolean mainMenu = false; //customer wants to return to main menu
     private static boolean successD = true; //customer deposit was successful
@@ -35,6 +49,7 @@ public class RunBank{
     public static void main(String args[]){
         //declare file location (file path)
         String filePath = "./CS 3331 - Bank Users.csv";
+        System.out.println("--------START-------");
         System.out.println("--------START-------");
         //read CSV file and create a list of "Customer"s from the entreis in the file
         List<Dictionary<?, Customer>> customerList = listOfCustomersFromCSV(filePath);
@@ -50,6 +65,7 @@ public class RunBank{
         System.out.println("------FINISHED FILE------");
         filePath = "./Result.csv";
         //Update the CSV with any changes made the to the list of "Customer"s
+        System.out.println("-------UPDATE--------");
         System.out.println("-------UPDATE--------");
         updateCSVFile(customerList, filePath);
         System.out.println("-------FINISH UPDATE-------");
@@ -167,34 +183,35 @@ public class RunBank{
                 return true; //transaction was not unsuccessful
             default:
                 switch (customerList.get(customerName).getAccounts().get(type.toLowerCase())){ //check the dictionary for type 
-                    case("checking"):
-                    case("saving"):
-                    case("credit"):
-                        System.out.printf("How much would you like to %s into the account\n", transaction);
-                        double amount = sc.nextDouble();
-                        switch (transaction){
-                           case("deposit"):
-                                return customerList.get(customerName).deposit(type, amount);
-                            case("withdrawal"):
-                                return customerList.get(customerName).withdrawal(type, amount);
+
+                    case(null): //type is not the accountType, it could be an account number or not correct input
+                        type = customerList.get(customerName).findAccountType(Integer.parseInt(type)); //find the account type
+
+                        if (type == null){ //if there was not an account with that number, it is an invalid account
+                            System.out.println("Account wasn't found please try again or return to main menu");
+                            return false;
+                        }else{ //there was an account with that number, proceed with the transaction
+                            return transactionHelper(sc, transaction, customerName, type);
                         }
-                        break;
-                    case(null):
-                        type = customerList.get(customerName).findAccountType(Integer.parseInt(type));
-                        switch(type){
-                            case(null):
-                                System.out.println("Account wasn't found please try again or return to main menu");
-                                return false;
-                            default:
-                                System.out.println("How much would you like to deposit into the account");
-                                amount = sc.nextDouble();
-                                return customerList.get(customerName).deposit(type, amount);
-                        }
-                        break;
+
+                    default: //there is an account for customerName of type accountType
+                        return transactionHelper(sc, transaction, customerName, type);
                     }
                 break;
         }
     }
+
+    private static boolean transactionHelper(Scanner sc, String transaction, String customerName, String type){
+        System.out.printf("How much would you like to %s into the account\n", transaction); //gets the amount for the transaction
+        double amount = sc.nextDouble();
+        if (transaction.equals("deposit")){ //if deposit, then run deposit, which will check if it is possible
+            return customerList.get(customerName).deposit(type, amount);
+        }else{ //else it must be withdrawal which will check if it is possible
+            return customerList.get(customerName).withdrawal(type, amount);
+        }
+    }
+
+
     private static int typeOfUser(Scanner sc){
         System.out.println("Will the following transaction be from a manager (m) or a regular user (r)? (exit)");
         String input = sc.next();
@@ -207,7 +224,6 @@ public class RunBank{
                 return 0;
             case("u"):
             case("user"):
-                return 1;
             default:
                 System.out.println("Please input the correct term");
                 return (typeOfUser(sc));
@@ -216,8 +232,8 @@ public class RunBank{
 
     private static String getCustomer(Scanner sc){
         System.out.println("Please provide your first and last name  (exit to quit or main menu to return to the main menu)");
-        String name = sc.next();
-        switch (name.toLowerCase()){
+        String name = sc.next(); //get name of customer or action to perform
+        switch(name){
             case ("e"):
             case("exit"):
                 exit = true;
@@ -238,11 +254,31 @@ public class RunBank{
         return name;
     }
     
+            default:
+                if (customerList.get(name) == null){ //if the customer doesn't exist rerun the function
+                    System.out.println("Cannot find user in the database\nEnsure that the spelling is correct or that the user is in the database");
+                    return getCustomer(sc);
+                }
+                else{ //else customer does exist in the bank
+                    System.out.println("Welcome, " + customerList.get(name).getName()); //greats customer with full name
+                    return name;
+                }
+        }
+    }
 
     static List<Dictionary<?,Customer>> listOfCustomersFromCSV(String filePath){
         List<Dictionary<?,Customer>> customerList = new ArrayList<>();
         Dictionary<String,Customer> customerNameList = new Hashtable<>();
         Dictionary<Integer,Customer> customerAccountNumberList = new Hashtable<>();
+    /*
+     * converts the entries given in the CSV to a List of "Customer" building each "Customer" object and their 3 subclass "Account" objects.
+     * @param filePath String that shows the location of the file. Put as a parameter for flexibility if needed in a future project.
+     * @return List<Map<Object, Object>> the list of all "Customer" objects fully constructed with all their information and their accounts created as well.The diffrent maps are for quickly looking up the customer based on their name or on their account number
+     */
+    private static Dictionary <?, Customer> listOfCustomersFromCSV(String filePath){
+        List<Map<?,Customer>> customerList = new ArrayList<>();
+        Map<String,Customer> customerNameList = new HashMap<>();
+        Map<Integer,Customer> customerAccountNumberList = new HashMap<>();
         String line;
         //try to read CSV file
         try(BufferedReader br = new BufferedReader(new FileReader(filePath))){
@@ -264,6 +300,8 @@ public class RunBank{
                 currentAccountHolder.setDOB(customerData[3]);
                 currentAccountHolder.setAddress(customerData[4]+", "+customerData[5]+", "+ customerData[6]);
                 currentAccountHolder.setPhoneNumber(customerData[7]);
+                currentAccountHolder.setAddress(customerData[4]+", "+customerData[5]+", "+ customerData[6]);
+                currentAccountHolder.setPhoneNumber(customerData[7]);
                 //Create the Accounts and set all its attributes
                 int checkingAccountNumber = Integer.parseInt(customerData[8]);
                 double checkingAccountBalance = Double.parseDouble(customerData[9]);
@@ -272,6 +310,7 @@ public class RunBank{
                 int savingAccountNumber = Integer.parseInt(customerData[10]);
                 double savingAccountBalance = Double.parseDouble(customerData[11]);
                 Account savingAccount = new Saving(savingAccountNumber, savingAccountBalance, currentAccountHolder);
+
 
                 int creditAccountNumber = Integer.parseInt(customerData[12]);
                 double creditMax = Double.parseDouble(customerData[13]);
@@ -295,7 +334,6 @@ public class RunBank{
         //catch if reading failed
         catch(IOException e){
             e.printStackTrace();
-        
         }
         //return all customers read 
         customerList.add(customerAccountNumberList);

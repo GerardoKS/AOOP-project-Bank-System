@@ -45,7 +45,7 @@ public class Credit extends Account{
      * prints the account holder first name, last name, account number, max, and balance 
      */
     public void displayAccount(){
-        System.out.println("The account number for "+ account_holder.getFirstName() + " " + account_holder.getLastName() + "is " + accountNumber + "and this account has a max limit of: $" + max + "and has a used: $"+ balance);
+        System.out.println("The account number for "+ accountHolder.getFirstName() + " " + accountHolder.getLastName() + "is " + accountNumber + "and this account has a max limit of: $" + max + "and has a used: $"+ balance);
     }
 
     /*
