@@ -32,11 +32,7 @@ import java.io.FileWriter;
  * @author Hannah Ayala
  */
 public class RunBank{
-<<<<<<< HEAD
     private static Dictionary<String, Customer> customerList; //dictionary with key (firstName lastName) and value Customer
-=======
-    private static List<Customer> customerList; //dictionary with key (firstName lastName) and value Customer
->>>>>>> 83b73006aaed363380f44eec389cb97fb1ea32e3
     private static boolean exit = false; //customer wants to exit
     private static boolean mainMenu = false; //customer wants to return to main menu
     private static boolean successD = true; //customer deposit was successful
@@ -47,35 +43,14 @@ public class RunBank{
 
     public static void main(String args[]){
         //declare file location (file path)
-<<<<<<< HEAD
-        //getting the information from the csv file
-        String filePath = "./CS 3331 - Bank Users.csv";
-        //read CSV file and create a list of "Customer"s from the entreis in the file
-        customerList = listOfCustomersFromCSV(filePath);
-        filePath = "./Result";
-
-        System.out.println("customerList obtained");
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Welcome to El Paso Miners Bank!");
-        while(!exit){ //will continue going to main menu unless the user chooses to exit
-           main_menu(sc); //manager or customer        
-        }
-        System.out.println("Thank you for choosing us!");
-
-        //Update the CSV with any changes made the to the list of "Customer"s
-        updateCSVFile(customerList, filePath);
-
-    }
-
-=======
         String filePath = "./CS 3331 - Bank Users.csv";
         System.out.println("--------START-------");
         //read CSV file and create a list of "Customer"s from the entreis in the file
-        List<Dictionary<?, Customer>> customerList = listOfCustomersFromCSV(filePath);
+        customerList = listOfCustomersFromCSV(filePath);
         System.out.println("------Read FILE -------");
         Enumeration<Customer> customers = customerList.get(1).elements();
     
-            // Iterate over each Customer in the second Dictionary
+        // Iterate over each Customer in the second Dictionary
         while (customers.hasMoreElements()) {
             Customer currentAccountHolder = customers.nextElement();
             System.out.println(currentAccountHolder.getId());
@@ -94,8 +69,6 @@ public class RunBank{
      * @param filePath String that shows the location of the file. Put as a parameter for flexibility if needed in a future project.
      * @return List<Dictionary<?, Object>> the list of all "Customer" objects fully constructed with all their information and their accounts created as well.The diffrent Dictionary are for quickly looking up the customer based on their name or on their account number. The wild card(?) is needed in order to have the Dictionary in the list
      */
-    
-    
         //getting the information from the csv file
         String filePath = "./CS 3331 - Bank Users.csv";
         customerList = listOfCustomersFromCSV(filePath);
@@ -109,7 +82,6 @@ public class RunBank{
 
     }
     
->>>>>>> 83b73006aaed363380f44eec389cb97fb1ea32e3
     private static void main_menu(Scanner sc){
         int users = typeOfUser(sc); //will get the type of user
            switch (users){
@@ -212,7 +184,6 @@ public class RunBank{
                 return true; //transaction was not unsuccessful
             default:
                 switch (customerList.get(customerName).getAccounts().get(type.toLowerCase())){ //check the dictionary for type 
-<<<<<<< HEAD
 
                     case(null): //type is not the accountType, it could be an account number or not correct input
                         type = customerList.get(customerName).findAccountType(Integer.parseInt(type)); //find the account type
@@ -226,37 +197,10 @@ public class RunBank{
 
                     default: //there is an account for customerName of type accountType
                         return transactionHelper(sc, transaction, customerName, type);
-=======
-                    case("checking"):
-                    case("saving"):
-                    case("credit"):
-                        System.out.printf("How much would you like to %s into the account\n", transaction);
-                        double amount = sc.nextDouble();
-                        switch (transaction){
-                           case("deposit"):
-                                return customerList.get(customerName).deposit(type, amount);
-                            case("withdrawal"):
-                                return customerList.get(customerName).withdrawal(type, amount);
-                        }
-                        break;
-                    case(null):
-                        type = customerList.get(customerName).findAccountType(Integer.parseInt(type));
-                        switch(type){
-                            case(null):
-                                System.out.println("Account wasn't found please try again or return to main menu");
-                                return false;
-                            default:
-                                System.out.println("How much would you like to deposit into the account");
-                                amount = sc.nextDouble();
-                                return customerList.get(customerName).deposit(type, amount);
-                        }
-                        break;
->>>>>>> 83b73006aaed363380f44eec389cb97fb1ea32e3
                     }
                 break;
         }
     }
-<<<<<<< HEAD
 
     private static boolean transactionHelper(Scanner sc, String transaction, String customerName, String type){
         System.out.printf("How much would you like to %s into the account\n", transaction); //gets the amount for the transaction
@@ -269,8 +213,6 @@ public class RunBank{
     }
 
 
-=======
->>>>>>> 83b73006aaed363380f44eec389cb97fb1ea32e3
     private static int typeOfUser(Scanner sc){
         System.out.println("Will the following transaction be from a manager (m) or a regular user (r)? (exit)");
         String input = sc.next();
@@ -283,7 +225,6 @@ public class RunBank{
                 return 0;
             case("u"):
             case("user"):
-                return 1;
             default:
                 System.out.println("Please input the correct term");
                 return (typeOfUser(sc));
@@ -292,12 +233,8 @@ public class RunBank{
 
     private static String getCustomer(Scanner sc){
         System.out.println("Please provide your first and last name  (exit to quit or main menu to return to the main menu)");
-<<<<<<< HEAD
         String name = sc.next(); //get name of customer or action to perform
-=======
-        String name = sc.next();
->>>>>>> 83b73006aaed363380f44eec389cb97fb1ea32e3
-        switch (name.toLowerCase()){
+        switch(name){
             case ("e"):
             case("exit"):
                 exit = true;
@@ -307,7 +244,6 @@ public class RunBank{
             case("main menu"):
                 mainMenu = true;
                 return null;
-<<<<<<< HEAD
             default:
                 if (customerList.get(name) == null){ //if the customer doesn't exist rerun the function
                     System.out.println("Cannot find user in the database\nEnsure that the spelling is correct or that the user is in the database");
@@ -329,24 +265,6 @@ public class RunBank{
         List<Map<?,Customer>> customerList = new ArrayList<>();
         Map<String,Customer> customerNameList = new HashMap<>();
         Map<Integer,Customer> customerAccountNumberList = new HashMap<>();
-=======
-        }
-
-        if (customerList.get(name) == null){
-            System.out.println("Cannot find user in the database\nEnsure that the spelling is correct or that the user is in the database");
-            return getCustomer(sc, customerList);
-        }
-
-        System.out.println("Welcome, " + customerList.get(name).getName()); //greats customer with full name
-        return name;
-    }
-    
-
-    private static List<Dictionary<?,Customer>> listOfCustomersFromCSV(String filePath){
-        List<Dictionary<?,Customer>> customerList = new ArrayList<>();
-        Dictionary<String,Customer> customerNameList = new Hashtable<>();
-        Dictionary<Integer,Customer> customerAccountNumberList = new Hashtable<>();
->>>>>>> 83b73006aaed363380f44eec389cb97fb1ea32e3
         String line;
         //try to read CSV file
         try(BufferedReader br = new BufferedReader(new FileReader(filePath))){
@@ -373,36 +291,6 @@ public class RunBank{
                 double checkingAccountBalance = Double.parseDouble(customerData[9]);
                 Account checkingAccount = new Checking(checkingAccountNumber, checkingAccountBalance, currentAccountHolder);
 
-<<<<<<< HEAD
-                // Create customer and set all its attributes
-                Customer currentAccountHolder = new Customer();
-                currentAccountHolder.setId(Integer.parseInt(customerData[0]));
-                currentAccountHolder.setFirstName(customerData[1]);
-                currentAccountHolder.setLastName(customerData[2]);
-                currentAccountHolder.setDOB(customerData[3]);
-                currentAccountHolder.setAddress(customerData[4]);
-                currentAccountHolder.setPhoneNumber(customerData[5]);
-                //Create the Accounts and set all its attributes
-
-                int checkingAccountNumber = Integer.parseInt(customerData[6]);
-                double checkingAccountBalance = Double.parseDouble(customerData[7]);
-                Account checkingAccount = new Checking(checkingAccountNumber, checkingAccountBalance, currentAccountHolder);
-
-                int savingAccountNumber = Integer.parseInt(customerData[8]);
-                double savingAccountBalance = Double.parseDouble(customerData[9]);
-                Account savingAccount = new Saving(savingAccountNumber, savingAccountBalance, currentAccountHolder);
-
-                int creditAccountNumber = Integer.parseInt(customerData[10]);
-                double creditMax = Double.parseDouble(customerData[11]);
-                double creditAccountBalance = Double.parseDouble(customerData[12]);
-                Account creditAccount = new Credit(creditAccountNumber,creditAccountBalance, currentAccountHolder, creditMax);
-                //set the accounts in the Customer object
-
-                Account[] accounts = new Account[] {checkingAccount, savingAccount, creditAccount};
-
-                currentAccountHolder.set_accounts(accounts);
-                //Store Customer in Map of Customers with the key as the ID
-=======
                 int savingAccountNumber = Integer.parseInt(customerData[10]);
                 double savingAccountBalance = Double.parseDouble(customerData[11]);
                 Account savingAccount = new Saving(savingAccountNumber, savingAccountBalance, currentAccountHolder);
@@ -419,7 +307,6 @@ public class RunBank{
                 //put accoounts in the Customers accounts Dictionary
                 currentAccountHolder.setAccounts(accounts);
                 //Store Customer in Dictionary of Customers with the key as the ID
->>>>>>> 83b73006aaed363380f44eec389cb97fb1ea32e3
                 //wrote with the getter to be more readable
                 customerAccountNumberList.put(checkingAccountNumber, currentAccountHolder);
                 customerAccountNumberList.put(savingAccountNumber, currentAccountHolder);
@@ -430,11 +317,6 @@ public class RunBank{
         //catch if reading failed
         catch(IOException e){
             e.printStackTrace();
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> 83b73006aaed363380f44eec389cb97fb1ea32e3
         }
         //return all customers read 
         customerList.add(customerAccountNumberList);
