@@ -1,42 +1,24 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Scanner;
-
 import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Dictionary;
-import java.util.Scanner;
 /*
  * Driver class containg User Interface and CSV conversion to create the bank system. 
  * @author Gerardo Sillas
  * @author Hannah Ayala
  */
 
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.Enumeration;
-
-
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-
-
-
-
-/*
- * Driver class containg User Interface and CSV conversion to create the bank system. 
- * @author Gerardo Sillas
- * @author Hannah Ayala
- */
 public class RunBank{
     private static Dictionary<String, Customer> customerList; //dictionary with key (firstName lastName) and value Customer
     private static boolean exit = false; //customer wants to exit
     private static boolean mainMenu = false; //customer wants to return to main menu
     private static boolean successD = true; //customer deposit was successful
-    private static boolean successW = true; //customer withdrawal was successful
+    private static boolean successW = true; //customer withdraw was successful
     private static boolean successT = true; //customer transfer was successful
     private static boolean successP = true; //customer paying someone was successful
 
@@ -50,6 +32,14 @@ public class RunBank{
         System.out.println("------Read FILE -------");
         Enumeration<Customer> customers = customerList.get(1).elements();
     
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Welcome to El Paso Miners Bank!");
+        while(!exit){ //will continue going to main menu unless the user chooses to exit
+           main_menu(sc); //manager or customer        
+        }
+        System.out.println("Thank you for choosing us!");
+
+
         // Iterate over each Customer in the second Dictionary
         while (customers.hasMoreElements()) {
             Customer currentAccountHolder = customers.nextElement();
@@ -62,6 +52,7 @@ public class RunBank{
         updateCSVFile(customerList, filePath);
         System.out.println("-------FINISH UPDATE-------");
 
+
     }
  
     /*
@@ -73,14 +64,7 @@ public class RunBank{
         String filePath = "./CS 3331 - Bank Users.csv";
         customerList = listOfCustomersFromCSV(filePath);
         System.out.println("customerList obtained");
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Welcome to El Paso Miners Bank!");
-        while(!exit){ //will continue going to main menu unless the user chooses to exit
-           main_menu(sc); //manager or customer        
-        }
-        System.out.println("Thank you for choosing us!");
 
-    }
     
     private static void main_menu(Scanner sc){
         int users = typeOfUser(sc); //will get the type of user
@@ -99,7 +83,7 @@ public class RunBank{
 
     private static void userMenu(Scanner sc, String customerName){
         String customerName2 = null; //prepares for the probablity of having two customers (paying someone)
-        System.out.println("Please input what you transaction you would like to do.\nCheck Balance (B)\nDeposit (D)\nWithdrawal (W)\nTransfer (T)\nPay someone (P)\nLogout/Return to Main Menu (L/M)\nExit (E)"); //options for the customer
+        System.out.println("Please input what you transaction you would like to do.\nCheck Balance (B)\nDeposit (D)\nwithdraw (W)\nTransfer (T)\nPay someone (P)\nLogout/Return to Main Menu (L/M)\nExit (E)"); //options for the customer
         String input = sc.next(); //stores the transaction (or action)
         switch (input.toLowerCase()){
             case("b"):
@@ -122,21 +106,21 @@ public class RunBank{
                 successD = transaction(sc, "deposit", customerName); //will deposit into one of customerName's accounts
                 break;
             case("w"):
-            case("withdrawal"):
+            case("withdraw"):
                 //FIX
-                successW = transaction(sc, "withdrawal", customerName); //will withdrawal from one of customerName's acocunts
+                successW = transaction(sc, "withdraw", customerName); //will withdraw from one of customerName's acocunts
                 break;
             case("t"):
             case("transfer"):
-                //will withdrawal and deposit into one of customerName's account 
-                successT = transaction(sc, "withdrawal", customerName) && transaction(sc, "deposit", customerName); 
+                //will withdraw and deposit into one of customerName's account 
+                successT = transaction(sc, "withdraw", customerName) && transaction(sc, "deposit", customerName); 
                 break;
             case("p"):
             case("pay"):
             case("pay someone"):
                 customerName2 = getCustomer(sc); //will get the second customer that will partake in this transaction
-                //will withdrawal from one of customerName's accounts and deposit into one of customerName2's accounts
-                successP = transaction(sc, "withdrawal", customerName) && transaction(sc, "deposit", customerName2) ;
+                //will withdraw from one of customerName's accounts and deposit into one of customerName2's accounts
+                successP = transaction(sc, "withdraw", customerName) && transaction(sc, "deposit", customerName2) ;
                 break;
             case("l"):
             case("logout"):
@@ -159,13 +143,13 @@ public class RunBank{
                 successD = transaction(sc, "deposit", customerName);
             }
             if (!successW){
-                successW = transaction(sc, "withdrawal", customerName);
+                successW = transaction(sc, "withdraw", customerName);
             }
             if (!successT){
-                successT = transaction(sc, "withdrawal", customerName) && transaction(sc, "deposit", customerName);                     
+                successT = transaction(sc, "withdraw", customerName) && transaction(sc, "deposit", customerName);                     
             }
             if (!successP){
-                successP = transaction(sc, "withdrawal", customerName) && transaction(sc, "deposit", customerName2);
+                successP = transaction(sc, "withdraw", customerName) && transaction(sc, "deposit", customerName2);
             }
         }
     }
@@ -207,8 +191,8 @@ public class RunBank{
         double amount = sc.nextDouble();
         if (transaction.equals("deposit")){ //if deposit, then run deposit, which will check if it is possible
             return customerList.get(customerName).deposit(type, amount);
-        }else{ //else it must be withdrawal which will check if it is possible
-            return customerList.get(customerName).withdrawal(type, amount);
+        }else{ //else it must be withdraw which will check if it is possible
+            return customerList.get(customerName).withdraw(type, amount);
         }
     }
 

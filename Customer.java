@@ -165,7 +165,7 @@ public class Customer extends Person{
         if (amount>=0 && accountType == "credit" && !accounts.get(accountType).canDeposit(amount)){ //if it is a deposit for credit, check if you can deposit, if not then return false
             System.out.printf("Cannot deposit %d into account of type credit\n", amount);
             return false;
-        }else if (amount<0 && !accounts.get(accountType).canWithdrawal(amount)){ //if we are withdrawing check if we can withdrawal
+        }else if (amount<0 && !accounts.get(accountType).canWithdraw(amount)){ //if we are withdrawing check if we can withdraw
             System.out.printf("Cannot withdrawl %d from account of type %s\n", amount, accountType);
         }
 
@@ -194,11 +194,11 @@ public class Customer extends Person{
      * @param amount amount to withdraw
      * @return true if successful, false otherwise
      */
-    public boolean withdrawal(String accountType, double amount){
+    public boolean withdraw(String accountType, double amount){
         return deposit(accountType, -amount);
     }
 
-    public boolean withdrawal(int accountNumber, double amount){
+    public boolean withdraw(int accountNumber, double amount){
         return deposit(accountNumber, -amount);
     }
 
@@ -222,8 +222,8 @@ public class Customer extends Person{
             System.out.println("One or both of the specified account numbers do not exist under this customer.");
             return false;
         }
-        if (accounts.get(source).canWithdrawal(amount) && accounts.get(dest).canDeposit(amount)){ //if you can deposit and you can withdrawal proceed with the transaction
-            accounts.get(source).changeBalance(-amount); //withdrawal from the source account
+        if (accounts.get(source).canWithdraw(amount) && accounts.get(dest).canDeposit(amount)){ //if you can deposit and you can withdraw proceed with the transaction
+            accounts.get(source).changeBalance(-amount); //withdraw from the source account
             accounts.get(dest).changeBalance(amount); //deposit into the dest account
             return true;
         }
@@ -255,8 +255,8 @@ public class Customer extends Person{
             System.out.println("One or both of the specified account numbers do not exist under this customer.");
             return false;
         }
-        if (accounts.get(source).canWithdrawal(amount) && (Credit) customer.accounts.get(dest).canDeposit(amount)){ //if both actions can be performed
-            accounts.get(source).changeBalance(-amount); //withdrawal from the source account
+        if (accounts.get(source).canWithdraw(amount) && (Credit) customer.accounts.get(dest).canDeposit(amount)){ //if both actions can be performed
+            accounts.get(source).changeBalance(-amount); //withdraw from the source account
             customer.accounts.get(dest).changeBalance(amount); //deposit into the dest account of customer
             return true;
         }
