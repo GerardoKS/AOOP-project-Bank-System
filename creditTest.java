@@ -18,7 +18,10 @@ public class creditTest {
         Credit testCreditObject = new Credit(accountNumber, balance, holder, max);
     }
  
- 
+    /*
+     * the main credit testing method that will be called to commense the test, if credit was bigger and needed more test this would be wear all the test methods for account would be called
+     * @return boolean, shows if you passed all the test(true) or failed(false) any of the test
+     */
     public boolean testCredit(){
         System.out.println("Credit");
         testCreditObject.setMax(2);
@@ -30,6 +33,7 @@ public class creditTest {
     /*
      * test the Change Balance function in Credit
      * This method also inlcudes the canDeposit method
+     * Each test case has an SOP to indicate that that, that taste case failed.
      * @return returns wether the test passed(true) or failed(false)
      */
     private boolean testChangeBalance(){
