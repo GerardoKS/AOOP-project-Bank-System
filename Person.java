@@ -1,7 +1,6 @@
 /**
  * Represents a person with personal details such as name, date of birth,
- * address, and phone number. This class provides methods to get and set
- * these attributes.
+ * address, and phone number.
  */
 public class Person{
     private String firstName;
