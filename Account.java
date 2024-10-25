@@ -47,36 +47,28 @@ public class Account{
     /*
      * Changes the balance based on the amount given
      * @param amount is positive if it is for a deposit or negative if withdrawl
-     * @return  wether the transation ws successful
+     * @return  wether the transation was successful
      */
  
-    public boolean changeBalance(double amount, Files f){
-        if(amount>0){
-            if(canDeposit(amount)){
-                balance += amount;
-                //if (amount > 0 ){
-                    String output = "Deposited " + amount + " into " + accountNumber + " account";
-                    System.out.println(output);
-                    f.writeFile(accountHolder.getName() + " " + output);
-                /*}else{
-                   String output = "Withdrew " + -amount + " from " + accountNumber + " account";
-                System.out.println(output);
-                    f.writeFile(accountHolder.getName() + " " + output);*/
-                    return true;
-                }
-            return false;
-        }else{
-            if (canWithdraw(amount)){
-                balance += amount;
-                String output = "Withdrew " + -amount + " from " + accountNumber + " account";
-                System.out.println(output);
-                f.writeFile(accountHolder.getName() + " " + output);
-                return true;
-            }
-            return false;
+     public boolean changeBalance(double amount, Files f){
+        String output = "";
+        if(amount < 0  && canWithdraw(amount)){
+            balance += amount;
+            output = "Withdrew " + -amount + " from " + accountNumber + " account";
+            System.out.println(output);
+            f.writeFile(accountHolder.getName() + " " + output);
+            return true;
         }
+        else if(amount >= 0 && canDeposit(amount)){
+            balance += amount;
+            output = "Deposited " + amount + " into " + accountNumber + " account";
+            System.out.println(output);
+            f.writeFile(accountHolder.getName() + " " + output);
+            return true;
+        }
+        System.out.println("Cannot perform transaction");
+        return false;
     }
- 
     /*
      * displays account holder first and last name, account number, and balance
      */
@@ -105,6 +97,9 @@ public class Account{
         }
         return true;
     }
+    /*
+     * The Deposit should always be true for this method since you dont have a max amount of money you can have
+     */
     public boolean canDeposit(double amount){
         return true;
     }
