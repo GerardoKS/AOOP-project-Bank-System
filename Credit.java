@@ -30,7 +30,7 @@
  
     /*
      * changes the balance based on the amount given
-     * @param amount positive double that shows how much money is tryying to be charged to the credit account
+     * @param amount positive double that shows how much money is trying to be charged to the credit account
      * @return boolean that shows wether the charge went through
      */
     public boolean changeBalance(double amount, Files f){
@@ -62,7 +62,7 @@
     /*
      * checks if you the amount will put the users credit total charge past the max amount
      * @param amount positive double that shows how much money is trying to be charged to the credit account
-     * @return boolean that tells if the sun of balance and amount will exceeed the max
+     * @return boolean that tells if the sum of balance and amount will exceeed the max
      */
     public boolean canWithdraw(double amount){
         if((balance + amount) < -max){
@@ -70,7 +70,11 @@
         }
         return true;
     }
-
+   /*
+    * check if the deposit amount is more than what is being owed
+    * @param positive double, amount that is being used to pay off the debt
+    * @return boolean to show if the amount was less than equal to what was owed
+    */
     public boolean canDeposit(double amount){
         if((balance + amount) <= 0 && (balance + amount) > -max){
             return true;
