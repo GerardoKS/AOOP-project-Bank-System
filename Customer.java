@@ -103,7 +103,6 @@ public class Customer extends Person{
         Scanner sc = new Scanner(System.in);
         String input = sc.nextLine();
         while(input.equals("")) input = sc.nextLine();
-        sc.close();
         switch (input.toLowerCase()){ //input could be account number, account type, action, or invalid
             case("e"):
             case("exit"):

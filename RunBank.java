@@ -201,7 +201,7 @@ private static Scanner sc = new Scanner(System.in);
         successW = true; //reset flags
         String customerName2 = "";
         System.out.println("\nPlease input what transaction you would like to do.\nCheck Balance (B)\nDeposit (D)\nwithdraw (W)\nTransfer (T)\nPay someone (P)\nLogout/Return to Main Menu (L/M)\nExit (E)"); //options for the customer
-        String input = sc.next(); //stores the transaction (or action)
+        String input = sc.nextLine(); //stores the transaction (or action)
 
         while(input.equals("")) input = sc.nextLine();
         switch (input.toLowerCase()){
@@ -644,18 +644,20 @@ private static Scanner sc = new Scanner(System.in);
             String titles = "Identification Number,First Name,Last Name,Date of Birth,Address,Phone Number,Checking Account Number,Checking Starting Balance,Savings Account Number,Savings Starting Balance,Credit Account Number,Credit Max,Credit Starting Balance";
             writer.write(titles);
             writer.newLine();
+            //This is the code for writing the CSV file in order but there was a casting error that we could not figure out
             //get the list of names to keep the order in the CSV from the list of dictionaries
             Enumeration<?> list = customerList.get(2).keys();
             //cast the into a List<String>
             List<String> names = (List<String>)list.nextElement();
             //Update each customer one by one
+            //iterate through every customer and write their data in the CSV
             for(String name : names){
                 Customer currentAccountHolder = customerList.get(1).get(name);
                 //turn Customer attribute into a String
                 String data =   Integer.toString(currentAccountHolder.getId())+","+currentAccountHolder.getFirstName()+","+currentAccountHolder.getLastName()+","+ currentAccountHolder.getDOB()+","+currentAccountHolder.getAddress() +","+ currentAccountHolder.getPhoneNumber()+",";
                 //get accounts and store in more descriptive varaibles for readability
                 Dictionary <String, Account> accounts = currentAccountHolder.getAccounts();
-                //get the Acount objects
+                //get the Account objects
                 Account checkingAccount = accounts.get("checking");
                 Account savingAccount = accounts.get("saving");
                 Account creditAccount = accounts.get("credit");

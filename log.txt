@@ -7,3 +7,7 @@ Daniel A Deposited 50.0 into 2078 account
 (Daniel A paid 25.0 from checking account to Derek Aguirre's checking account)
 Daniel A Withdrew 25.0 from 1078 account
 Derek Aguirre Deposited 25.0 into 1048 account
+Daniel A displayed balance 1078 account
+Daniel A displayed balance 1078 account
+Daniel A displayed balance 1078 account
+Daniel A displayed balance 1078 account
