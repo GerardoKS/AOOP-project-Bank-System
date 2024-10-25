@@ -34,15 +34,17 @@
      * @return boolean that shows wether the charge went through
      */
     public boolean changeBalance(double amount, Files f){
-        if(canDeposit(amount)){
+        String output = "";
+        if(amount < 0  && canWithdraw(amount)){
             balance += amount;
-            String output = "";
-            if (amount > 0 ){
-                output = "Deposited " + amount + " into " + accountNumber + " account";
-               
-            }else{
-                output = "Withdrew " + -amount + " from " + accountNumber + " account";
-            }
+            output = "Withdrew " + -amount + " from " + accountNumber + " account";
+            System.out.println(output);
+            f.writeFile(accountHolder.getName() + " " + output);
+            return true;
+        }
+        else if(amount >= 0 && canDeposit(amount)){
+            balance += amount;
+            output = "Deposited " + amount + " into " + accountNumber + " account";
             System.out.println(output);
             f.writeFile(accountHolder.getName() + " " + output);
             return true;
