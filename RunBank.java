@@ -550,9 +550,10 @@ private static Scanner sc = new Scanner(System.in);
     }
     
     /*
-     * converts the entries given in the CSV to a List of "Customer" building each "Customer" object and their 3 subclass "Account" objects.
+     * In this method every input line read is converted into Customer with fully set attributes and Account attributes. They are then returned for use in the system
+     * The last dictionary is used as a way of sorting the list when you update the CSV file. CSV file can overwrite original but we decided not to just in case it is needed.
      * @param filePath String that shows the location of the file. Put as a parameter for flexibility if needed in a future project.
-     * @return List<Map<Object, Object>> the list of all "Customer" objects fully constructed with all their information and their accounts created as well.The diffrent maps are for quickly looking up the customer based on their name or on their account number
+     * @return List<Map<?, Customer>> the list of all "Customer" objects fully constructed with all their information and their accounts created as well.The diffrent maps are for quickly looking up the customer based on their name or on their account number. The last dictionary is used for keeping track of the order for later use when updating the CSV file
      */
     static List<Dictionary<?,Customer>> listOfCustomersFromCSV(String filePath){
         List<Dictionary<?,Customer>> customerList = new ArrayList<>();
@@ -633,8 +634,9 @@ private static Scanner sc = new Scanner(System.in);
         return customerList;
     }
     /*
-     * Update the CSV File with the new entries and any altered entry that happened throughout the life cycle of the program
-     * @param List<Customer> list of Customers that are going have there attributes and account attributes convereted into strings and updated in the CSV file
+     * Update the CSV File with the new entries and any altered entry that happened throughout the life cycle of the program. 
+     * We decided to create a seperate file path for the updated CSV file rather than overwriting the original. If needed the file path can be changed to the original file so that the updates end up there. 
+     * @param List<Dictionary<?,Customer>> list of Customers that are going to have there attributes and account attributes convereted into strings and updated in the CSV file
      * @param filePath to increase flexibility, filePath added incase needed again for future project
      */
     public static void updateCSVFile(List<Dictionary<?,Customer>> customerList, String filePath){
