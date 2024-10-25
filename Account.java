@@ -108,4 +108,8 @@ public class Account{
     public boolean canDeposit(double amount){
         return true;
     }
+
+    public String toString(){
+        return("Account number: " + accountNumber + "\nAccount holder: " + accountHolder.getName() + "\nAccount balance: " + balance);
+    }
 }

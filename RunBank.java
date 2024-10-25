@@ -10,7 +10,6 @@ import java.util.Dictionary;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
-import java.lang.NumberFormatException;
 
 
 /*
@@ -59,7 +58,10 @@ public class RunBank{
            switch (users){
                 case 0: //manager
                     System.out.println("You have chosen Bank Manager access");
-                    exit = true;
+                    mainMenu = false;
+                    while(!mainMenu && !exit){
+                        managerMenu(f);
+                    }
                     break;
                 case 1: //normal user
                     System.out.println("You have chosen regular user.");
@@ -72,7 +74,89 @@ public class RunBank{
            
     }
 
-    
+    private static void managerMenu(Files f){
+        exit = false;
+        mainMenu = false;
+        boolean managerMenu = false;
+        System.out.println("A. Inquire by name: \nB.Inquire by account number: \n(exit (e) or main menu (m))");
+        String option = sc.nextLine();
+        while(option.equals("")) option = sc.nextLine();
+        switch (option.toLowerCase()){
+            case("a"):
+                String customerName = getCustomer();
+                while (!exit && !mainMenu && !managerMenu){
+                    System.out.println("Enter the account type");
+                    String input = sc.nextLine();
+                    while(input.equals("")) input = sc.nextLine();
+                    switch (input){
+                        case("e"):
+                        case("exit"):
+                            mainMenu = true;
+                            exit = true;
+                            break;
+                        case("m"):
+                        case("main"):
+                        case("mainMenu"):
+                            mainMenu = true;
+                            break;
+                        default:
+                            int type = verifyAccount(customerName, input);
+                            if (type>0){
+                                System.out.println(customerList.get(customerName).getAccounts().get(input).toString());
+                                managerMenu = true;
+                                break;
+                            }
+                    }
+                }
+                break;
+            case("b"):
+                int num = getAccountNumber(f);
+                Customer customer = (accountList.get(num));
+                System.out.println(customer.getAccounts().get(customer.findAccountType(num)).toString());
+                break;
+            case("e"):
+            case("exit"):
+                mainMenu = true;
+                exit = true;
+                break;
+            case("m"):
+            case("main"):
+            case("main menu"):
+                mainMenu = true;
+                break;
+            default:
+                System.out.println("Please select from the options");
+                managerMenu(f);
+        }
+    }
+
+
+    private static int getAccountNumber(Files f){
+        System.out.println("Enter account number: (exit (e) or main(m))");
+        String number = sc.nextLine();
+        while(number.equals("")) number = sc.nextLine();
+        switch (number){
+            case("e"):
+            case("exit"):
+                mainMenu = true;
+                exit = true;
+                return 0;
+            case("m"):
+            case("main"):
+            case("main menu"):
+                mainMenu = true;
+                return 0;
+            default:
+                try{
+                    int num = Integer.parseInt(number);
+                    if (accountList.get(num) == null) throw new Exception();
+                    return num;
+                }catch (Exception e){
+                    System.out.println("Account of number " + number + " was not found.");
+                    return getAccountNumber(f);
+                }
+        }
+    }
 
     private static void userMenu(String customerName, Files f){
         successD =true;
@@ -83,7 +167,7 @@ public class RunBank{
         System.out.println("\nPlease input what transaction you would like to do.\nCheck Balance (B)\nDeposit (D)\nwithdraw (W)\nTransfer (T)\nPay someone (P)\nLogout/Return to Main Menu (L/M)\nExit (E)"); //options for the customer
         String input = sc.next(); //stores the transaction (or action)
 
-        while(input == "") input = sc.nextLine();
+        while(input.equals("")) input = sc.nextLine();
         switch (input.toLowerCase()){
             case("b"):
             case("balance"):
@@ -241,7 +325,7 @@ public class RunBank{
     private static String getAccount(){
         System.out.printf("Please specify which account you would like to perform this transaction to, include the type or the account number (exit (e) or main menu (m) or user menu (u))\n"); //get account number or account type to perform transaction for or action to perform
         String type = sc.nextLine();
-        while(type == "") type = sc.nextLine();
+        while(type.equals ("")) type = sc.nextLine();
         return type;
     }
 
@@ -307,7 +391,7 @@ public class RunBank{
     private static int typeOfUser(){
         System.out.println("Will the following transaction be from a manager (m) or a regular user (u)? (exit (e))");
         String input = sc.nextLine();
-        while(input == "") input = sc.nextLine();
+        while(input.equals("")) input = sc.nextLine();
         switch (input.toLowerCase()){
             case("e"):
             case("exit"):
@@ -329,7 +413,7 @@ public class RunBank{
     private static String getCustomer(){
         System.out.println("Please provide your first and last name  (exit (e) or main menu (m))");
         String name = sc.nextLine(); //get name of customer or action to perform
-        while(name == "") name = sc.nextLine();
+        while(name.equals("")) name = sc.nextLine();
         switch(name){
             case ("e"):
             case("exit"):
