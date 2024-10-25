@@ -1,3 +1,8 @@
+/**
+ * Represents a person with personal details such as name, date of birth,
+ * address, and phone number. This class provides methods to get and set
+ * these attributes.
+ */
 public class Person{
     private String firstName;
     private String lastName;
@@ -5,7 +10,10 @@ public class Person{
     private String address;
     private String phone;
 
-
+    /**
+     * Constructs a Person object with default values.
+     * The default values for firstName, lastName, dob, address, and phone are set to empty strings.
+     */
     public Person(){
         firstName = "";
         lastName = "";
@@ -14,6 +22,15 @@ public class Person{
         phone = "";        
     }
 
+    /**
+     * Constructs a Person object with specified values for each attribute.
+     *
+     * @param firstName The first name of the person.
+     * @param lastName The last name of the person.
+     * @param dob The date of birth of the person.
+     * @param address The address of the person.
+     * @param phone The phone number of the person.
+     */
     public Person(String firstName, String lastName, String dob, String address, String phone){
         this.firstName = firstName;
         this.lastName = lastName;
@@ -22,47 +39,102 @@ public class Person{
         this.phone = phone;
     }
 
-    public void setFirstName(String name){
+    /**
+     * Sets the first name of the person.
+     *
+     * @param name The first name to set.
+     */
+    public void setFirstName(String name) {
         this.firstName = name;
     }
 
-    public void setLastName(String name){
+    /**
+     * Sets the last name of the person.
+     *
+     * @param name The last name to set.
+     */
+    public void setLastName(String name) {
         this.lastName = name;
     }
 
-    public void setDOB(String dob){
+    /**
+     * Sets the date of birth of the person.
+     *
+     * @param dob The date of birth to set.
+     */
+    public void setDOB(String dob) {
         this.dob = dob;
     }
 
-    public void setAddress(String address){
+    /**
+     * Sets the address of the person.
+     *
+     * @param address The address to set.
+     */
+    public void setAddress(String address) {
         this.address = address;
     }
 
-    public void setPhoneNumber(String phone){
+    /**
+     * Sets the phone number of the person.
+     *
+     * @param phone The phone number to set.
+     */
+    public void setPhoneNumber(String phone) {
         this.phone = phone;
     }
 
-    public String getFirstName(){
+    /**
+     * Gets the first name of the person.
+     *
+     * @return The first name of the person.
+     */
+    public String getFirstName() {
         return firstName;
     }
 
-    public String getLastName(){
+    /**
+     * Gets the last name of the person.
+     *
+     * @return The last name of the person.
+     */
+    public String getLastName() {
         return lastName;
     }
 
-    public String getDOB(){
+    /**
+     * Gets the date of birth of the person.
+     *
+     * @return The date of birth of the person.
+     */
+    public String getDOB() {
         return dob;
     }
 
-    public String getAddress(){
+    /**
+     * Gets the address of the person.
+     *
+     * @return The address of the person.
+     */
+    public String getAddress() {
         return address;
     }
 
-    public String getPhoneNumber(){
+    /**
+     * Gets the phone number of the person.
+     *
+     * @return The phone number of the person.
+     */
+    public String getPhoneNumber() {
         return phone;
     }
 
-    public String getName(){
+    /**
+     * Gets the full name of the person by combining the first and last names.
+     *
+     * @return The full name of the person.
+     */
+    public String getName() {
         return getFirstName() + " " + getLastName();
     }
 }

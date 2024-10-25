@@ -2,194 +2,168 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Dictionary;
 import java.util.Scanner;
-import java.util.Map;
 
 
 
+/**
+ * The Customer class represents a customer with multiple accounts.
+ * It extends the Person class and provides functionality to manage
+ * accounts, such as deposits, withdrawals, transfers, and viewing balances.
+ */
 public class Customer extends Person{
     private Dictionary <String, Account> accounts;
     private int id;
 
+    /**
+     * Default constructor for the Customer class.
+     * Initializes an empty hashtable of accounts and sets the id to -1.
+     */
     public Customer(){
         accounts = new Hashtable<>();
-        /*Account fake = new Account(-1, -1, new Customer());
-        accounts.put("saving", fake);
-        accounts.put("checking", fake);
-        accounts.put("credit", fake);*/
         id = -1;
     }
 
+    /**
+     * Constructs a Customer with specified account information and personal details.
+     * 
+     * @param accounts The dictionary of the customer's accounts.
+     * @param id The unique ID of the customer.
+     * @param firstName The customer's first name.
+     * @param lastName The customer's last name.
+     * @param dob The customer's date of birth.
+     * @param address The customer's address.
+     * @param phone The customer's phone number.
+     */
     public Customer(Dictionary <String, Account> accounts, int id, String firstName, String lastName, String dob, String address, String phone){
         super(firstName, lastName, dob, address, phone);
         this.accounts = accounts;
         this.id = id;
     }
+
     /**
-     * sets the accounts of the customer
-     * @param accounts
+     * Sets the customer's accounts.
+     * 
+     * @param accounts The dictionary of the customer's accounts.
      */
     public void setAccounts(Dictionary <String, Account> accounts){
         this.accounts = accounts;
     }
 
+    /**
+     * Sets the customer's unique ID.
+     * 
+     * @param id The unique ID of the customer.
+     */
     public void setId(int id){
         this.id = id;
     }
 
     /**
-     * prints and returns the list of accounts of the customer
-     * @return list of accounts
+     * Returns the customer's accounts.
+     * 
+     * @return A dictionary of the customer's accounts.
      */
     public Dictionary<String, Account> getAccounts(){
         return accounts;
     } 
 
+    /**
+     * Returns the customer's unique ID.
+     * 
+     * @return The unique ID of the customer.
+     */
     public int getId(){
         return id;
     }
 
-
     /**
+     * Finds the type of account based on the account number.
      * 
-     * @param number the account number to find
-     * @return the index position the account is in accounts
+     * @param number The account number to find.
+     * @return The type of the account as a string, or null if not found.
      */
     public String findAccountType(int number){  
         Enumeration<String> keys = accounts.keys();
-        while(keys.hasMoreElements()) {
+        while(keys.hasMoreElements()) { //traverse through dictionary
             String key = (String) keys.nextElement();
-            if (accounts.get(key).getAccountNumber() == number) return key;
+            if (accounts.get(key).getAccountNumber() == number) return key; //if an account number matches then return the type
         }
         return null;
     }
 
     /**
-     * displays all of this customers accounts
-     */
-    public void displayAccounts(Files f){
-        Enumeration<String> keys = accounts.keys();
-        while(keys.hasMoreElements()) {
-            String key = (String) keys.nextElement();
-            if (accounts.get(key) != null){
-                System.out.printf("Account of type %s balance: ", key);
-                accounts.get(key).displayAccount(f);
-            }
-        }
-    }
-
-    /**
-     * if customer has only one account, return the balance of their only account
-     * else ask for more information, based on which, return the balance of the wanted account
-     * @return the balance of the desired account
-     */
+    * Returns the balance of the desired account. If the customer has more than one account,
+    * it prompts the user for the account type or number.
+    * 
+    * @param f The file object used for logging.
+    * @return The balance of the specified account or -1, -2, -3 for exit codes.
+    */
     public int getBalance(Files f){
-        /* switch (this.numberOfAccounts()){ //count the number of accounts
-            case(0): //if there are no accounts
-                System.out.println("There are no accounts under this customer.");
-                return 0; //return 0.0
-            case(1): //if there is only one account, print it
-                Enumeration<String> keys = accounts.keys();
-                while(keys.hasMoreElements()) {
-                    String key = (String) keys.nextElement();
-                    if (accounts.get(key) != null){
-                        getBalance(key, f);
-                        return 0;
-                    } 
+        System.out.println("Please specify which type of account(checking, saving, or credit) or account number you would like to get the balance of (exit (e) or main menu (m) or user menu (u))");
+        Scanner sc = new Scanner(System.in);
+        String input = sc.nextLine();
+        while(input.equals("")) input = sc.nextLine();
+        sc.close();
+        switch (input.toLowerCase()){ //input could be account number, account type, action, or invalid
+            case("e"):
+            case("exit"):
+                return -1;
+            case("m"):
+            case("main menu"):
+                return -2;
+            case("u"):
+            case("user"):
+            case("user menu"): //deal with the actions
+                return -3;
+            case ("checking"):
+            case ("saving"):
+            case ("credit"): //if its a type then get balance
+                    getBalance(input.toLowerCase(), f); 
+                    break;
+            default: //not an action or account type, must be either an account number or invalid input
+                try {
+                    String type = findAccountType(Integer.parseInt(input)); //if not an int, throw error
+                    if (type == null) throw new Exception(); //if int but not an account of this customer, throw error
+                    return getBalance(type, f); //is an account of this customer
+                } catch (Exception e) {
+                    System.out.println("No such account found");
+                    return getBalance(f); //try again or give the option to leave
                 }
-                break;
-            default: //there are more than one accounts
-                */
-                System.out.println("Please specify which type of account(checking, saving, or credit) or account number you would like to get the balance of (exit (e) or main menu (m) or user menu (u))");
-                Scanner sc = new Scanner(System.in);
-                String input = sc.nextLine();
-                switch (input.toLowerCase()){ //input could be account number or account type or action
-                    case("e"):
-                    case("exit"):
-                        return -1;
-                    case("m"):
-                    case("main menu"):
-                        return -2;
-                    case("u"):
-                    case("user"):
-                    case("user menu"):
-                        return -3;
-                    case ("checking"):
-                    case ("saving"):
-                    case ("credit"):
-                         getBalance(input.toLowerCase(), f);
-                         break;
-                    default: //not an action or account type, must be either an account number or invalid input
-                        //keys = accounts.keys();
-                        //while(keys.hasMoreElements()) {
-                            //String key = (String) keys.nextElement();
-                            /*Enumeration<String> keyss = accounts.keys();
-                            while (keyss.hasMoreElements()) {
-                                String key = keyss.nextElement();
-                                System.out.println("value at " + key);*/
-                                try {
-                                    return getBalance(findAccountType(Integer.parseInt(input)), f);
-
-                                } catch (Exception e) {
-                                    System.out.println("No such account found");
-                                    return getBalance(f);
-                                }
-
-                                //}
-                                    //if (accounts.get(key).getAccountNumber() == Integer.parseInt(input)) return getBalance(key, f); //there was a matching account for the account number
-                        //}
-                        //System.out.println("Couldn't find account of that type or with that account number\nMake sure you are only including the type or account number not both.\n"); //invalid input
-                        //return getBalance(f);
-                }  
-                return 0;   
-        }
+        }  
+        return 0;   
+    }
     
-
     /**
-     * returns the balance of the account based on the account number
-     * @param account_num the number of the account to get the balance of
-     *  the balance of the account
+     * Returns the balance of the account of the specified type.
+     * 
+     * @param accountType The type of the account.
+     * @param f The file object used for logging.
+     * @return The balance of the account.
      */
     public int getBalance(String accountType, Files f){
         accounts.get(accountType).displayBalance(f);
-        //System.out.printf("Balance %d", accounts.get(accountType).getBalance());
-        //accounts.get(accountType).displayBalance());  //IF TIME MAKE IT DISPLAY NEATLY
-        //(accounts.get(accountType).getBalance());
         return 0;
     }
 
-    /**
-     * creates a new account of the type type and with the given balance
-     * @param balance the balance of the account
-     * @param type the type of the new account
-     * @return true if it was successful, false otherwise
-     */
-    public boolean add_account(String type, Account account, Files f){
-        if (accounts.get(type) != null){ //if there is already an account with that type
-            System.out.printf("Account of type %s already exists.\n", type);
-            return false;
-        }
-        //else create the account
-        accounts.put(type, account);
-        return true;
-    }
-
 
     /**
-     * deposits money into the specified account number
-     * @param account account number to deposit into
-     * @param amount amount to be deposited
-     * @return true if successful, false otherwise
+     * Deposits or withdraws money into/from the specified account.
+     * 
+     * @param accountType The type of the account.
+     * @param amount The amount to deposit (positive) or withdraw (negative).
+     * @param f The file object used for logging.
+     * @return true if the transaction was successful, false otherwise.
      */
     public boolean deposit(String accountType, double amount, Files f){
         if (accounts.get(accountType)==null){ //if there is no account of that type
-            System.out.println("No account of such account number found.");
+            System.out.println("No account found.");
             return false;
         }
     
-        if (amount>=0 && !accounts.get(accountType).canDeposit(amount)){ //if it is a deposit for credit, check if you can deposit, if not then return false
+        if (amount>=0 && !accounts.get(accountType).canDeposit(amount)){ //if deposit and you cant deposit
             System.out.printf("Cannot deposit " + amount + " into account\n");
             return false;
-        }else if (amount<0 && !accounts.get(accountType).canWithdraw(amount)){ //if we are withdrawing check if we can withdraw
+        }else if (amount<0 && !accounts.get(accountType).canWithdraw(amount)){ //if withdrawl and you cant withdraw
             System.out.printf("Cannot withdrawl " + -amount + " from account\n");
             return false;
         }
@@ -200,48 +174,72 @@ public class Customer extends Person{
     }
 
 
-    //MIGHT BE COMPLETELY USELESS BECAUSE OF THE MAIN FILE
+    /**
+     * Deposits or withdraws money into/from the specified account based on the account number.
+     * 
+     * @param accountNumber The account number.
+     * @param amount The amount to deposit or withdraw.
+     * @param f The file object used for logging.
+     * @return true if the transaction was successful, false otherwise.
+     */
     public boolean deposit(int accountNumber, double amount, Files f){
         String type = findAccountType(accountNumber); //find the account type for that number
-        if  (type == null){
-            //if it doesn't exist then return false
-            System.out.println("Account of account number %d cannot be found in this customer please try again");
+        if  (type == null){ //if it doesn't exist then return false
+            System.out.println("Account cannot be found in this customer please try again");
             return false;
-        }else{
-             //else deposit into that accounttype
-                return deposit(type, amount, f);
+        }else{ //else deposit into that accounttype
+            return deposit(type, amount, f);
         }
     }
-
+ 
     /**
-     * withdraws the amount frm the specified account number
-     * @param account account number to withrow from
-     * @param amount amount to withdraw
-     * @return true if successful, false otherwise
+     * Withdraws money from the specified account.
+     * 
+     * @param accountType The type of the account.
+     * @param amount The amount to withdraw.
+     * @param f The file object used for logging.
+     * @return true if successful, false otherwise.
      */
     public boolean withdraw(String accountType, double amount, Files f){
         return deposit(accountType, -amount, f);
     }
 
+    /**
+     * Withdraws money from the specified account based on the account number.
+     * 
+     * @param accountNumber The account number.
+     * @param amount The amount to withdraw.
+     * @param f The file object used for logging.
+     * @return true if successful, false otherwise.
+     */
     public boolean withdraw(int accountNumber, double amount, Files f){
         return deposit(accountNumber, -amount, f);
     }
 
     /**
-     * withdraws amount from the source account and deposits amoung into the
-     * destination account
-     * @param source account number of the source account
-     * @param destination account number of the destination account
-     * @param amount amount to be deposited
-     * @return true if successful, false otherwise
+     * Transfers money from one account to another within the same customer.
+     * 
+     * @param source The source account number.
+     * @param dest The destination account number.
+     * @param amount The amount to be transferred.
+     * @param f The file object used for logging.
+     * @return true if successful, false otherwise.
      */
-    //MIGHT BE COMPLETELY USELESS BECAUSE OF THE MAIN
     public boolean transfer(int source , int dest, double amount, Files f){
         String sourceType = findAccountType(source);
         String destType = findAccountType(dest);
         return transfer(sourceType, destType, amount, f);
     }
 
+    /**
+     * Transfers money from one account to another within the same customer.
+     * 
+     * @param source The source account type.
+     * @param dest The destination account type.
+     * @param amount The amount to be transferred.
+     * @param f The file object used for logging.
+     * @return true if successful, false otherwise.
+     */
     public boolean transfer(String source, String dest, double amount, Files f){
         if (accounts.get(source) == null || accounts.get(dest) == null){ //if either account doesn't exist
             System.out.println("One or both of the specified account numbers do not exist under this customer.");
@@ -250,34 +248,42 @@ public class Customer extends Person{
         if (accounts.get(source).canWithdraw(-amount) && accounts.get(dest).canDeposit(amount)){ //if you can deposit and you can withdraw proceed with the transaction
             String output = "(" + this.getName() + " transfered " + amount + " from " +  source + " account to " + dest + " account)";
             System.out.println(output);
-            f.writeFile(output);
+            f.writeFile(output); //log
             accounts.get(source).changeBalance(-amount, f); //withdraw from the source account
             accounts.get(dest).changeBalance(amount, f); //deposit into the dest account
             return true;
         }
-        
+    
         System.out.println("One or both transactions cannot be performed."); //means either or both transactions couldn't be performed
         return false;
     }
 
     /**
-     * withdraws amount from the current custmer source account and 
-     * deposits amount into the param customer destination account number
-     * @param customer customer owner of destination account
-     * @param source account number of the source account
-     * @param destination account number of the destination account
-     * @param amount amount to be paid
-     * @return true if successful, false otherwise
+     * Transfers a payment from one account of the current customer to another account of a different customer.
+     * 
+     * @param customer The customer who will receive the payment.
+     * @param source The source account number of the current customer.
+     * @param dest The destination account number of the receiving customer.
+     * @param amount The amount to be transferred.
+     * @param f The file object used for logging the transaction.
+     * @return true if the payment was successful, false otherwise.
      */
-
-    //MIGHT BE COMPLETELY USELESS BECAUSE OF MAIN
     public boolean pay(Customer customer, int source, int dest, double amount, Files f ){
         String sourceType = findAccountType(source);
         String destType = customer.findAccountType(dest);
         return pay(customer, sourceType, destType, amount, f);        
     }
 
-
+    /**
+     * Transfers a payment from the current customer's account to another account belonging to a different customer.
+     * 
+     * @param customer The customer receiving the payment.
+     * @param source The type of the source account (e.g., "checking", "saving") from which the payment will be made.
+     * @param dest The type of the destination account (e.g., "checking", "saving") to which the payment will be transferred.
+     * @param amount The amount to be transferred.
+     * @param f The file object used for logging the transaction.
+     * @return true if the payment was successful, false otherwise.
+     */
     public boolean pay(Customer customer, String source, String dest, double amount, Files f){
         if (accounts.get(source) == null || customer.accounts.get(dest) == null){ //if either of the accounts don't exist
             System.out.println("One or both of the specified account numbers do not exist under this customer.");
@@ -295,19 +301,5 @@ public class Customer extends Person{
         //else either or both transactions cannot be performed
         System.out.println("One or both transactions cannot be performed.");
         return false;
-    }
-
-    /**
-     * returns the number of active accounts
-     * @return number of non-null accounts
-     */
-    public int numberOfAccounts(){
-        int count = 0;
-        Enumeration<String> keys = accounts.keys();      
-        while(keys.hasMoreElements()) {
-            String str = (String)keys.nextElement();
-            if (accounts.get(str) != null) count++;
-        }  
-        return count;
     }
 }
