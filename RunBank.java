@@ -563,40 +563,76 @@ private static Scanner sc = new Scanner(System.in);
         String line;
         //try to read CSV file
         try(BufferedReader br = new BufferedReader(new FileReader(filePath))){
-            boolean skipCategoryNames = true;
+            line = br.readLine();
+            //Get the categories so you can set the attributes of the customer and accounts properly
+            String[] categories = line.split(",");
             //read each line until no more lines
+            int currentID = 1;
             while((line = br.readLine())!= null){
-                //skip first lines since it is just attribute names
-                if(skipCategoryNames){
-                    skipCategoryNames = false;
-                    continue;
-                }
                 //split line by the commas and store in a String array
                 String[] customerData = line.split(",");
                 // Create customer and set all its attributes
                 Customer currentAccountHolder = new Customer();
-                currentAccountHolder.setId(Integer.parseInt(customerData[0]));
-                currentAccountHolder.setFirstName(customerData[1]);
-                currentAccountHolder.setLastName(customerData[2]);
-                currentAccountHolder.setDOB(customerData[3]);
- 
-                currentAccountHolder.setAddress(customerData[4]+", "+customerData[5]+", "+ customerData[6]);
-                currentAccountHolder.setPhoneNumber(customerData[7]);
-                //Create the Accounts and set all its attributes
-                int checkingAccountNumber = Integer.parseInt(customerData[8]);
-                double checkingAccountBalance = Double.parseDouble(customerData[9]);
-                Account checkingAccount = new Checking(checkingAccountNumber, checkingAccountBalance, currentAccountHolder);
- 
-                int savingAccountNumber = Integer.parseInt(customerData[10]);
-                double savingAccountBalance = Double.parseDouble(customerData[11]);
-                Account savingAccount = new Saving(savingAccountNumber, savingAccountBalance, currentAccountHolder);
- 
- 
-                int creditAccountNumber = Integer.parseInt(customerData[12]);
-                double creditMax = Double.parseDouble(customerData[13]);
-                double creditAccountBalance = Double.parseDouble(customerData[14]);
-                Account creditAccount = new Credit(creditAccountNumber,creditAccountBalance, currentAccountHolder, creditMax);
-                //set the accounts in the Customer object
+                Account checkingAccount = new Checking();
+                Account savingAccount = new Saving();
+                Credit creditAccount = new Credit();
+                int checkingAccountNumber = 0;
+                int savingAccountNumber = 0;
+                int creditAccountNumber = 0;
+                int customerDataCurrentIndex = 0;
+                for(String category: categories){
+                    switch (category){
+                        case "First Name":
+                            currentAccountHolder.setFirstName(customerData[customerDataCurrentIndex]);
+                            break;
+                        case "Last Name":
+                            currentAccountHolder.setLastName(customerData[customerDataCurrentIndex]);
+                            break;
+                        case "Date of Birth":
+                            currentAccountHolder.setDOB(customerData[customerDataCurrentIndex]);
+                            break;
+                        case "Address":
+                            currentAccountHolder.setAddress(customerData[customerDataCurrentIndex]+","+customerData[customerDataCurrentIndex+ 1]+","+ customerData[customerDataCurrentIndex+2]);
+                            customerDataCurrentIndex += 2;
+                            break;
+                        case "Phone Number":
+                            currentAccountHolder.setPhoneNumber(customerData[customerDataCurrentIndex]);
+                            break;
+                        //Create the Accounts and set all its attributes
+                        case "Checking Account Number":
+                            checkingAccountNumber = currentID + 999;
+                            checkingAccount.setAccountNumber(checkingAccountNumber);
+                            break;
+                        case "Checking Starting Balance":
+                            checkingAccount.setBalance(Double.parseDouble(customerData[customerDataCurrentIndex]));
+                            break;
+
+                        case "Savings Account Number":
+                            savingAccountNumber = currentID + 1999;
+                            savingAccount.setAccountNumber(savingAccountNumber);
+                            break;
+                        case "Savings Starting Balance":
+                            savingAccount.setBalance(Double.parseDouble(customerData[customerDataCurrentIndex]));
+                            break;
+
+                        case "Credit Account Number":
+                            creditAccountNumber = currentID + 2999;
+                            creditAccount.setAccountNumber(creditAccountNumber);
+                            break;
+
+                        case "Credit Max":
+                            creditAccount.setMax(Double.parseDouble(customerData[customerDataCurrentIndex]));
+                            break;
+
+                        case "Credit Starting Balance":
+                            creditAccount.setBalance(Double.parseDouble(customerData[customerDataCurrentIndex]));
+                            break;
+                        //set the accounts in the Customer object
+                    }
+                    customerDataCurrentIndex++;
+                }
+                currentAccountHolder.setId(currentID);
+                currentID++;
                 Dictionary<String,Account> accounts = new Hashtable<>();
                 accounts.put("checking", checkingAccount);
                 accounts.put("saving", savingAccount);
