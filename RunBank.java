@@ -563,54 +563,69 @@ private static Scanner sc = new Scanner(System.in);
         String line;
         //try to read CSV file
         try(BufferedReader br = new BufferedReader(new FileReader(filePath))){
-            boolean skipCategoryNames = true;
+            boolean CategoryNames = true;
+            //Get the categories so you can set the attributes of the customer and accounts properly
+            String[] categories = line.split(",");
             //read each line until no more lines
             while((line = br.readLine())!= null){
-                //skip first lines since it is just attribute names
-                if(skipCategoryNames){
-                    skipCategoryNames = false;
-                    continue;
-                }
                 //split line by the commas and store in a String array
                 String[] customerData = line.split(",");
                 // Create customer and set all its attributes
                 Customer currentAccountHolder = new Customer();
-                currentAccountHolder.setId(Integer.parseInt(customerData[0]));
-                currentAccountHolder.setFirstName(customerData[1]);
-                currentAccountHolder.setLastName(customerData[2]);
-                currentAccountHolder.setDOB(customerData[3]);
- 
-                currentAccountHolder.setAddress(customerData[4]+", "+customerData[5]+", "+ customerData[6]);
-                currentAccountHolder.setPhoneNumber(customerData[7]);
-                //Create the Accounts and set all its attributes
-                int checkingAccountNumber = Integer.parseInt(customerData[8]);
-                double checkingAccountBalance = Double.parseDouble(customerData[9]);
-                Account checkingAccount = new Checking(checkingAccountNumber, checkingAccountBalance, currentAccountHolder);
- 
-                int savingAccountNumber = Integer.parseInt(customerData[10]);
-                double savingAccountBalance = Double.parseDouble(customerData[11]);
-                Account savingAccount = new Saving(savingAccountNumber, savingAccountBalance, currentAccountHolder);
- 
- 
-                int creditAccountNumber = Integer.parseInt(customerData[12]);
-                double creditMax = Double.parseDouble(customerData[13]);
-                double creditAccountBalance = Double.parseDouble(customerData[14]);
-                Account creditAccount = new Credit(creditAccountNumber,creditAccountBalance, currentAccountHolder, creditMax);
-                //set the accounts in the Customer object
-                Dictionary<String,Account> accounts = new Hashtable<>();
-                accounts.put("checking", checkingAccount);
-                accounts.put("saving", savingAccount);
-                accounts.put("credit", creditAccount);
-                //put accoounts in the Customers accounts Dictionary
-                currentAccountHolder.setAccounts(accounts);
-                //Store Customer in Dictionary of Customers with the key as the ID
-                //wrote with the getter to be more readable
-                customerAccountNumberList.put(checkingAccountNumber, currentAccountHolder);
-                customerAccountNumberList.put(savingAccountNumber, currentAccountHolder);
-                customerAccountNumberList.put(creditAccountNumber, currentAccountHolder);
-                customerNameList.put(currentAccountHolder.getFirstName()+" "+currentAccountHolder.getLastName(),currentAccountHolder);
-                //create a list storing all the names so that when you update your CSV file you can keep the order
-                names.add(currentAccountHolder.getFirstName()+" "+currentAccountHolder.getLastName());
+                Account checkingAccount = new Checking();
+                Account savingAccount = new Saving();
+                Credit creditAccount = new Credit();
+                for(String category: categories){
+                    switch (category){
+                        case "Identification":
+                            currentAccountHolder.setId(Integer.parseInt(customerData[0]));
+                        case "First Name":
+                            currentAccountHolder.setFirstName(customerData[1]);
+                        case "Last Name":
+                            currentAccountHolder.setLastName(customerData[2]);
+                        case "Date of Birth":
+                            currentAccountHolder.setDOB(customerData[3]);
+                        case "Address":
+                            currentAccountHolder.setAddress(customerData[4]+", "+customerData[5]+", "+ customerData[6]);
+                        case "Phone Number":
+                            currentAccountHolder.setPhoneNumber(customerData[7]);
+                        //Create the Accounts and set all its attributes
+                        case "Checking Account Number":
+                            int checkingAccountNumber = Integer.parseInt(customerData[8]);
+                            checkingAccount.setAccountNumber(checkingAccountNumber);
+                        case "Checking Starting Balance":
+                            checkingAccount.setBalance(Double.parseDouble(customerData[9]));
+                        
+                        case "Saving Account Number":
+                            int savingAccountNumber = Integer.parseInt(customerData[10])
+                            savingAccount.setAccountNumber(savingAccountNumber);
+                        case "Saving Starting Balance":
+                            savingAccount.setBalance(Double.parseDouble(customerData[11]));
+
+                        case "Credit Account Number":
+                            int creditAccountNumber = Integer.parseInt(customerData[12]);
+                            creditAccount.setAccountNumber(checkingAccountNumber);
+                        case "Credit Max":
+                            creditAccount.setMax(Double.parseDouble(customerData[13]));
+                        case "Credit Starting Balance":
+                            creditAccount.setBalance(Double.parseDouble(customerData[14]));
+                        //set the accounts in the Customer object
+                        Dictionary<String,Account> accounts = new Hashtable<>();
+                        accounts.put("checking", checkingAccount);
+                        accounts.put("saving", savingAccount);
+                        accounts.put("credit", creditAccount);
+                        //put accoounts in the Customers accounts Dictionary
+                        currentAccountHolder.setAccounts(accounts);
+                        //Store Customer in Dictionary of Customers with the key as the ID
+                        //wrote with the getter to be more readable
+                        customerAccountNumberList.put(checkingAccountNumber, currentAccountHolder);
+                        customerAccountNumberList.put(savingAccountNumber, currentAccountHolder);
+                        customerAccountNumberList.put(creditAccountNumber, currentAccountHolder);
+                        customerNameList.put(currentAccountHolder.getFirstName()+" "+currentAccountHolder.getLastName(),currentAccountHolder);
+                        //create a list storing all the names so that when you update your CSV file you can keep the order
+                        names.add(currentAccountHolder.getFirstName()+" "+currentAccountHolder.getLastName());
+                    }
+                }
             }
         }
         //catch if reading failed
