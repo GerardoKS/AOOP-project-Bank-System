@@ -4,10 +4,8 @@ import java.util.Scanner;
 import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Dictionary;
-import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -22,12 +20,12 @@ public class RunBank{
 /** 
  * A dictionary that maps a combined key of first name and last name to a Customer object.
  */
-private static Dictionary<?, Customer> customerList; 
+private static Dictionary<String, Customer> customerList = new Hashtable<>(); 
 
 /** 
  * A dictionary that maps account identifiers to Customer objects.
  */
-private static Dictionary<?, Customer> accountList; 
+private static Dictionary<Integer, Customer> accountList = new Hashtable<>(); 
 
 /** 
  * A flag indicating whether the customer wants to exit the application.
@@ -64,6 +62,11 @@ private static boolean successP = true;
  */
 private static Scanner sc = new Scanner(System.in);
 
+/*
+ * List of names to maintain the order of the users, so that when the updatingCSVFile method is invoked, it can update the CSV file based on the order they were read
+ */
+private static List<String> names = new ArrayList<>();
+
     /** 
      * The entry point of the application. This method initializes the bank application,
      * reads customer data from a CSV file, and runs the main banking loop.
@@ -74,10 +77,7 @@ private static Scanner sc = new Scanner(System.in);
         //declare file location (file path)
         String filePath = "./CS 3331 - Bank Users.csv";
         //read CSV file and create a list of "Customer"s from the entreis in the file
-        List<Dictionary<?, Customer>> dictionaries = listOfCustomersFromCSV(filePath);
-        accountList = dictionaries.get(0);
-        customerList = dictionaries.get(1);
-        
+        ReadCustomersFromCSV(filePath);
         //runs the bank
         Files f = new Files("log");
         f.createFile();
@@ -90,7 +90,7 @@ private static Scanner sc = new Scanner(System.in);
 
         filePath = "./Result.csv";
         //Update the CSV with any changes made the to the list of "Customer"s
-        updateCSVFile(dictionaries, filePath);
+        updateCSVFile(filePath);
     }
 
     /** 
@@ -555,11 +555,7 @@ private static Scanner sc = new Scanner(System.in);
      * @param filePath String that shows the location of the file. Put as a parameter for flexibility if needed in a future project.
      * @return List<Map<?, Customer>> the list of all "Customer" objects fully constructed with all their information and their accounts created as well.The diffrent maps are for quickly looking up the customer based on their name or on their account number. The last dictionary is used for keeping track of the order for later use when updating the CSV file
      */
-    static List<Dictionary<?,Customer>> listOfCustomersFromCSV(String filePath){
-        List<Dictionary<?,Customer>> customerList = new ArrayList<>();
-        List<String> names = new ArrayList<>();
-        Dictionary<String,Customer> customerNameList = new Hashtable<>();
-        Dictionary<Integer,Customer> customerAccountNumberList = new Hashtable<>();
+    static void ReadCustomersFromCSV(String filePath){
         String line;
         //try to read CSV file
         try(BufferedReader br = new BufferedReader(new FileReader(filePath))){
@@ -574,8 +570,11 @@ private static Scanner sc = new Scanner(System.in);
                 // Create customer and set all its attributes
                 Customer currentAccountHolder = new Customer();
                 Account checkingAccount = new Checking();
+                checkingAccount.setAccountHolder(currentAccountHolder);
                 Account savingAccount = new Saving();
+                savingAccount.setAccountHolder(currentAccountHolder);
                 Credit creditAccount = new Credit();
+                creditAccount.setAccountHolder(currentAccountHolder);
                 int checkingAccountNumber = 0;
                 int savingAccountNumber = 0;
                 int creditAccountNumber = 0;
@@ -639,12 +638,13 @@ private static Scanner sc = new Scanner(System.in);
                 accounts.put("credit", creditAccount);
                 //put accoounts in the Customers accounts Dictionary
                 currentAccountHolder.setAccounts(accounts);
+
                 //Store Customer in Dictionary of Customers with the key as the ID
                 //wrote with the getter to be more readable
-                customerAccountNumberList.put(checkingAccountNumber, currentAccountHolder);
-                customerAccountNumberList.put(savingAccountNumber, currentAccountHolder);
-                customerAccountNumberList.put(creditAccountNumber, currentAccountHolder);
-                customerNameList.put(currentAccountHolder.getFirstName()+" "+currentAccountHolder.getLastName(),currentAccountHolder);
+                accountList.put(checkingAccountNumber, currentAccountHolder);
+                accountList.put(savingAccountNumber, currentAccountHolder);
+                accountList.put(creditAccountNumber, currentAccountHolder);
+                customerList.put(currentAccountHolder.getFirstName()+" "+currentAccountHolder.getLastName(),currentAccountHolder);
                 //create a list storing all the names so that when you update your CSV file you can keep the order
                 names.add(currentAccountHolder.getFirstName()+" "+currentAccountHolder.getLastName());
             }
@@ -653,21 +653,6 @@ private static Scanner sc = new Scanner(System.in);
         catch(IOException e){
             e.printStackTrace();
         }
-        //create a dictionary to store list of names so that it can be returned
-        Dictionary<List<String>, Customer> Dummy = new Hashtable<>();
-        //make list unmodifiable O(1) so that it can be used as a key
-        names = Collections.unmodifiableList(names);
-        //create a dummy customer so your Dictionary value doesnt throw a NULL pointer exception
-        Customer dummy = new Customer();
-        //put the List and dummy Customer object in the Dummy Dictionary
-        Dummy.put(names, dummy);
-        //return all customers read
-        customerList.add(customerAccountNumberList);
-        customerList.add(customerNameList);
-        //add the Dummy dictionary to the list that is going to be returned
-        customerList.add(Dummy);
-        //return the list
-        return customerList;
     }
     /*
      * Update the CSV File with the new entries and any altered entry that happened throughout the life cycle of the program. 
@@ -675,22 +660,17 @@ private static Scanner sc = new Scanner(System.in);
      * @param List<Dictionary<?,Customer>> list of Customers that are going to have there attributes and account attributes convereted into strings and updated in the CSV file
      * @param filePath to increase flexibility, filePath added incase needed again for future project
      */
-    public static void updateCSVFile(List<Dictionary<?,Customer>> customerList, String filePath){
+    public static void updateCSVFile(String filePath){
         //try to update CSV
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))){
             //write the titles before the data
             String titles = "Identification Number,First Name,Last Name,Date of Birth,Address,Phone Number,Checking Account Number,Checking Starting Balance,Savings Account Number,Savings Starting Balance,Credit Account Number,Credit Max,Credit Starting Balance";
             writer.write(titles);
             writer.newLine();
-            //This is the code for writing the CSV file in order but there was a casting error that we could not figure out
-            //get the list of names to keep the order in the CSV from the list of dictionaries
-            Enumeration<?> list = customerList.get(2).keys();
-            //cast the into a List<String>
-            List<String> names = (List<String>)list.nextElement();
             //Update each customer one by one
             //iterate through every customer and write their data in the CSV
             for(String name : names){
-                Customer currentAccountHolder = customerList.get(1).get(name);
+                Customer currentAccountHolder = customerList.get(name);
                 //turn Customer attribute into a String
                 String data =   Integer.toString(currentAccountHolder.getId())+","+currentAccountHolder.getFirstName()+","+currentAccountHolder.getLastName()+","+ currentAccountHolder.getDOB()+","+currentAccountHolder.getAddress() +","+ currentAccountHolder.getPhoneNumber()+",";
                 //get accounts and store in more descriptive varaibles for readability
