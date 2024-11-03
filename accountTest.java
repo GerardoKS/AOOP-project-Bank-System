@@ -1,68 +1,106 @@
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+/**
+ * This class is to test if the methods in Account work properly
+ * The methods with returns in Accounts are canDeposit, CanWithdraw, changeBalance and toString, .
+ * The changeBalance contains canDeposit and CanWithdraw
+ * @author Gerardo Sillas
+ */
 public class accountTest {
-   
-    int accountNumber;
-    double balance;
-    double max;
-    Customer holder;
-    Account testCreditObject = new Account();
-    // constructor to make dummy account
-    accountTest(){
-        this.accountNumber = 0000;
-        this.balance = 0;
-        Customer emptyCustomer = new Customer();
-        this.holder = emptyCustomer;
-        Account testCreditObject = new Account(accountNumber, balance, holder);
+    Account testAccount;
+    Customer testCustomer;
+    Files testFile = new Files();
+    @BeforeEach
+    void setUp(){
+        testCustomer = new Customer();
+        testAccount = new Account(1000,0,testCustomer);
+    }
+    @AfterEach
+    void tearDown(){
+        testCustomer = null;
+        testAccount = null;
     }
  
-    /*
-     * the main account testing method that will be called to commense the test, if account was bigger and needed more test this would be wear all the test methods for account would be called
-     * @return boolean, shows if you passed all the test(true) or failed(false) any of the test
+
+    /**
+     * test the changeBalance function in Account to see if withdraw is to large, will it fail
      */
-    public boolean testAccount(){
-        System.out.println("Account");
-        if(!testChangeBalanceAccount()){
-            return false;
-        }
-        return true;
+    @Test
+    void testChangeBalanceNegativeInfinity(){
+         //try a condition that should always fail
+        assertFalse(testAccount.changeBalance(Double.NEGATIVE_INFINITY, testFile));
     }
-    /*
-     * test the Change Balance function in Credit
-     * This method also inlcudes the canDeposit method
-     * each has a SOP to indeicate that, that specific test failed
-     * @return returns wether the test passed(true) or failed(false)
+
+    /**
+     * test the changeBalance function in Account to see if withdraw is nothing, will it pass
      */
-    private boolean testChangeBalanceAccount(){
-         Files testFile = new Files();
-        testCreditObject.setBalance(0);
-        //try a condition that should always fail
-        if(testCreditObject.changeBalance(Double.NEGATIVE_INFINITY, testFile)){
-            System.out.println("failed amount neg inf change balance");
-            return false;
-        }    
-        //try 0
-        if(!testCreditObject.changeBalance(0, testFile)){
-            System.out.println("failed amount 0 change balance");
-            return false;
-        }    
-        //try valeus with decimals
-        if(testCreditObject.changeBalance(-0.5, testFile)){
-            System.out.println("failed amount -0.5 change balance");
-            return false;
-        }    
-        if(!testCreditObject.changeBalance(0.5, testFile)){
-            System.out.println("failed amount 0.5 change balance");
-            return false;
-        }    
-        //try positive values
-        if(testCreditObject.changeBalance(-1, testFile)){
-            System.out.println("failed amount -1 change balance");
-            return false;
-        }    
-        if(!testCreditObject.changeBalance(1, testFile)){
-            System.out.println("failed amount 1 change balance");
-            return false;
-        }    
-        return true;
+    @Test
+    void testChangeBalanceZero(){
+       //try 0
+        assertTrue(testAccount.changeBalance(0, testFile));
+    }   
+    
+    /**
+     * test the changeBalance function in Account to see if withdraw of a decimal valued number with sufficient funds, will pass
+     */
+    @Test
+    void testChangeBalanceDecimalValuesPass(){
+        //try decimal values
+        testAccount.setBalance(0.5);
+        assertTrue(testAccount.changeBalance(-0.5, testFile));
+    }   
+    
+    /**
+     * test the changeBalance function in Account to see if withdraw of a decimal valued number without sufficient funds, will fail
+     */
+    @Test
+    void testChangeBalanceDecimalValuesFail(){
+        //try decimal values
+        //balance == 0
+        assertFalse(testAccount.changeBalance(-0.5, testFile));
+    }    
+    
+    /**
+     * test the changeBalance function in Account to see if withdraw of a whole number with sufficient funds, will pass
+     */
+    @Test
+    void testChangeBalanceWholeValuePass(){
+        //try decimal values
+        testAccount.setBalance(1);
+        assertTrue(testAccount.changeBalance(-1, testFile));
+    }    
+
+    /**
+     * test the changeBalance function in Account to see if withdraw of a whole number without sufficient funds, will fail
+     */
+    @Test
+    void testChangeBalanceWholeValueFail(){
+        //try decimal values
+        //balance == 0
+        assertFalse(testAccount.changeBalance(-1, testFile));
+    } 
+
+    /**
+     * test the changeBalance function in Account to see if deposits will pass
+     */
+    @Test
+    void testChangeBalanceDeposit(){
+        //try decimal values
+        assertTrue(testAccount.changeBalance(1, testFile));
+    } 
+
+    /**
+     * test the toString function in Account to see if the String it returns is correct
+     */
+    @Test
+    void testToString(){
+        testCustomer.setFirstName("Donald");
+        testCustomer.setLastName("Duck");
+        assertEquals("Account number: " + 1000 + "\nAccount holder: " + "Donald Duck" + "\nAccount balance: " + 0.0, testAccount.toString());
     }
  
 }

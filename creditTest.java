@@ -1,100 +1,128 @@
-/*
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertFalse;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+/**
  * This class is to test if the methods in credit work properly
  * @author Gerardo Sillas
  */
 public class creditTest {
-    int accountNumber;
-    double balance;
-    double max;
-    Customer holder;
-    Credit testCreditObject = new Credit();
+    Customer testHolder;
+    Credit testCreditAccount;
+    Files testFile = new Files();
  
-    creditTest(){
-        this.accountNumber = 0000;
-        this.balance = 0;
-        this.max = 2;
-        Customer emptyCustomer = new Customer();
-        this.holder = emptyCustomer;
-        Credit testCreditObject = new Credit(accountNumber, balance, holder, max);
+    @BeforeEach
+    void setup(){
+        testHolder = new Customer();
+        testCreditAccount = new Credit(3000, 0, testHolder, 0);
     }
- 
-    /*
-     * the main credit testing method that will be called to commense the test, if credit was bigger and needed more test this would be wear all the test methods for account would be called
-     * @return boolean, shows if you passed all the test(true) or failed(false) any of the test
-     */
-    public boolean testCredit(){
-        System.out.println("Credit");
-        testCreditObject.setMax(2);
-        if(!testChangeBalance()){
-            return false;
-        }
-        return true;
+
+    @AfterEach
+    void tearDown(){
+        testHolder = null;
+        testCreditAccount = null;
     }
-    /*
-     * test the Change Balance function in Credit
-     * This method also inlcudes the canDeposit method
-     * Each test case has an SOP to indicate that that, that taste case failed.
-     * @return returns wether the test passed(true) or failed(false)
+
+
+    /**
+     * test the changeBalance function in Credit to see if withdraw is to large, will it fail
      */
-    private boolean testChangeBalance(){
-        Files testFile = new Files();
-        testCreditObject.setBalance(0);
-        //try a condition that should always fail
-        if(testCreditObject.changeBalance(Double.NEGATIVE_INFINITY, testFile)){
-            System.out.println("failed amount neg inf change balance");
-            return false;
-        }    
+    @Test
+    void testChangeBalanceNegativeInfinity(){
+    //try a condition that should always fail
+        assertFalse(testCreditAccount.changeBalance(Double.NEGATIVE_INFINITY, testFile));
+    }  
+
+    /**
+     * test the changeBalance function in Credit to see if withdraw is nothing, will it pass
+     */
+    @Test
+    void testChangeBalanceZero(){
         //try 0
-        if(!testCreditObject.changeBalance(0, testFile)){
-            System.out.println("failed amount 0 change balance");
-            return false;
-        }    
+        assertTrue(testCreditAccount.changeBalance(0, testFile));
+    }    
+
+    /**
+     * test the changeBalance function in Credit to see if withdraw of a decimal valued number with a diffrence of balance and amount is less than or equal to max, will pass
+     */
+    @Test
+    void testChangeBalanceDecimalValuesPass(){
         //try valeus with decimals
-        if(!testCreditObject.changeBalance(-0.5, testFile)){
-            System.out.println("failed amount -0.5 change balance");
-            return false;
-        }    
-        //pay more that you owe test for values with decimals
-        testCreditObject.setBalance(0);
-        if(testCreditObject.changeBalance(0.5, testFile)){
-            System.out.println("failed amount 0.5 change balance");
-            return false;
-        }    
-        //try positive values
-        if(!testCreditObject.changeBalance(-1, testFile)){
-            System.out.println("failed amount -1 change balance");
-            return false;
-        }    
-        //pay more than you owe test for no decimal numbers
-        testCreditObject.setBalance(0);
-        if(testCreditObject.changeBalance(1, testFile)){
-            System.out.println("failed amount 1 change balance");
-            return false;
-        }    
-        //if they pay off all their debt
-        testCreditObject.setBalance(-1);
-        if(!testCreditObject.changeBalance(1, testFile)){
-            System.out.println("failed amount 1 balance -1 change balance");
-            return false;
-        }
-        //exceed max
-        testCreditObject.setBalance(-1);
-        if(testCreditObject.changeBalance(-2, testFile)){
-            System.out.println("failed amount -2 balance -1 change balance");
-            return false;
-        }  
-        //reach max
-        testCreditObject.setBalance(-1.5);
-        if(!testCreditObject.changeBalance(-0.5, testFile)){
-            System.out.println("failed amount -0.5 balance -1.5 change balance");
-            return false;
-        }  
-        //exceed max with decimal value
-        testCreditObject.setBalance(-2);
-        if(testCreditObject.changeBalance(-0.5, testFile)){
-            System.out.println("failed amount -0.5 balance -2 change balance");
-            return false;
-        }  
-        return true;
-    }
+        //balance == 0
+        testCreditAccount.setMax(-0.5);
+        assertTrue(testCreditAccount.changeBalance(-0.5, testFile));
+    }    
+
+    /**
+     * test the changeBalance function in Credit to see if withdraw of a decimal valued number with a diffrence of balance and amount is greater than max, will fail
+     */
+    @Test
+    void testChangeBalanceDecimalValuesFail(){
+        //try valeus with decimals
+        //balance == 0
+        //max == 0
+        assertFalse(testCreditAccount.changeBalance(-0.5, testFile));
+    }    
+
+    /**
+     * test the changeBalance function in Credit to see if withdraw of a whole valued number with a diffrence of balance and amount is less than or equal to max, will pass
+     */
+    @Test
+    void testChangeBalanceWholeValuesPass(){
+        //change value for whole valued numbers
+        testCreditAccount.setMax(-1);
+        assertTrue(testCreditAccount.changeBalance(-1, testFile));
+    }   
+
+    /**
+     * test the changeBalance function in Credit to see if withdraw of a whole valued number with a diffrence of balance and amount is greater than max, will fail
+     */
+    @Test
+    void testChangeBalanceWholeValuesFail(){
+        //change balance exceeds max
+        //max == 0
+        assertFalse(testCreditAccount.changeBalance(-1, testFile));
+    }   
+
+    /**
+     * test the changeBalance function in Credit to see if paying off debt for a decimal valued amount that is less than or equal to balance, will pass
+     */
+    @Test
+    void testChangeBalanceDecimalValuePayOffCreditDebtPass(){
+        //pay off debt on your credit 
+        testCreditAccount.setBalance(-0.5);
+        assertTrue(testCreditAccount.changeBalance(0.5, testFile));
+    }  
+
+    /**
+     * test the changeBalance function in Credit to see if paying off debt for a decimal valued amount that is greater than balance, will fail
+     */
+    @Test
+    void testChangeBalanceDecimalValuePayOffCreditDebtFail(){
+        //try to pay more than you owe
+        //balance == 0
+        assertFalse(testCreditAccount.changeBalance(0.5, testFile));
+    } 
+
+    /**
+     * test the changeBalance function in Credit to see if paying off debt for a whole valued amount that is less than or equal to balance, will pass
+     */
+    @Test
+    void testChangeBalanceWholeValuePayOffCreditDebtPass(){
+        //pay off debt on your credit 
+        testCreditAccount.setBalance(-1);
+        assertTrue(testCreditAccount.changeBalance(1, testFile));
+    }  
+
+
+    /**
+     * test the changeBalance function in Credit to see if paying off debt with a whole valued amount that is greater than balance, will fail
+     */
+    @Test
+    void testChangeBalanceWholeValuePayOffCreditDebtFail(){
+        //try to pay more than you owe
+        //balance == 0
+        assertFalse(testCreditAccount.changeBalance(1, testFile));
+    } 
 }

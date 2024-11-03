@@ -1,4 +1,4 @@
-/*
+/**
  * Account class used to be a base for the three account sub categories saving, checking, and credit, used to reduce redudancy through inheritance and polymorphosm
  * @author Gerardo Sillas
  */
@@ -6,7 +6,7 @@
 
 
 public class Account{
-    /*
+    /**
      * account_number, balance and account_holder are all base information needed to have an account not including account specific requirements
      */
     protected int accountNumber;
@@ -44,7 +44,7 @@ public class Account{
         return accountHolder;
     }
  
-    /*
+    /**
      * Changes the balance based on the amount given
      * @param amount is positive if it is for a deposit or negative if withdrawl
      * @return  wether the transation was successful
@@ -69,7 +69,7 @@ public class Account{
         System.out.println("Cannot perform transaction");
         return false;
     }
-    /*
+    /**
      * displays account holder first and last name, account number, and balance
      */
     public void displayAccount(Files f){
@@ -77,7 +77,7 @@ public class Account{
         f.writeFile(accountHolder.getName() + " displayed "  + accountNumber + " account");
     }
  
-    /*
+    /**
      * displays balance for the account with the account number ...
      */
     public void displayBalance(Files f){
@@ -85,7 +85,7 @@ public class Account{
         f.writeFile(accountHolder.getName() + " displayed balance "  + accountNumber + " account");
     }
  
-    /*
+    /**
      * Checks if the withdrawl should be approved based on the uses balance
      * @peram amount amount that is wan ted to be withdrawn
      * @return boolean returning true if the customer has eenough money in their balance to 2
@@ -97,7 +97,7 @@ public class Account{
         }
         return true;
     }
-    /*
+    /**
      * The Deposit should always be true for this method since you dont have a max amount of money you can have
      */
     public boolean canDeposit(double amount){

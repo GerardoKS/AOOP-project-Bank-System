@@ -8,9 +8,11 @@ import java.util.Hashtable;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Random;
 
 
-/*
+
+/**
  * Driver class containg User Interface and CSV conversion to create the bank system. 
  * @author Gerardo Sillas
  * @author Hannah Ayala
@@ -62,7 +64,9 @@ private static boolean successP = true;
  */
 private static Scanner sc = new Scanner(System.in);
 
-/*
+public static double maxi;
+
+/**
  * List of names to maintain the order of the users, so that when the updatingCSVFile method is invoked, it can update the CSV file based on the order they were read
  */
 private static List<String> names = new ArrayList<>();
@@ -549,13 +553,14 @@ private static List<String> names = new ArrayList<>();
         return type;
     }
     
-    /*
+    /**
      * In this method every input line read is converted into Customer with fully set attributes and Account attributes. They are then returned for use in the system
      * The last dictionary is used as a way of sorting the list when you update the CSV file. CSV file can overwrite original but we decided not to just in case it is needed.
      * @param filePath String that shows the location of the file. Put as a parameter for flexibility if needed in a future project.
      * @return List<Map<?, Customer>> the list of all "Customer" objects fully constructed with all their information and their accounts created as well.The diffrent maps are for quickly looking up the customer based on their name or on their account number. The last dictionary is used for keeping track of the order for later use when updating the CSV file
      */
     static void ReadCustomersFromCSV(String filePath){
+        Random random = new Random();
         String line;
         //try to read CSV file
         try(BufferedReader br = new BufferedReader(new FileReader(filePath))){
@@ -579,6 +584,12 @@ private static List<String> names = new ArrayList<>();
                 int savingAccountNumber = 0;
                 int creditAccountNumber = 0;
                 int customerDataCurrentIndex = 0;
+                checkingAccountNumber = currentID + 999;
+                checkingAccount.setAccountNumber(checkingAccountNumber);
+                savingAccountNumber = currentID + 1999;
+                savingAccount.setAccountNumber(savingAccountNumber);
+                creditAccountNumber = currentID + 2999;
+                creditAccount.setAccountNumber(creditAccountNumber);
                 for(String category: categories){
                     switch (category){
                         case "First Name":
@@ -597,39 +608,40 @@ private static List<String> names = new ArrayList<>();
                         case "Phone Number":
                             currentAccountHolder.setPhoneNumber(customerData[customerDataCurrentIndex]);
                             break;
-                        //Create the Accounts and set all its attributes
-                        case "Checking Account Number":
-                            checkingAccountNumber = currentID + 999;
-                            checkingAccount.setAccountNumber(checkingAccountNumber);
-                            break;
+
                         case "Checking Starting Balance":
                             checkingAccount.setBalance(Double.parseDouble(customerData[customerDataCurrentIndex]));
                             break;
 
-                        case "Savings Account Number":
-                            savingAccountNumber = currentID + 1999;
-                            savingAccount.setAccountNumber(savingAccountNumber);
-                            break;
                         case "Savings Starting Balance":
                             savingAccount.setBalance(Double.parseDouble(customerData[customerDataCurrentIndex]));
                             break;
 
-                        case "Credit Account Number":
-                            creditAccountNumber = currentID + 2999;
-                            creditAccount.setAccountNumber(creditAccountNumber);
-                            break;
-
-                        case "Credit Max":
-                            creditAccount.setMax(Double.parseDouble(customerData[customerDataCurrentIndex]));
-                            break;
 
                         case "Credit Starting Balance":
                             creditAccount.setBalance(Double.parseDouble(customerData[customerDataCurrentIndex]));
                             break;
-                        //set the accounts in the Customer object
+                        
+
+                        case "Credit Score":
+                            int creditScore = Integer.parseInt(customerData[customerDataCurrentIndex]);
+                            currentAccountHolder.setCreditScore(creditScore);
+                            if(creditScore <= 580)
+                                creditAccount.setMax(random.nextDouble() + random.nextInt(599) + 100);
+                            else if(581<= creditScore && creditScore<= 669)
+                                creditAccount.setMax(random.nextDouble() + random.nextInt(4299) + 700);
+                            else if(670<= creditScore && creditScore<= 739)
+                                creditAccount.setMax(random.nextDouble() + random.nextInt(2499) + 5000);
+                            else if(740<= creditScore && creditScore<= 799)
+                                creditAccount.setMax(random.nextDouble() + random.nextInt(8499) + 7500);
+                            else
+                                creditAccount.setMax(random.nextDouble() + random.nextInt(9000) + 16000);
+                            break;
+                                
                     }
                     customerDataCurrentIndex++;
                 }
+                System.out.println("Max: " + creditAccount.getMax());
                 currentAccountHolder.setId(currentID);
                 currentID++;
                 Dictionary<String,Account> accounts = new Hashtable<>();
@@ -654,7 +666,7 @@ private static List<String> names = new ArrayList<>();
             e.printStackTrace();
         }
     }
-    /*
+    /**
      * Update the CSV File with the new entries and any altered entry that happened throughout the life cycle of the program. 
      * We decided to create a seperate file path for the updated CSV file rather than overwriting the original. If needed the file path can be changed to the original file so that the updates end up there. 
      * @param List<Dictionary<?,Customer>> list of Customers that are going to have there attributes and account attributes convereted into strings and updated in the CSV file

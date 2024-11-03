@@ -9,10 +9,13 @@ import java.util.Scanner;
  * The Customer class represents a customer with multiple accounts.
  * It extends the Person class and provides functionality to manage
  * accounts, such as deposits, withdrawals, transfers, and viewing balances.
+ * 
+ * @author Hannah Ayala
  */
 public class Customer extends Person{
     private Dictionary <String, Account> accounts;
     private int id;
+    private int creditScore;
 
     /**
      * Default constructor for the Customer class.
@@ -34,10 +37,11 @@ public class Customer extends Person{
      * @param address The customer's address.
      * @param phone The customer's phone number.
      */
-    public Customer(Dictionary <String, Account> accounts, int id, String firstName, String lastName, String dob, String address, String phone){
+    public Customer(Dictionary <String, Account> accounts, int id, String firstName, String lastName, String dob, String address, String phone, int creditScore){
         super(firstName, lastName, dob, address, phone);
         this.accounts = accounts;
         this.id = id;
+        this.creditScore = creditScore;
     }
 
     /**
@@ -59,6 +63,15 @@ public class Customer extends Person{
     }
 
     /**
+     * Sets the customer's credit score.
+     * 
+     * @param creditScore The credit score of the customer.
+     */
+    public void setCreditScore(int creditScore){
+        this.creditScore = creditScore;
+    }
+
+    /**
      * Returns the customer's accounts.
      * 
      * @return A dictionary of the customer's accounts.
@@ -74,6 +87,16 @@ public class Customer extends Person{
      */
     public int getId(){
         return id;
+    }
+
+    
+    /**
+     * Returns the customer's credit score.
+     * 
+     * @return The credit score of the customer.
+     */
+    public int getCreditScore(){
+        return creditScore;
     }
 
     /**
