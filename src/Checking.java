@@ -1,3 +1,5 @@
+package src;
+
 /**
  * Checking class extended from Account class to represent Checking Accounts
  * @author Gerardo Sillas

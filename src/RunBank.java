@@ -1,3 +1,4 @@
+package src;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Scanner;
@@ -9,6 +10,7 @@ import java.util.Dictionary;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
+
 
 
 
@@ -64,13 +66,20 @@ private static boolean successP = true;
  */
 private static Scanner sc = new Scanner(System.in);
 
-public static double maxi;
-
 /**
  * List of names to maintain the order of the users, so that when the updatingCSVFile method is invoked, it can update the CSV file based on the order they were read
  */
 private static List<String> names = new ArrayList<>();
 
+/**
+ * titles for the updated CSV file(first line) 
+ */
+private static String titles;
+
+/**
+ * shows the total number of customers so the ID and the account numbers can be created.
+ */
+private static int totalCustomers;
     /** 
      * The entry point of the application. This method initializes the bank application,
      * reads customer data from a CSV file, and runs the main banking loop.
@@ -79,9 +88,10 @@ private static List<String> names = new ArrayList<>();
      */
     public static void main(String args[]){
         //declare file location (file path)
-        String filePath = "./CS 3331 - Bank Users.csv";
+        String filePath = "./src/resources/CS 3331 - Bank Users.csv";
         //read CSV file and create a list of "Customer"s from the entreis in the file
         ReadCustomersFromCSV(filePath);
+        totalCustomers = names.size();
         //runs the bank
         Files f = new Files("log");
         f.createFile();
@@ -565,6 +575,7 @@ private static List<String> names = new ArrayList<>();
         //try to read CSV file
         try(BufferedReader br = new BufferedReader(new FileReader(filePath))){
             line = br.readLine();
+            titles = line;
             //Get the categories so you can set the attributes of the customer and accounts properly
             String[] categories = line.split(",");
             //read each line until no more lines
@@ -580,18 +591,23 @@ private static List<String> names = new ArrayList<>();
                 savingAccount.setAccountHolder(currentAccountHolder);
                 Credit creditAccount = new Credit();
                 creditAccount.setAccountHolder(currentAccountHolder);
+
                 int checkingAccountNumber = 0;
                 int savingAccountNumber = 0;
                 int creditAccountNumber = 0;
-                int customerDataCurrentIndex = 0;
                 checkingAccountNumber = currentID + 999;
                 checkingAccount.setAccountNumber(checkingAccountNumber);
                 savingAccountNumber = currentID + 1999;
                 savingAccount.setAccountNumber(savingAccountNumber);
                 creditAccountNumber = currentID + 2999;
                 creditAccount.setAccountNumber(creditAccountNumber);
+
+                int customerDataCurrentIndex = 0;
                 for(String category: categories){
                     switch (category){
+                        case "Identification Number":
+                            currentAccountHolder.setId(Integer.parseInt(customerData[customerDataCurrentIndex]));
+
                         case "First Name":
                             currentAccountHolder.setFirstName(customerData[customerDataCurrentIndex]);
                             break;
@@ -609,19 +625,36 @@ private static List<String> names = new ArrayList<>();
                             currentAccountHolder.setPhoneNumber(customerData[customerDataCurrentIndex]);
                             break;
 
+                        case "Checking Account Number":
+                            checkingAccountNumber = Integer.parseInt(customerData[customerDataCurrentIndex]);
+                            checkingAccount.setAccountNumber(checkingAccountNumber);
+                            break;
+
                         case "Checking Starting Balance":
                             checkingAccount.setBalance(Double.parseDouble(customerData[customerDataCurrentIndex]));
+                            break;
+
+                        case "Savings Account Number":
+                            savingAccountNumber = Integer.parseInt(customerData[customerDataCurrentIndex]);
+                            savingAccount.setAccountNumber(savingAccountNumber);
                             break;
 
                         case "Savings Starting Balance":
                             savingAccount.setBalance(Double.parseDouble(customerData[customerDataCurrentIndex]));
                             break;
 
+                        case "Credit Account Number":
+                            creditAccountNumber = Integer.parseInt(customerData[customerDataCurrentIndex]);
+                            creditAccount.setAccountNumber(creditAccountNumber);
+                            break;
+
+                        case "Credit Max":
+                            creditAccount.setMax(Double.parseDouble(customerData[customerDataCurrentIndex]));
+                            break;
 
                         case "Credit Starting Balance":
                             creditAccount.setBalance(Double.parseDouble(customerData[customerDataCurrentIndex]));
                             break;
-                        
 
                         case "Credit Score":
                             int creditScore = Integer.parseInt(customerData[customerDataCurrentIndex]);
@@ -641,7 +674,6 @@ private static List<String> names = new ArrayList<>();
                     }
                     customerDataCurrentIndex++;
                 }
-                System.out.println("Max: " + creditAccount.getMax());
                 currentAccountHolder.setId(currentID);
                 currentID++;
                 Dictionary<String,Account> accounts = new Hashtable<>();
@@ -650,15 +682,20 @@ private static List<String> names = new ArrayList<>();
                 accounts.put("credit", creditAccount);
                 //put accoounts in the Customers accounts Dictionary
                 currentAccountHolder.setAccounts(accounts);
-
+                //create the object that will store the transactions
+                Transaction transactions = new Transaction();
+                //set the information in the Transaction object, informaiton is retrieved from object
+                transactions.setInformation(currentAccountHolder);
+                //put the Transaction object in the customer object
+                currentAccountHolder.setTransactions(transactions);
                 //Store Customer in Dictionary of Customers with the key as the ID
                 //wrote with the getter to be more readable
                 accountList.put(checkingAccountNumber, currentAccountHolder);
                 accountList.put(savingAccountNumber, currentAccountHolder);
                 accountList.put(creditAccountNumber, currentAccountHolder);
-                customerList.put(currentAccountHolder.getFirstName()+" "+currentAccountHolder.getLastName(),currentAccountHolder);
+                customerList.put(currentAccountHolder.getName(),currentAccountHolder);
                 //create a list storing all the names so that when you update your CSV file you can keep the order
-                names.add(currentAccountHolder.getFirstName()+" "+currentAccountHolder.getLastName());
+                names.add(currentAccountHolder.getName());
             }
         }
         //catch if reading failed
@@ -676,26 +713,76 @@ private static List<String> names = new ArrayList<>();
         //try to update CSV
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))){
             //write the titles before the data
-            String titles = "Identification Number,First Name,Last Name,Date of Birth,Address,Phone Number,Checking Account Number,Checking Starting Balance,Savings Account Number,Savings Starting Balance,Credit Account Number,Credit Max,Credit Starting Balance";
             writer.write(titles);
             writer.newLine();
             //Update each customer one by one
             //iterate through every customer and write their data in the CSV
+            String[] categories = titles.split(",");
             for(String name : names){
                 Customer currentAccountHolder = customerList.get(name);
-                //turn Customer attribute into a String
-                String data =   Integer.toString(currentAccountHolder.getId())+","+currentAccountHolder.getFirstName()+","+currentAccountHolder.getLastName()+","+ currentAccountHolder.getDOB()+","+currentAccountHolder.getAddress() +","+ currentAccountHolder.getPhoneNumber()+",";
-                //get accounts and store in more descriptive varaibles for readability
-                Dictionary <String, Account> accounts = currentAccountHolder.getAccounts();
-                //get the Account objects
-                Account checkingAccount = accounts.get("checking");
-                Account savingAccount = accounts.get("saving");
-                Account creditAccount = accounts.get("credit");
-                //turn Accounts' attributes into String and then added them to the end of data
-                data = data + Integer.toString(checkingAccount.getAccountNumber()) + "," + Double.toString(checkingAccount.getBalance()) + "," + Integer.toString(savingAccount.getAccountNumber()) + "," + Double.toString(savingAccount.getBalance()) + "," + Integer.toString(creditAccount.getAccountNumber()) + "," + Double.toString(((Credit)creditAccount).getMax()) +","+ Double.toString(creditAccount.getBalance());
-                //write Customers data into the CSV file
-                writer.write(data);
-                //create the next line for the next entry
+                Account checkingAccount = currentAccountHolder.getAccounts().get("checking");
+                Account savingAccount = currentAccountHolder.getAccounts().get("saving");
+                Credit creditAccount = (Credit) currentAccountHolder.getAccounts().get("credit");
+                boolean addComma = false;
+                for(String category : categories){
+                    if(addComma)
+                        writer.write(",");
+                    else
+                        addComma = true;
+                    switch (category){
+                        case "Identification Number":
+                            writer.write(Integer.toString(currentAccountHolder.getId()));
+                            break;
+                        
+                        case "First Name":
+                            writer.write(currentAccountHolder.getFirstName());
+                            break;
+                        case "Last Name":
+                            writer.write(currentAccountHolder.getLastName());
+                            break;
+                        case "Date of Birth":
+                            writer.write(currentAccountHolder.getDOB());
+                            break;
+                        case "Address":
+                            writer.write(currentAccountHolder.getAddress());
+                            break;
+                        case "Phone Number":
+                            writer.write(currentAccountHolder.getPhoneNumber());
+                            break;
+
+                        case "Checking Account Number":
+                            writer.write(Integer.toString(checkingAccount.getAccountNumber()));
+                            break;
+
+                        case "Checking Starting Balance":
+                            writer.write(Double.toString(checkingAccount.getBalance()));
+                            break;
+
+                        case "Savings Account Number":
+                            writer.write(Integer.toString(savingAccount.getAccountNumber()));
+                            break;
+
+                        case "Savings Starting Balance":
+                            writer.write(Double.toString(savingAccount.getBalance()));
+                            break;
+
+                        case "Credit Account Number":
+                            writer.write(Integer.toString(creditAccount.getAccountNumber()));
+                            break;
+
+                        case "Credit Max":
+                            writer.write(Double.toString(creditAccount.getMax()));
+                            break;
+
+                        case "Credit Starting Balance":
+                            writer.write(Double.toString(creditAccount.getBalance()));
+                            break;
+
+                        case "Credit Score":
+                            writer.write(Integer.toString(currentAccountHolder.getCreditScore()));
+                            break;
+                    }  
+                }
                 writer.newLine();
             }
         }

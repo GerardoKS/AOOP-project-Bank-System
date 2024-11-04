@@ -1,3 +1,5 @@
+package src;
+
 /**
  * Credit class that is extended off Account class to represent Credit Accounts
  * @author Gerardo Sillas
@@ -63,7 +65,7 @@
      * @return boolean that tells if the sum of balance and amount will exceeed the max
      */
     public boolean canWithdraw(double amount){
-        if((balance + amount) <= (max*-1)){
+        if((balance + amount) < (max*-1)){
             return false;
         }
         return true;
