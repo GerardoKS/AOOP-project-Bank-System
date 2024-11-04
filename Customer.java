@@ -9,6 +9,8 @@ import java.util.Scanner;
  * The Customer class represents a customer with multiple accounts.
  * It extends the Person class and provides functionality to manage
  * accounts, such as deposits, withdrawals, transfers, and viewing balances.
+ * 
+ * @author Hannah Ayala
  */
 public class Customer extends Person{
     private Dictionary <String, Account> accounts;

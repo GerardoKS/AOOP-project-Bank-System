@@ -1,6 +1,8 @@
 /**
  * Represents a person with personal details such as name, date of birth,
  * address, and phone number.
+ * 
+ * @author Hannah Ayala
  */
 public class Person{
     private String firstName;
