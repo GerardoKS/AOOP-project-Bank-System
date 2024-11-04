@@ -12,7 +12,9 @@ public class Account{
      */
     protected int accountNumber;
     protected double balance;
+    protected double startingBalance;
     protected Customer accountHolder;
+
  
     public Account(){}
  
@@ -29,6 +31,7 @@ public class Account{
     }
     public void setBalance(double balance){
         this.balance = balance;
+        this.startingBalance = balance;
     }
     public void setAccountHolder(Customer holder){
         this.accountHolder = holder;
@@ -40,6 +43,9 @@ public class Account{
     }
     public double getBalance(){
         return balance;
+    }
+    public double getStartingBalance(){
+        return startingBalance;
     }
     public Customer getAccountHolder(){
         return accountHolder;

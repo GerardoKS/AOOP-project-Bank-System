@@ -2,31 +2,31 @@ package tst;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.Before;
+import org.junit.After;
 
 import src.Account;
 import src.Customer;
 import src.Files;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
 /**
  * This class is to test if the methods in Account work properly
  * The methods with returns in Accounts are canDeposit, CanWithdraw, changeBalance and toString, .
  * The changeBalance contains canDeposit and CanWithdraw
  * @author Gerardo Sillas
  */
-public class accountTest {
+public class AccountTest {
     Account testAccount;
     Customer testCustomer;
     Files testFile = new Files();
-    @BeforeEach
-    void setUp(){
+    @Before
+    public void setUp(){
         testCustomer = new Customer();
         testAccount = new Account(1000,0,testCustomer);
     }
-    @AfterEach
-    void tearDown(){
+    @After
+    public void tearDown(){
         testCustomer = null;
         testAccount = null;
     }
@@ -36,7 +36,7 @@ public class accountTest {
      * test the changeBalance function in Account to see if withdraw is to large, will it fail
      */
     @Test
-    void testChangeBalanceNegativeInfinity(){
+    public void testChangeBalanceNegativeInfinity(){
          //try a condition that should always fail
         assertFalse(testAccount.changeBalance(Double.NEGATIVE_INFINITY, testFile));
     }
@@ -45,7 +45,7 @@ public class accountTest {
      * test the changeBalance function in Account to see if withdraw is nothing, will it pass
      */
     @Test
-    void testChangeBalanceZero(){
+    public void testChangeBalanceZero(){
        //try 0
         assertTrue(testAccount.changeBalance(0, testFile));
     }   
@@ -54,7 +54,7 @@ public class accountTest {
      * test the changeBalance function in Account to see if withdraw of a decimal valued number with sufficient funds, will pass
      */
     @Test
-    void testChangeBalanceDecimalValuesPass(){
+    public void testChangeBalanceDecimalValuesPass(){
         //try decimal values
         testAccount.setBalance(0.5);
         assertTrue(testAccount.changeBalance(-0.5, testFile));
@@ -64,7 +64,7 @@ public class accountTest {
      * test the changeBalance function in Account to see if withdraw of a decimal valued number without sufficient funds, will fail
      */
     @Test
-    void testChangeBalanceDecimalValuesFail(){
+    public void testChangeBalanceDecimalValuesFail(){
         //try decimal values
         //balance == 0
         assertFalse(testAccount.changeBalance(-0.5, testFile));
@@ -74,7 +74,7 @@ public class accountTest {
      * test the changeBalance function in Account to see if withdraw of a whole number with sufficient funds, will pass
      */
     @Test
-    void testChangeBalanceWholeValuePass(){
+    public void testChangeBalanceWholeValuePass(){
         //try decimal values
         testAccount.setBalance(1);
         assertTrue(testAccount.changeBalance(-1, testFile));
@@ -84,7 +84,7 @@ public class accountTest {
      * test the changeBalance function in Account to see if withdraw of a whole number without sufficient funds, will fail
      */
     @Test
-    void testChangeBalanceWholeValueFail(){
+    public void testChangeBalanceWholeValueFail(){
         //try decimal values
         //balance == 0
         assertFalse(testAccount.changeBalance(-1, testFile));
@@ -94,7 +94,7 @@ public class accountTest {
      * test the changeBalance function in Account to see if deposits will pass
      */
     @Test
-    void testChangeBalanceDeposit(){
+    public void testChangeBalanceDeposit(){
         //try decimal values
         assertTrue(testAccount.changeBalance(1, testFile));
     } 
@@ -103,7 +103,7 @@ public class accountTest {
      * test the toString function in Account to see if the String it returns is correct
      */
     @Test
-    void testToString(){
+    public void testToString(){
         testCustomer.setFirstName("Donald");
         testCustomer.setLastName("Duck");
         assertEquals("Account number: " + 1000 + "\nAccount holder: " + "Donald Duck" + "\nAccount balance: " + 0.0, testAccount.toString());

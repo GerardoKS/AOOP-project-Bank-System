@@ -17,6 +17,7 @@ public class Customer extends Person{
     private Dictionary <String, Account> accounts;
     private int id;
     private int creditScore;
+    private Transaction transactions;
 
     /**
      * Default constructor for the Customer class.
@@ -73,6 +74,15 @@ public class Customer extends Person{
     }
 
     /**
+     * Sets the customer's transactions log so that entries can be added.
+     * 
+     * @param transactions The object that will store the transaction logs.
+     */
+    public void setTransactions(Transaction transactions){
+        this.transactions = transactions;
+    }
+
+    /**
      * Returns the customer's accounts.
      * 
      * @return A dictionary of the customer's accounts.
@@ -100,6 +110,14 @@ public class Customer extends Person{
         return creditScore;
     }
 
+    /**
+     * Returns the customer's transaction logs.
+     * 
+     * @return The object storing the customers transaction logs.
+     */
+    public Transaction getTransactions(){
+        return transactions;
+    }
     /**
      * Finds the type of account based on the account number.
      * 

@@ -682,15 +682,20 @@ private static int totalCustomers;
                 accounts.put("credit", creditAccount);
                 //put accoounts in the Customers accounts Dictionary
                 currentAccountHolder.setAccounts(accounts);
-
+                //create the object that will store the transactions
+                Transaction transactions = new Transaction();
+                //set the information in the Transaction object, informaiton is retrieved from object
+                transactions.setInformation(currentAccountHolder);
+                //put the Transaction object in the customer object
+                currentAccountHolder.setTransactions(transactions);
                 //Store Customer in Dictionary of Customers with the key as the ID
                 //wrote with the getter to be more readable
                 accountList.put(checkingAccountNumber, currentAccountHolder);
                 accountList.put(savingAccountNumber, currentAccountHolder);
                 accountList.put(creditAccountNumber, currentAccountHolder);
-                customerList.put(currentAccountHolder.getFirstName()+" "+currentAccountHolder.getLastName(),currentAccountHolder);
+                customerList.put(currentAccountHolder.getName(),currentAccountHolder);
                 //create a list storing all the names so that when you update your CSV file you can keep the order
-                names.add(currentAccountHolder.getFirstName()+" "+currentAccountHolder.getLastName());
+                names.add(currentAccountHolder.getName());
             }
         }
         //catch if reading failed
