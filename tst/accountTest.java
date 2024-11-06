@@ -8,7 +8,7 @@ import org.junit.After;
 
 import src.Account;
 import src.Customer;
-import src.Files;
+import src.Logger;
 
 /**
  * This class is to test if the methods in Account work properly
@@ -19,7 +19,7 @@ import src.Files;
 public class AccountTest {
     Account testAccount;
     Customer testCustomer;
-    Files testFile = new Files();
+    Logger testFile = Logger.getInstance();
     @Before
     public void setUp(){
         testCustomer = new Customer();

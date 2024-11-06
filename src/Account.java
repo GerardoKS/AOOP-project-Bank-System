@@ -57,20 +57,20 @@ public class Account{
      * @return  wether the transation was successful
      */
  
-     public boolean changeBalance(double amount, Files f){
+     public boolean changeBalance(double amount, Logger log){
         String output = "";
         if(amount < 0  && canWithdraw(amount)){
             balance += amount;
             output = "Withdrew " + -amount + " from " + accountNumber + " account";
             System.out.println(output);
-            f.writeFile(accountHolder.getName() + " " + output);
+            log.Use(accountHolder.getName() + " " + output);
             return true;
         }
         else if(amount >= 0 && canDeposit(amount)){
             balance += amount;
             output = "Deposited " + amount + " into " + accountNumber + " account";
             System.out.println(output);
-            f.writeFile(accountHolder.getName() + " " + output);
+            log.Use(accountHolder.getName() + " " + output);
             return true;
         }
         System.out.println("Cannot perform transaction");
@@ -79,17 +79,17 @@ public class Account{
     /**
      * displays account holder first and last name, account number, and balance
      */
-    public void displayAccount(Files f){
+    public void displayAccount(Logger log){
         System.out.println("The account number for "+ accountHolder.getFirstName() + " " + accountHolder.getLastName() + "is " + accountNumber + "with a balance of: " + balance);
-        f.writeFile(accountHolder.getName() + " displayed "  + accountNumber + " account");
+        log.Use(accountHolder.getName() + " displayed "  + accountNumber + " account");
     }
  
     /**
      * displays balance for the account with the account number ...
      */
-    public void displayBalance(Files f){
+    public void displayBalance(Logger log){
         System.out.println("The balance for account number: " + accountNumber + " is: $" + balance);
-        f.writeFile(accountHolder.getName() + " displayed balance "  + accountNumber + " account");
+        log.Use(accountHolder.getName() + " displayed balance "  + accountNumber + " account");
     }
  
     /**

@@ -33,20 +33,20 @@ package src;
      * @param amount positive double that shows how much money is trying to be charged to the credit account
      * @return boolean that shows wether the charge went through
      */
-    public boolean changeBalance(double amount, Files f){
+    public boolean changeBalance(double amount, Logger log){
         String output = "";
         if(amount < 0  && canWithdraw(amount)){
             balance += amount;
             output = "Withdrew " + -amount + " from " + accountNumber + " account";
             System.out.println(output);
-            f.writeFile(accountHolder.getName() + " " + output);
+            log.Use(accountHolder.getName() + " " + output);
             return true;
         }
         else if(amount >= 0 && canDeposit(amount)){
             balance += amount;
             output = "Deposited " + amount + " into " + accountNumber + " account";
             System.out.println(output);
-            f.writeFile(accountHolder.getName() + " " + output);
+            log.Use(accountHolder.getName() + " " + output);
             return true;
         }
         System.out.println("Cannot perform transaction");
