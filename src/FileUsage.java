@@ -1,0 +1,14 @@
+package src;
+
+/**
+ * interface to be used by all classes that interact with Files
+ * @author Gerardo Sillas
+ */
+public interface FileUsage {
+    /**
+     * abstract class to be used by classes that implement this inteface
+     * the input is a string that specifies the file path that is going to be "Used".
+     * @param filePath
+     */
+    void Use(String filePath);
+}

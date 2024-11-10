@@ -118,6 +118,10 @@ public class Customer extends Person{
     public Transaction getTransactions(){
         return transactions;
     }
+
+    public void addTransactionEntry(String entry){
+        transactions.addTransactionEntry(entry);
+    }
     /**
      * Finds the type of account based on the account number.
      * 
@@ -140,7 +144,7 @@ public class Customer extends Person{
     * @param f The file object used for logging.
     * @return The balance of the specified account or -1, -2, -3 for exit codes.
     */
-    public int getBalance(Files f){
+    public int getBalance(Logger log){
         System.out.println("Please specify which type of account(checking, saving, or credit) or account number you would like to get the balance of (exit (e) or main menu (m) or user menu (u))");
         Scanner sc = new Scanner(System.in);
         String input = sc.nextLine();
@@ -159,16 +163,16 @@ public class Customer extends Person{
             case ("checking"):
             case ("saving"):
             case ("credit"): //if its a type then get balance
-                    getBalance(input.toLowerCase(), f); 
+                    getBalance(input.toLowerCase(), log); 
                     break;
             default: //not an action or account type, must be either an account number or invalid input
                 try {
                     String type = findAccountType(Integer.parseInt(input)); //if not an int, throw error
                     if (type == null) throw new Exception(); //if int but not an account of this customer, throw error
-                    return getBalance(type, f); //is an account of this customer
+                    return getBalance(type, log); //is an account of this customer
                 } catch (Exception e) {
                     System.out.println("No such account found");
-                    return getBalance(f); //try again or give the option to leave
+                    return getBalance(log); //try again or give the option to leave
                 }
         }  
         return 0;   
@@ -181,8 +185,8 @@ public class Customer extends Person{
      * @param f The file object used for logging.
      * @return The balance of the account.
      */
-    public int getBalance(String accountType, Files f){
-        accounts.get(accountType).displayBalance(f);
+    public int getBalance(String accountType, Logger log){
+        accounts.get(accountType).displayBalance(log);
         return 0;
     }
 
@@ -195,7 +199,7 @@ public class Customer extends Person{
      * @param f The file object used for logging.
      * @return true if the transaction was successful, false otherwise.
      */
-    public boolean deposit(String accountType, double amount, Files f){
+    public boolean deposit(String accountType, double amount, Logger log){
         if (accounts.get(accountType)==null){ //if there is no account of that type
             System.out.println("No account found.");
             return false;
@@ -210,7 +214,7 @@ public class Customer extends Person{
         }
 
         //else proceed with the transaction
-        accounts.get(accountType).changeBalance(amount, f);
+        accounts.get(accountType).changeBalance(amount, log);
         return true;
     }
 
@@ -223,13 +227,13 @@ public class Customer extends Person{
      * @param f The file object used for logging.
      * @return true if the transaction was successful, false otherwise.
      */
-    public boolean deposit(int accountNumber, double amount, Files f){
+    public boolean deposit(int accountNumber, double amount, Logger log){
         String type = findAccountType(accountNumber); //find the account type for that number
         if  (type == null){ //if it doesn't exist then return false
             System.out.println("Account cannot be found in this customer please try again");
             return false;
         }else{ //else deposit into that accounttype
-            return deposit(type, amount, f);
+            return deposit(type, amount, log);
         }
     }
  
@@ -241,8 +245,8 @@ public class Customer extends Person{
      * @param f The file object used for logging.
      * @return true if successful, false otherwise.
      */
-    public boolean withdraw(String accountType, double amount, Files f){
-        return deposit(accountType, -amount, f);
+    public boolean withdraw(String accountType, double amount, Logger log){
+        return deposit(accountType, -amount, log);
     }
 
     /**
@@ -253,8 +257,8 @@ public class Customer extends Person{
      * @param f The file object used for logging.
      * @return true if successful, false otherwise.
      */
-    public boolean withdraw(int accountNumber, double amount, Files f){
-        return deposit(accountNumber, -amount, f);
+    public boolean withdraw(int accountNumber, double amount, Logger log){
+        return deposit(accountNumber, -amount, log);
     }
 
     /**
@@ -266,10 +270,10 @@ public class Customer extends Person{
      * @param f The file object used for logging.
      * @return true if successful, false otherwise.
      */
-    public boolean transfer(int source , int dest, double amount, Files f){
+    public boolean transfer(int source , int dest, double amount, Logger log){
         String sourceType = findAccountType(source);
         String destType = findAccountType(dest);
-        return transfer(sourceType, destType, amount, f);
+        return transfer(sourceType, destType, amount, log);
     }
 
     /**
@@ -281,7 +285,7 @@ public class Customer extends Person{
      * @param f The file object used for logging.
      * @return true if successful, false otherwise.
      */
-    public boolean transfer(String source, String dest, double amount, Files f){
+    public boolean transfer(String source, String dest, double amount, Logger log){
         if (accounts.get(source) == null || accounts.get(dest) == null){ //if either account doesn't exist
             System.out.println("One or both of the specified account numbers do not exist under this customer.");
             return false;
@@ -289,9 +293,9 @@ public class Customer extends Person{
         if (accounts.get(source).canWithdraw(-amount) && accounts.get(dest).canDeposit(amount)){ //if you can deposit and you can withdraw proceed with the transaction
             String output = "(" + this.getName() + " transfered " + amount + " from " +  source + " account to " + dest + " account)";
             System.out.println(output);
-            f.writeFile(output); //log
-            accounts.get(source).changeBalance(-amount, f); //withdraw from the source account
-            accounts.get(dest).changeBalance(amount, f); //deposit into the dest account
+            log.Use(output); //log
+            accounts.get(source).changeBalance(-amount, log); //withdraw from the source account
+            accounts.get(dest).changeBalance(amount, log); //deposit into the dest account
             return true;
         }
     
@@ -309,10 +313,10 @@ public class Customer extends Person{
      * @param f The file object used for logging the transaction.
      * @return true if the payment was successful, false otherwise.
      */
-    public boolean pay(Customer customer, int source, int dest, double amount, Files f ){
+    public boolean pay(Customer customer, int source, int dest, double amount, Logger log){
         String sourceType = findAccountType(source);
         String destType = customer.findAccountType(dest);
-        return pay(customer, sourceType, destType, amount, f);        
+        return pay(customer, sourceType, destType, amount, log);        
     }
 
     /**
@@ -325,7 +329,7 @@ public class Customer extends Person{
      * @param f The file object used for logging the transaction.
      * @return true if the payment was successful, false otherwise.
      */
-    public boolean pay(Customer customer, String source, String dest, double amount, Files f){
+    public boolean pay(Customer customer, String source, String dest, double amount, Logger log){
         if (accounts.get(source) == null || customer.accounts.get(dest) == null){ //if either of the accounts don't exist
             System.out.println("One or both of the specified account numbers do not exist under this customer.");
             return false;
@@ -333,9 +337,9 @@ public class Customer extends Person{
         if (accounts.get(source).canWithdraw(-amount) && customer.accounts.get(dest).canDeposit(amount)){ //if both actions can be performed
             String output = "(" + this.getName() + " paid " + amount + " from " +  source + " account to " + customer.getName() +  "'s " + dest + " account)";
             System.out.println(output);
-            f.writeFile(output);
-            accounts.get(source).changeBalance(-amount, f); //withdraw from the source account
-            customer.accounts.get(dest).changeBalance(amount, f); //deposit into the dest account of customer
+            log.Use(output);
+            accounts.get(source).changeBalance(-amount, log); //withdraw from the source account
+            customer.accounts.get(dest).changeBalance(amount, log); //deposit into the dest account of customer
             return true;
         }
         

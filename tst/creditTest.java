@@ -8,17 +8,19 @@ import org.junit.After;
 
 import src.Credit;
 import src.Customer;
-import src.Files;
+import src.Logger;
 
 
 /**
- * This class is to test if the methods in credit work properly
+ * This class is to test if the methods in credit work properly.
+ * The methods with returns in Accounts are canDeposit, CanWithdraw, changeBalance.
+ * The changeBalance contains canDeposit and CanWithdraw
  * @author Gerardo Sillas
  */
 public class CreditTest {
     Customer testHolder;
     Credit testCreditAccount;
-    Files testFile = new Files();
+    Logger testFile = Logger.getInstance();
  
     @Before
     public void setup(){

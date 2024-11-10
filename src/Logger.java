@@ -6,35 +6,42 @@ import java.io.FileWriter;
 /**
  * The Files class provides methods to create a text file and write content to it.
  */
-public class Files {
+public class Logger implements FileUsage{
+  /**
+   * Static instance of the object, to create a Singleton Design Pattern
+   */
+  private static Logger instance;
   
   /**
    * The name of the file (without extension).
    */
-  public String name;
+  public String fileName;
 
   /**
    * Default constructor for the Files class.
    */
-  public Files(){
+  private Logger(){
   }
 
   /**
-   * Constructs a Files object with a specified name.
-   * 
-   * @param n The name of the file.
+   * Allow other classes to access the static object
    */
-  public Files(String n){
-    name = n;
+  public static Logger getInstance(){
+    if (instance == null) {
+        instance = new Logger();
+    }
+    return instance;
   }
+
 
   /**
    * Creates a new text file with the specified name.
    * If the file already exists, it notifies the user.
    */
-  public void createFile(){
+  public void setUp(String fileName){
     try {
-      File file = new File(name + ".txt");
+      this.fileName = fileName;
+      File file = new File(fileName + ".txt");
       if (file.createNewFile()) {
         System.out.println("File created: " + file.getName());
       } else {
@@ -52,9 +59,9 @@ public class Files {
    * 
    * @param input The text to be written to the file.
    */
-  public void writeFile(String input){
+  public void Use(String input){
     try {
-      FileWriter myWriter = new FileWriter(name + ".txt", true);
+      FileWriter myWriter = new FileWriter(fileName + ".txt", true);
       myWriter.write(input + "\n");
       myWriter.close();
     } catch (IOException e) {
