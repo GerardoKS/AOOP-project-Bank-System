@@ -6,6 +6,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.Hashtable;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
@@ -59,12 +60,19 @@ private static boolean successT = true;
  */
 private static boolean successP = true; 
 
+/**
+ * A flag indicating whether a payment made by a customer was successful.
+ */
+private static boolean successU = true;
+
+
 /** 
  * A Scanner object used for input from the user.
  */
 private static Scanner sc = new Scanner(System.in);
 
 public static double maxi;
+
 
 /**
  * List of names to maintain the order of the users, so that when the updatingCSVFile method is invoked, it can update the CSV file based on the order they were read
@@ -204,7 +212,7 @@ private static List<String> names = new ArrayList<>();
         successT = true;
         successW = true; //reset flags
         String customerName2 = "";
-        System.out.println("\nPlease input what transaction you would like to do.\nCheck Balance (B)\nDeposit (D)\nwithdraw (W)\nTransfer (T)\nPay someone (P)\nLogout/Return to Main Menu (L/M)\nExit (E)"); //options for the customer
+        System.out.println("\nPlease input what transaction you would like to do.\nCheck Balance (B)\nDeposit (D)\nwithdraw (W)\nTransfer (T)\nPay someone (P)\nCreate User (U)\nLogout/Return to Main Menu (L/M)\nExit (E)"); //options for the customer
         String input = sc.nextLine(); //stores the transaction (or action)
 
         while(input.equals("")) input = sc.nextLine();
@@ -239,6 +247,12 @@ private static List<String> names = new ArrayList<>();
                 System.out.println("You will be prompted on the person that you will be paying");
                 customerName2 = getCustomer();
                 successP = transfer(customerName2, customerName, f);
+                break;
+            case("u"):
+            case("user"):
+            case("create user"):
+                //create user
+                successU = createUser(f);
                 break;
             case("l"):
             case("logout"):
@@ -465,6 +479,89 @@ private static List<String> names = new ArrayList<>();
                 System.out.println("Please input the correct term");
                 return (typeOfUser());
         }
+    }
+
+
+    /**
+     * 
+     * @return
+     */
+    private static boolean createUser(Files f){
+        System.out.println("You will be prompted on the information needed to create a new user");
+
+
+        // FIX CHECK IF IT SHOULD RETURN TRUE OR FALSE IF THE USER INPUTS EXIT OR MAIN MENU
+        String name = verifyNewCustomerInput("name"); //get name
+        if (name == null) return true; //exit or main menu
+
+        String dob = verifyNewCustomerInput("date of birth"); //get dob
+        if (dob == null) return true; //exit or main menu
+
+        String address = verifyNewCustomerInput("address"); //get address
+        if (address == null) return true; //exit or main menu
+
+        String city = verifyNewCustomerInput("city"); //get city
+        if (city == null) return true; //exit or main menu
+
+        String state = verifyNewCustomerInput("state"); //get state
+        if (state == null) return true; //exit or main menu
+
+        String zip = verifyNewCustomerInput("zip code"); //get zip
+        if (zip == null) return true; //exit or main menu
+
+        String phone = verifyNewCustomerInput("phone number"); //get phone number
+        if (phone == null) return true; //exit or main menu
+
+        //create user.
+        Dictionary <String, Account> accounts = new Hashtable<>(); //create accounts
+        Customer customer = new Customer();
+        int accountNum = generateAccountNumber();
+        Account checking = new Checking(accountNum, 0, customer);
+        accounts.put("checking", checking);
+        accountList.put(accountNum, customer);
+
+        accountNum = generateAccountNumber();
+        Account saving = new Saving(accountNum, 0, customer);
+        accounts.pit
+
+        int id; //create id
+        String firstName = name.split(" ")[0];
+        String lastName = name.split(" ")[1];
+        int creditScore = (int)(Math.random()* 420) +  380; //FIX I DONT REMEMBER HOW TO DO MATH.RANDOM... -_- create a credit score 
+
+        customer.setId(id);
+        customer.setAccounts(accounts);
+        customer.setFirstName(firstName);
+        customer.setLastName(lastName);
+        customer.setDOB(dob);
+        customer.setAddress(address);
+        customer.setPhoneNumber(phone);
+        customer.setCreditScore(creditScore);
+
+        customerList.put(name, customer);
+        
+        return true;
+    }
+
+    private static String verifyNewCustomerInput(String inputType){
+        String input = "";
+        while (input == ""){ //verify we get an input
+            System.out.println("Please enter the " + inputType + " for the account (exit (e) or main menu (m))"); //input or action
+            input = sc.nextLine();
+           switch (input){
+                case ("e"):
+                case("exit"): //action
+                    exit = true;
+                    mainMenu = true;
+                    return null;
+                case("m"):
+                case("main"):
+                case("main menu"): //action
+                    mainMenu = true;
+                    return null;
+            }
+        }
+        return input; //else return input
     }
 
     /**
