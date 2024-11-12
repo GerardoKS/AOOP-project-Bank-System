@@ -1,5 +1,5 @@
 From First Name,From Last Name,From Where,Action,To First Name,To Last Name,To Where,Action Amount
-Mickey,Mouse,Checking,pays,Donald,Duck,Checking,100
+Mickey,Mouse,Checking,pays,Donald,Duck,Checking,10000
 Mickey,Mouse,Savings,transfers,Mickey,Mouse,Checking,400
 Mickey,Mouse,Savings,inquires,,,,
 Mickey,Mouse,Checking,withdraws,,,,100

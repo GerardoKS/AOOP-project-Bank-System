@@ -3,6 +3,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Scanner;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.Hashtable;
@@ -16,7 +17,6 @@ import java.util.Random;
 
 /**
  * Driver class containg User Interface and CSV conversion to create the bank system. 
- * @author Gerardo Sillas
  * @author Hannah Ayala
  */
 
@@ -61,6 +61,10 @@ private static boolean successT = true;
  */
 private static boolean successP = true; 
 
+
+private static boolean successU = true;
+
+
 /** 
  * A Scanner object used for input from the user.
  */
@@ -81,6 +85,8 @@ protected static String titles;
  */
 private static int totalCustomers;
 
+protected static Logger log = Logger.getInstance();
+
 static ReadCustomersFromCSVFile readCustomersFromCSVFile = new ReadCustomersFromCSVFile();
 static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
     /** 
@@ -91,16 +97,19 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      */
     public static void main(String args[]){
         //declare file location (file path)
-        String filePath = "./src/resources/CS 3331 - Bank Users.csv";
+        String filePath = "./resources/CS 3331 - Bank Users.csv";
         //read CSV file and create a list of "Customer"s from the entreis in the file
         readCustomersFromCSVFile.Use(filePath);
         totalCustomers = names.size();
         //runs the bank
-        Logger log = Logger.getInstance();
+        //Logger log = Logger.getInstance();
         log.setUp("log");
         System.out.println("Welcome to El Paso Miners Bank!");
+
+        //manager transactions 
+
         while(!exit){ //will continue going to main manu unless the user chooses to exit
-           main_menu(log); //manager or customer        
+           main_menu(); //manager or customer        
         }
         System.out.println("Thank you for choosing us!");
         //ends
@@ -118,14 +127,14 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      *
      * @param f An instance of the Files class used for logging transactions.
      */
-    private static void main_menu(Logger log){
+    private static void main_menu(){
         int users = typeOfUser(); //will get the type of user
            switch (users){
                 case 0: //manager
                     System.out.println("You have chosen Bank Manager access");
                     mainMenu = false;
                     while(!mainMenu && !exit){  //while they dont choose to go back to the main manu
-                        managerMenu(log); //provide manager with options
+                        managerMenu(); //provide manager with options
                     }
                     break;
                 case 1: //normal user
@@ -133,7 +142,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
                     mainMenu = false;
                     String customerName = getCustomer(); //will get name of customer and validate it
                     while (!mainMenu && !exit){ //while they do not choose to go back to the main menu
-                        userMenu(customerName, log); //provide the user with transaction options
+                        userMenu(customerName); //provide the user with transaction options
                     }
            }
            
@@ -145,11 +154,11 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      *
      * @param f An instance of the Files class used for logging transactions.
      */
-    private static void managerMenu(Logger log){
+    private static void managerMenu(){
         exit = false;
         mainMenu = false; 
         boolean managerMenu = false; //reset flags
-        System.out.println("A. Inquire by name: \nB.Inquire by account number: \n(exit (e) or main menu (m))"); //options
+        System.out.println("\nPlease input what transaction you would like to do.Inquire by name (a)\nInquire by account number: (b)\nGenerate Bank Statement (g)\nPerform Transactions (t)\n(exit (e) or main menu (m))"); //options
         String option = sc.nextLine();
         while(option.equals("")) option = sc.nextLine();
         switch (option.toLowerCase()){ //based on option
@@ -181,9 +190,21 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
                 }
                 break;
             case("b"): //by account number
-                int num = getAccountNumber(log); //get account number and validate
+                int num = getAccountNumber(); //get account number and validate
                 Customer customer = (accountList.get(num));
                 System.out.println(customer.getAccounts().get(customer.findAccountType(num)).toString()); //print the tostring
+                break;
+            case("g"):
+            case("generate"):
+            case("generate bank statement"):
+                //generate bank statement FIX
+                break;
+            case("t"):
+            case("transactions"):
+                String transactionsPath = "./resources/Transactions(1).csv";
+                System.out.println("Transactions started");
+                managerTransactions(transactionsPath);
+                System.out.println("Transactions ended");
                 break;
             case("e"):
             case("exit"): //actions
@@ -197,7 +218,67 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
                 break;
             default: //invalid input
                 System.out.println("Please select from the options");
-                managerMenu(log);
+                managerMenu();
+        }
+    }
+
+
+
+    private static void managerTransactions(String filePath){
+        try(BufferedReader br = new BufferedReader(new FileReader(filePath))){
+            String line = br.readLine();
+            while((line = br.readLine())!= null){
+                String[] input = new String[8];
+                for(int i = 0; i<7; i++){
+                    input[i] = line.substring(0, line.indexOf(","));
+                    line = line.substring(line.indexOf(",") + 1);
+                }
+                input[7] = line;
+
+                
+                //get from first and last name
+                String fromFirst = input[0];
+                String fromLast = input[1];
+                String fromName = fromFirst + " " + fromLast;
+                //get from account name/number
+                String fromAccount = input[2];
+                fromAccount = fromAccount.toLowerCase();
+                if (fromAccount.equals("savings")) fromAccount = "saving";
+                //get action
+                String action = input[3];
+                //get to first and last name
+                String toFirst = input[4];
+                String toLast = input[5];
+                String toName = toFirst + " " + toLast;
+                //get to account
+                String toAccount = input[6];
+                toAccount = toAccount.toLowerCase();
+                if (toAccount.equals("savings")) toAccount = "saving";
+                //get amount
+                double amount = 0;
+                if (!input[7].equals("")) amount = Double.parseDouble(input[7]);
+                
+                switch (action.toLowerCase()){
+                    case("pays"):
+                        transferHelper(fromName, toName, fromAccount, toAccount, amount);
+                        break;
+                    case("transfers"):
+                        transferHelper(fromName, toName, fromAccount, toAccount, amount);
+                        break;
+                    case("inquires"):
+                        customerList.get(fromName).getBalance(fromAccount);
+                        break;
+                    case("withdraws"):
+                        customerList.get(fromName).deposit(fromAccount, amount);
+                        break;
+
+                    case("deposits"):
+                        customerList.get(toName).deposit(toAccount, amount);
+                        break;
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -211,13 +292,13 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      * @param customerName The name of the customer using the menu.
      * @param f An instance of the Files class used for logging transactions.
      */
-    private static void userMenu(String customerName, Logger log){
+    private static void userMenu(String customerName){
         successD =true;
         successP = true;
         successT = true;
         successW = true; //reset flags
         String customerName2 = "";
-        System.out.println("\nPlease input what transaction you would like to do.\nCheck Balance (B)\nDeposit (D)\nwithdraw (W)\nTransfer (T)\nPay someone (P)\nLogout/Return to Main Menu (L/M)\nExit (E)"); //options for the customer
+        System.out.println("\nPlease input what transaction you would like to do.\nCheck Balance (B)\nDeposit (D)\nwithdraw (W)\nTransfer (T)\nPay someone (P)\nCreate User (U)\nLogout/Return to Main Menu (L/M)\nExit (E)"); //options for the customer
         String input = sc.nextLine(); //stores the transaction (or action)
 
         while(input.equals("")) input = sc.nextLine();
@@ -225,7 +306,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
             case("b"):
             case("balance"):
             case("check balance"):
-                int status = customerList.get(customerName).getBalance(log); //will get the balance and display it (or action)
+                int status = customerList.get(customerName).getBalance(); //will get the balance and display it (or action)
                 if (status == -1){ //exit
                     exit = true;
                     break;
@@ -236,22 +317,28 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
                 break;
             case("d"):
             case("deposit"):
-                successD = transaction("deposit", customerName, log); //will deposit into one of customerName's accounts
+                successD = transaction("deposit", customerName); //will deposit into one of customerName's accounts
                 break;
             case("w"):
             case("withdraw"):
-                successW = transaction("withdraw", customerName, log); //will withdraw from one of customerName's acocunts
+                successW = transaction("withdraw", customerName); //will withdraw from one of customerName's acocunts
                 break;
             case("t"):
             case("transfer"):
-                successT = transfer(customerName, customerName, log);
+                successT = transfer(customerName, customerName);
                 break;
             case("p"):
             case("pay"):
             case("pay someone"):
                 System.out.println("You will be prompted on the person that you will be paying");
                 customerName2 = getCustomer();
-                successP = transfer(customerName2, customerName, log);
+                successP = transfer(customerName2, customerName);
+                break;
+            case("u"):
+            case("user"):
+            case("create user"):
+                //create user
+                successU = createUser();
                 break;
             case("l"):
             case("logout"):
@@ -271,16 +358,19 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
         //if the transaction wasn't successful, try it again until the user selects to return to main menu or to the user menu
         if(!exit){
             if (!successD){
-                successD = transaction("deposit", customerName, log);
+                successD = transaction("deposit", customerName);
             }
             if (!successW){
-                successW = transaction("withdraw", customerName, log);
+                successW = transaction("withdraw", customerName);
             }
             if (!successT){
-                successT = transfer(customerName, customerName, log);              
+                successT = transfer(customerName, customerName);              
             }
             if (!successP){
-                successP = transfer(customerName2, customerName, log);;
+                successP = transfer(customerName2, customerName);;
+            }
+            if (!successU){ //FIX MIGHT BE THE INCORRECT BOOLEAN
+                successU = createUser();
             }
         }
     }
@@ -298,7 +388,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      * @param f An instance of the Files class used for logging transactions.
      * @return True if the transfer was successful; otherwise, false.
      */
-    private static boolean transfer(String customerName2, String customerName, Logger log){
+    private static boolean transfer(String customerName2, String customerName){
         System.out.println("How much would you like to pay"); //gets the amount for the transaction
         Double payAmount = sc.nextDouble();
         System.out.println("You will be prompted to provide information regarding the account you are paying from");
@@ -323,14 +413,23 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
             return false;
         }
         if (typeOneStat == 1 && typeOneStat == typeTwoStat){ //both are types
-            if (customerName.equals(customerName2)) return customerList.get(customerName).transfer(typeOne, typeTwo, payAmount, log); //between the same person, transfer
-            else return customerList.get(customerName).pay(customerList.get(customerName2), typeOne, typeTwo, payAmount, log); //between two people, pay
+            return transferHelper(customerName, customerName2, typeTwo, typeOne, payAmount);
         }else if (typeOneStat ==2 && typeOneStat == typeTwoStat){ //both are account numbers
-            if (customerName.equals(customerName2)) return customerList.get(customerName).transfer(Integer.parseInt(typeOne), Integer.parseInt(typeTwo), payAmount, log); //between the saem person, transfer
-            else return customerList.get(customerName).pay(customerList.get(customerName2), Integer.parseInt(typeOne), Integer.parseInt(typeTwo), payAmount, log); //between two people, pay
+            return transferHelper(customerName, customerName2, Integer.parseInt(typeOne), Integer.parseInt(typeTwo), payAmount);
         }
         System.out.println("Please provide both types of accounts or both account numbers not mismatch"); //accounts not correct
         return false;
+    }
+
+
+    private static boolean transferHelper(String customerName, String customerName2, String fromAccount, String toAccount, double amount){
+        if (customerName.equals(customerName2)) return customerList.get(customerName).transfer(fromAccount, toAccount, amount);
+        return customerList.get(customerName).pay(customerList.get(customerName2), fromAccount, toAccount, amount);
+    }
+
+    private static boolean transferHelper(String customerName, String customerName2, int fromAccount, int toAccount, double amount){
+        if(customerName.equals(customerName2)) return customerList.get(customerName).transfer(fromAccount, toAccount, amount);
+        return customerList.get(customerName).pay(customerList.get(customerName2), fromAccount, toAccount, amount);
     }
 
     /**
@@ -343,7 +442,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      * @param f An instance of the Files class used for logging transactions.
      * @return True if the transaction was successful; otherwise, false.
      */
-    private static boolean transaction(String transaction, String customerName, Logger log){
+    private static boolean transaction(String transaction, String customerName){
         String type = getAccount(); 
         int state = verifyAccount(customerName, type); //get and verify the account
         switch (state){
@@ -352,11 +451,11 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
             case(-3): //actions
                 return true; 
             case(0): //try again
-                return transaction(transaction, customerName, log);
+                return transaction(transaction, customerName);
             case(1): //valid type
-                return transactionHelper(transaction, customerName, type, log);
+                return transactionHelper(transaction, customerName, type);
             case(2): //valid account number
-                return transactionHelper(transaction, customerName, Integer.parseInt(type), log);
+                return transactionHelper(transaction, customerName, Integer.parseInt(type));
         }
         return false;
     }
@@ -417,13 +516,13 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      * @param f An instance of the Files class used for logging transactions.
      * @return True if the transaction was successful; otherwise, false.
      */
-    private static boolean transactionHelper(String transaction, String customerName, String type, Logger log){
+    private static boolean transactionHelper(String transaction, String customerName, String type){
         System.out.printf("How much would you like to %s into the account\n", transaction); //gets the amount for the transaction
         double amount = sc.nextDouble();
         if (transaction.equals("deposit")){ //if deposit, then run deposit, which will check if it is possible
-            return customerList.get(customerName).deposit(type, amount, log);
+            return customerList.get(customerName).deposit(type, amount);
         }else{ //else it must be withdraw which will check if it is possible
-            return customerList.get(customerName).withdraw(type, amount, log);
+            return customerList.get(customerName).withdraw(type, amount);
         }
     }
 
@@ -438,13 +537,13 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      * @param f An instance of the Files class used for logging transactions.
      * @return True if the transaction was successful; otherwise, false.
      */
-    private static boolean transactionHelper(String transaction, String customerName, int number, Logger log){
+    private static boolean transactionHelper(String transaction, String customerName, int number){
         System.out.printf("How much would you like to %s into the account\n", transaction); //gets the amount for the transaction
         double amount = sc.nextDouble();
         if (transaction.equals("deposit")){ //if deposit, then run deposit, which will check if it is possible
-            return customerList.get(customerName).deposit(number, amount, log);
+            return customerList.get(customerName).deposit(number, amount);
         }else{ //else it must be withdraw which will check if it is possible
-            return customerList.get(customerName).withdraw(number, amount, log);
+            return customerList.get(customerName).withdraw(number, amount);
         }
     }
 
@@ -478,6 +577,99 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
                 System.out.println("Please input the correct term");
                 return (typeOfUser());
         }
+    }
+private static boolean createUser(){
+        System.out.println("You will be prompted on the information needed to create a new user");
+
+
+        // FIX CHECK IF IT SHOULD RETURN TRUE OR FALSE IF THE USER INPUTS EXIT OR MAIN MENU
+        String name = verifyNewCustomerInput("name"); //get name
+        if (name == null) return true; //exit or main menu
+
+        String dob = verifyNewCustomerInput("date of birth"); //get dob
+        if (dob == null) return true; //exit or main menu
+
+        String address = verifyNewCustomerInput("address"); //get address
+        if (address == null) return true; //exit or main menu
+
+        String city = verifyNewCustomerInput("city"); //get city
+        if (city == null) return true; //exit or main menu
+
+        String state = verifyNewCustomerInput("state"); //get state
+        if (state == null) return true; //exit or main menu
+
+        String zip = verifyNewCustomerInput("zip code"); //get zip
+        if (zip == null) return true; //exit or main menu
+
+        String phone = verifyNewCustomerInput("phone number"); //get phone number
+        if (phone == null) return true; //exit or main menu
+
+        //create user.
+        Dictionary <String, Account> accounts = new Hashtable<>(); //create accounts
+        Customer customer = new Customer();
+        int accountNum = generateAccountNumber();
+        Account checking = new Checking(accountNum, 0, customer);
+        accounts.put("checking", checking);
+        accountList.put(accountNum, customer);
+
+        accountNum = generateAccountNumber();
+        Account saving = new Saving(accountNum, 0, customer);
+        accounts.put("saving", saving);
+        accountList.put(accountNum, customer);
+
+        accountNum = generateAccountNumber();
+        Account credit = new Credit();
+        accounts.put("credit", credit);
+        accountList.put(accountNum, customer);
+
+
+        int id = totalCustomers;
+        totalCustomers++;
+        String firstName = name.split(" ")[0];
+        String lastName = name.split(" ")[1];
+        int creditScore = (int)(Math.random()* 420) +  380; 
+
+        customer.setId(id);
+        customer.setAccounts(accounts);
+        customer.setFirstName(firstName);
+        customer.setLastName(lastName);
+        customer.setDOB(dob);
+        customer.setAddress(address);
+        customer.setPhoneNumber(phone);
+        customer.setCreditScore(creditScore);
+
+        customerList.put(name, customer);
+        
+        return true;
+    }
+
+    private static int generateAccountNumber(){
+        int num;
+        while (true){
+            num = (int)(Math.random()*8999) + 1000; //FIX find the range of account numbers
+            if (accountList.get(num) == null) return num;
+        }
+    }
+
+    private static String verifyNewCustomerInput(String inputType){
+        String input = "";
+        while (input == ""){ //verify we get an input
+            System.out.println("Please enter the " + inputType + " for the account (exit (e) or main menu (m))"); //input or action
+            input = sc.nextLine();
+            switch (input){
+                case ("e"):
+                case("exit"): //action
+                    exit = true;
+                    mainMenu = true;
+                    return null;
+                case("m"):
+                case("main"):
+                case("main menu"): //action
+                    mainMenu = true;
+                    return null;
+            }
+        }
+        return input; //else return input
     }
 
     /**
@@ -525,7 +717,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      * @return The valid account number entered by the user, or 0 if the user 
      * chooses to exit or return to the main menu.
      */
-    private static int getAccountNumber(Logger log){
+    private static int getAccountNumber(){
         System.out.println("Enter account number: (exit (e) or main(m))"); 
         String number = sc.nextLine(); //get input
         while(number.equals("")) number = sc.nextLine();
@@ -547,7 +739,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
                     return num; //it is an int valid account
                 }catch (Exception e){
                     System.out.println("Account of number " + number + " was not found."); //not found, try again
-                    return getAccountNumber(log);
+                    return getAccountNumber();
                 }
         }
     }
