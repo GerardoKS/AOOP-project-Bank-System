@@ -71,7 +71,7 @@ private static boolean successU = true;
  */
 private static Scanner sc = new Scanner(System.in);
 
-public static double maxi;
+public static double maxID = 0;
 
 
 /**
@@ -522,12 +522,20 @@ private static List<String> names = new ArrayList<>();
 
         accountNum = generateAccountNumber();
         Account saving = new Saving(accountNum, 0, customer);
-        accounts.pit
+        accounts.put("saving", saving);
+        accountList.put(accountNum, customer);
 
-        int id; //create id
+        accountNum = generateAccountNumber();
+        Account credit = new Credit();
+        accounts.put("credit", credit);
+        accountList.put(accountNum, customer);
+
+
+        int id = maxID; //FIX create id
+        maxID++;
         String firstName = name.split(" ")[0];
         String lastName = name.split(" ")[1];
-        int creditScore = (int)(Math.random()* 420) +  380; //FIX I DONT REMEMBER HOW TO DO MATH.RANDOM... -_- create a credit score 
+        int creditScore = (int)(Math.random()* 420) +  380; 
 
         customer.setId(id);
         customer.setAccounts(accounts);
@@ -541,6 +549,14 @@ private static List<String> names = new ArrayList<>();
         customerList.put(name, customer);
         
         return true;
+    }
+
+    private static int generateAccountNumber(){
+        int num;
+        while (true){
+            num = (int)(Math.random()*8999) + 1000; //FIX find the range of account numbers
+            if (accountList.get(num) == null) return num;
+        }
     }
 
     private static String verifyNewCustomerInput(String inputType){
