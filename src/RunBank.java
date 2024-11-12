@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.util.Scanner;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.LocalDate;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.Hashtable;
@@ -158,7 +159,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
         exit = false;
         mainMenu = false; 
         boolean managerMenu = false; //reset flags
-        System.out.println("\nPlease input what transaction you would like to do.Inquire by name (a)\nInquire by account number: (b)\nGenerate Bank Statement (g)\nPerform Transactions (t)\n(exit (e) or main menu (m))"); //options
+        System.out.println("\nPlease input what transaction you would like to do.\nInquire by name (a)\nInquire by account number: (b)\nGenerate Bank Statement (g)\nPerform Transactions (t)\n(exit (e) or main menu (m))"); //options
         String option = sc.nextLine();
         while(option.equals("")) option = sc.nextLine();
         switch (option.toLowerCase()){ //based on option
@@ -197,7 +198,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
             case("g"):
             case("generate"):
             case("generate bank statement"):
-                //generate bank statement FIX
+                generateStatement();
                 break;
             case("t"):
             case("transactions"):
@@ -375,6 +376,47 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
         }
     }
 
+
+    private static boolean generateStatement(){
+        String name = getCustomer();
+        if (name == null) return true;
+
+        Logger statement = Logger.getInstance();
+        statement.setUp(name + " - Bank Statement");
+
+        statement.Use("Date: " + LocalDate.now());
+        statement.Use("\nCustomer Details:\n" + customerList.get(name).toString());
+        statement.Use("\nAccount Details:");
+        statement.Use("Checking ("+ customerList.get(name).getAccounts().get("checking").getAccountNumber() + ")");
+        statement.Use("Starting Balance: " + customerList.get(name).getAccounts().get("checking").getStartingBalance());
+        statement.Use("Ending/Current Balance: " + customerList.get(name).getAccounts().get("checking").getBalance());
+        statement.Use("Saving (" + customerList.get(name).getAccounts().get("saving").getAccountNumber() + ")");
+        statement.Use("Starting Balance: " + customerList.get(name).getAccounts().get("saving").getStartingBalance());
+        statement.Use("Ending/Current Balance: " + customerList.get(name).getAccounts().get("saving").getBalance());
+        statement.Use("Credit (" + customerList.get(name).getAccounts().get("credit").getAccountNumber() + ")");
+        statement.Use("Starting Balance: " + customerList.get(name).getAccounts().get("credit").getStartingBalance());
+        statement.Use("Ending/Current Balance: " + customerList.get(name).getAccounts().get("credit").getBalance());
+
+        statement.Use("\nAll transactions: ");
+
+		try {
+            String filePath = "./log.txt";
+			BufferedReader reader = new BufferedReader(new FileReader(filePath));
+			String line = reader.readLine();
+
+			while (line != null) {
+				if (line.contains(name)){
+                    statement.Use(line);
+                }
+                line = reader.readLine();
+			}
+			reader.close();
+            return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+            return false;
+		}
+    }
 
     /**
      * Facilitates a transfer of funds between two customers' accounts. 
@@ -682,7 +724,7 @@ private static boolean createUser(){
      *         otherwise, returns null.
      */
     private static String getCustomer(){
-        System.out.println("Please provide your first and last name  (exit (e) or main menu (m))");
+        System.out.println("Please provide a first and last name  (exit (e) or main menu (m))");
         String name = sc.nextLine(); //get name of customer or action to perform
         while(name.equals("")) name = sc.nextLine();
         switch(name){
@@ -701,7 +743,7 @@ private static boolean createUser(){
                 return getCustomer();
                 }
                 else{ //else customer does exist in the bank
-                System.out.println("Welcome, " + customerList.get(name).getName()); //greets customer with full name
+                //System.out.println("Welcome, " + customerList.get(name).getName()); //greets customer with full name
                 return name;
                 }
         }

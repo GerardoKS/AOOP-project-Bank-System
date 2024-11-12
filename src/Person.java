@@ -139,4 +139,8 @@ public class Person{
     public String getName() {
         return getFirstName() + " " + getLastName();
     }
+
+    public String toString(){
+        return "Name: " + getName() + "\nDate of Birth: " + dob +  "\nAddress: " + address + "\nPhone Number: " + phone;
+    }
 }
