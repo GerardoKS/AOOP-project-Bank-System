@@ -28,9 +28,14 @@ public class RunBank{
 protected static Dictionary<String, Customer> customerList = new Hashtable<>(); 
 
 /** 
- * A dictionary that maps account identifiers to Customer objects.
+ * A dictionary that maps IDs to Customer objects.
  */
 protected static Dictionary<Integer, Customer> accountList = new Hashtable<>(); 
+
+/*
+ *A dictionary that maps account identifiers to Customer objects.
+ */
+protected static Dictionary<Integer, Customer> IDList = new Hashtable<>();
 
 /** 
  * A flag indicating whether the customer wants to exit the application.
@@ -75,7 +80,7 @@ private static Scanner sc = new Scanner(System.in);
  * List of names to maintain the order of the users, so that when the updatingCSVFile method is invoked, it can update the CSV file based on the order they were read
  */
 protected static List<String> names = new ArrayList<>();
-
+	
 /**
  * titles for the updated CSV file(first line) 
  */
