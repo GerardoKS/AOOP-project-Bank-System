@@ -141,7 +141,6 @@ public class Customer extends Person{
     * Returns the balance of the desired account. If the customer has more than one account,
     * it prompts the user for the account type or number.
     * 
-    * @param f The file object used for logging.
     * @return The balance of the specified account or -1, -2, -3 for exit codes.
     */
     public int getBalance(){
@@ -182,7 +181,6 @@ public class Customer extends Person{
      * Returns the balance of the account of the specified type.
      * 
      * @param accountType The type of the account.
-     * @param f The file object used for logging.
      * @return The balance of the account.
      */
     public int getBalance(String accountType){
@@ -196,7 +194,6 @@ public class Customer extends Person{
      * 
      * @param accountType The type of the account.
      * @param amount The amount to deposit (positive) or withdraw (negative).
-     * @param f The file object used for logging.
      * @return true if the transaction was successful, false otherwise.
      */
     public boolean deposit(String accountType, double amount){
@@ -224,7 +221,6 @@ public class Customer extends Person{
      * 
      * @param accountNumber The account number.
      * @param amount The amount to deposit or withdraw.
-     * @param f The file object used for logging.
      * @return true if the transaction was successful, false otherwise.
      */
     public boolean deposit(int accountNumber, double amount){
@@ -242,7 +238,6 @@ public class Customer extends Person{
      * 
      * @param accountType The type of the account.
      * @param amount The amount to withdraw.
-     * @param f The file object used for logging.
      * @return true if successful, false otherwise.
      */
     public boolean withdraw(String accountType, double amount){
@@ -254,7 +249,6 @@ public class Customer extends Person{
      * 
      * @param accountNumber The account number.
      * @param amount The amount to withdraw.
-     * @param f The file object used for logging.
      * @return true if successful, false otherwise.
      */
     public boolean withdraw(int accountNumber, double amount){
@@ -267,7 +261,6 @@ public class Customer extends Person{
      * @param source The source account number.
      * @param dest The destination account number.
      * @param amount The amount to be transferred.
-     * @param f The file object used for logging.
      * @return true if successful, false otherwise.
      */
     public boolean transfer(int source , int dest, double amount){
@@ -282,7 +275,6 @@ public class Customer extends Person{
      * @param source The source account type.
      * @param dest The destination account type.
      * @param amount The amount to be transferred.
-     * @param f The file object used for logging.
      * @return true if successful, false otherwise.
      */
     public boolean transfer(String source, String dest, double amount){
@@ -310,7 +302,6 @@ public class Customer extends Person{
      * @param source The source account number of the current customer.
      * @param dest The destination account number of the receiving customer.
      * @param amount The amount to be transferred.
-     * @param f The file object used for logging the transaction.
      * @return true if the payment was successful, false otherwise.
      */
     public boolean pay(Customer customer, int source, int dest, double amount){
@@ -326,7 +317,6 @@ public class Customer extends Person{
      * @param source The type of the source account (e.g., "checking", "saving") from which the payment will be made.
      * @param dest The type of the destination account (e.g., "checking", "saving") to which the payment will be transferred.
      * @param amount The amount to be transferred.
-     * @param f The file object used for logging the transaction.
      * @return true if the payment was successful, false otherwise.
      */
     public boolean pay(Customer customer, String source, String dest, double amount){

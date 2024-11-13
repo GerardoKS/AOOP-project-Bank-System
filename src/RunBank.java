@@ -67,9 +67,10 @@ private static boolean successT = true;
  */
 private static boolean successP = true; 
 
-
+/** 
+ * A flag indicating whether creating a user made by a customer was successful.
+ */
 private static boolean successU = true;
-
 
 /** 
  * A Scanner object used for input from the user.
@@ -91,9 +92,27 @@ protected static String titles;
  */
 private static int totalCustomers;
 
+
+/**
+ * Logger instance for logging events within the class.
+ * This `Logger` is protected and static, allowing it to be shared across
+ * instances of this class and accessible to subclasses.
+ */
 protected static Logger log = Logger.getInstance();
 
+
+/**
+ * Instance of ReadCustomersFromCSVFile used to read customer data from a CSV file.
+ * This static instance is shared across the class, allowing easy access to methods
+ * for retrieving customer data from a CSV source.
+ */
 static ReadCustomersFromCSVFile readCustomersFromCSVFile = new ReadCustomersFromCSVFile();
+
+/**
+ * Instance of UpdateCSVFile used to update or modify data in an existing CSV file.
+ * This static instance is shared across the class, enabling centralized access to CSV
+ * file modification methods.
+ */
 static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
     /** 
      * The entry point of the application. This method initializes the bank application,
@@ -107,12 +126,10 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
         //read CSV file and create a list of "Customer"s from the entreis in the file
         readCustomersFromCSVFile.Use(filePath);
         totalCustomers = names.size();
-        //runs the bank
-        //Logger log = Logger.getInstance();
+        //get the log ready for input
         log.setUp("log");
+        //runs the bank
         System.out.println("Welcome to El Paso Miners Bank!");
-
-        //manager transactions 
 
         while(!exit){ //will continue going to main manu unless the user chooses to exit
            main_menu(); //manager or customer        
@@ -131,7 +148,6 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      * the flow of the application, directing users to the appropriate menu 
      * options based on their selection.
      *
-     * @param f An instance of the Files class used for logging transactions.
      */
     private static void main_menu(){
         int users = typeOfUser(); //will get the type of user
@@ -140,7 +156,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
                     System.out.println("You have chosen Bank Manager access");
                     mainMenu = false;
                     while(!mainMenu && !exit){  //while they dont choose to go back to the main manu
-                        managerMenu(); //provide manager with options
+                        managerMenu(); //provide manager menu with options
                     }
                     break;
                 case 1: //normal user
@@ -158,7 +174,6 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      * Displays the manager menu, allowing bank managers to inquire about
      * customer accounts either by customer name or account number. 
      *
-     * @param f An instance of the Files class used for logging transactions.
      */
     private static void managerMenu(){
         exit = false;
@@ -209,7 +224,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
             case("transactions"):
                 String transactionsPath = "./resources/Transactions(1).csv";
                 System.out.println("Transactions started");
-                managerTransactions(transactionsPath);
+                managerTransactions(transactionsPath); //transactions from csv
                 System.out.println("Transactions ended");
                 break;
             case("e"):
@@ -229,19 +244,38 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
     }
 
 
-
+    /**
+     * Processes transactions for multiple customers from a CSV file.
+     * This method reads each line of the specified CSV file, parses the transaction
+     * details, and performs the appropriate action (e.g., transfers, deposits, withdrawals).
+     *
+     * @param filePath the path to the CSV file containing transaction data
+     * 
+     * The CSV file is expected to have the following format for each line:
+     * "fromFirstName,fromLastName,fromAccount,action,toFirstName,toLastName,toAccount,amount".
+     * The method reads these details, then performs the action based on the "action" field:
+     * - "pays" or "transfers": Transfers funds between accounts
+     * - "inquires": Checks the balance for a customer's account
+     * - "withdraws": Withdraws an amount from a customer's account
+     * - "deposits": Deposits an amount into a customer's account
+     * 
+     * The method uses helper methods and accesses `customerList` to perform actions.
+     *
+     * @throws IOException if there is an issue reading the file
+     * @throws NumberFormatException if the amount in the CSV is not a valid number
+     * @throws NullPointerException if a customer or account is not found in `customerList`
+     */
     private static void managerTransactions(String filePath){
         try(BufferedReader br = new BufferedReader(new FileReader(filePath))){
             String line = br.readLine();
-            while((line = br.readLine())!= null){
+            while((line = br.readLine())!= null){ //conitnue reading until the line is empty
                 String[] input = new String[8];
                 for(int i = 0; i<7; i++){
-                    input[i] = line.substring(0, line.indexOf(","));
+                    input[i] = line.substring(0, line.indexOf(",")); //populate the list
                     line = line.substring(line.indexOf(",") + 1);
                 }
                 input[7] = line;
 
-                
                 //get from first and last name
                 String fromFirst = input[0];
                 String fromLast = input[1];
@@ -296,7 +330,6 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      * operations are performed based on the chosen transaction type.
      *
      * @param customerName The name of the customer using the menu.
-     * @param f An instance of the Files class used for logging transactions.
      */
     private static void userMenu(String customerName){
         successD =true;
@@ -375,23 +408,39 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
             if (!successP){
                 successP = transfer(customerName2, customerName);;
             }
-            if (!successU){ //FIX MIGHT BE THE INCORRECT BOOLEAN
+            if (!successU){
                 successU = createUser();
             }
         }
     }
 
-
+    /**
+     * Generates a bank statement for a specific customer, logging account details,
+     * balances, and transaction history.
+     *
+     * This method retrieves the customer's name and, if found, creates a detailed bank
+     * statement using the `Logger` instance. The statement includes:
+     * - Current date
+     * - Customer details
+     * - Account details for checking, savings, and credit accounts
+     * - All transactions involving the customer
+     * 
+     * @return true if the statement is successfully generated, or if the customer
+     *         name is null; false if an error occurs during statement generation.
+     *
+     * @throws IOException if there is an issue reading the transaction log file.
+     * @throws NullPointerException if a customer's account information is missing.
+     */
     private static boolean generateStatement(){
         String name = getCustomer();
         if (name == null) return true;
 
         Logger statement = Logger.getInstance();
-        statement.setUp(name + " - Bank Statement");
+        statement.setUp(name + " - Bank Statement"); //set up the file for the user
 
-        statement.Use("Date: " + LocalDate.now());
-        statement.Use("\nCustomer Details:\n" + customerList.get(name).toString());
-        statement.Use("\nAccount Details:");
+        statement.Use("Date: " + LocalDate.now()); //current date
+        statement.Use("\nCustomer Details:\n" + customerList.get(name).toString()); //customer details
+        statement.Use("\nAccount Details:"); //all of the account details
         statement.Use("Checking ("+ customerList.get(name).getAccounts().get("checking").getAccountNumber() + ")");
         statement.Use("Starting Balance: " + customerList.get(name).getAccounts().get("checking").getStartingBalance());
         statement.Use("Ending/Current Balance: " + customerList.get(name).getAccounts().get("checking").getBalance());
@@ -410,8 +459,8 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
 			String line = reader.readLine();
 
 			while (line != null) {
-				if (line.contains(name)){
-                    statement.Use(line);
+				if (line.contains(name)){ //if the log mentions the customer
+                    statement.Use(line); //add the statement to the users statement
                 }
                 line = reader.readLine();
 			}
@@ -432,7 +481,6 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      *
      * @param customerName2 The name of the customer receiving the payment.
      * @param customerName The name of the customer making the payment.
-     * @param f An instance of the Files class used for logging transactions.
      * @return True if the transfer was successful; otherwise, false.
      */
     private static boolean transfer(String customerName2, String customerName){
@@ -468,12 +516,37 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
         return false;
     }
 
-
+    /**
+     * Facilitates a transfer or payment transaction between accounts by customer names and account types.
+     * 
+     * This method checks if both customer names are the same. If so, it transfers funds between two accounts
+     * owned by the same customer. Otherwise, it initiates a payment from one customer to another.
+     * 
+     * @param customerName  the name of the customer initiating the transaction
+     * @param customerName2 the name of the receiving customer, or the same customer if transferring between accounts
+     * @param fromAccount   the type of the source account (e.g., "checking", "saving")
+     * @param toAccount     the type of the destination account
+     * @param amount        the amount to be transferred or paid
+     * @return true if the transaction is successful; false otherwise
+     */
     private static boolean transferHelper(String customerName, String customerName2, String fromAccount, String toAccount, double amount){
         if (customerName.equals(customerName2)) return customerList.get(customerName).transfer(fromAccount, toAccount, amount);
         return customerList.get(customerName).pay(customerList.get(customerName2), fromAccount, toAccount, amount);
     }
 
+    /**
+     * Facilitates a transfer or payment transaction between accounts by customer names and account numbers.
+     * 
+     * This method checks if both customer names are the same. If so, it transfers funds between two accounts
+     * owned by the same customer. Otherwise, it initiates a payment from one customer to another.
+     * 
+     * @param customerName  the name of the customer initiating the transaction
+     * @param customerName2 the name of the receiving customer, or the same customer if transferring between accounts
+     * @param fromAccount   the account number of the source account
+     * @param toAccount     the account number of the destination account
+     * @param amount        the amount to be transferred or paid
+     * @return true if the transaction is successful; false otherwise
+     */
     private static boolean transferHelper(String customerName, String customerName2, int fromAccount, int toAccount, double amount){
         if(customerName.equals(customerName2)) return customerList.get(customerName).transfer(fromAccount, toAccount, amount);
         return customerList.get(customerName).pay(customerList.get(customerName2), fromAccount, toAccount, amount);
@@ -486,7 +559,6 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      *
      * @param transaction A string indicating the type of transaction ("deposit" or "withdraw").
      * @param customerName The name of the customer making the transaction.
-     * @param f An instance of the Files class used for logging transactions.
      * @return True if the transaction was successful; otherwise, false.
      */
     private static boolean transaction(String transaction, String customerName){
@@ -560,7 +632,6 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      * @param transaction A string indicating the type of transaction ("deposit" or "withdraw").
      * @param customerName The name of the customer making the transaction.
      * @param type The account type for the transaction.
-     * @param f An instance of the Files class used for logging transactions.
      * @return True if the transaction was successful; otherwise, false.
      */
     private static boolean transactionHelper(String transaction, String customerName, String type){
@@ -581,7 +652,6 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      * @param transaction A string indicating the type of transaction ("deposit" or "withdraw").
      * @param customerName The name of the customer making the transaction.
      * @param number The account number for the transaction.
-     * @param f An instance of the Files class used for logging transactions.
      * @return True if the transaction was successful; otherwise, false.
      */
     private static boolean transactionHelper(String transaction, String customerName, int number){
@@ -625,7 +695,17 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
                 return (typeOfUser());
         }
     }
-private static boolean createUser(){
+
+    /**
+     * Creates a new customer with associated checking, savings, and credit accounts.
+     *
+     * Prompts the user for required information (name, date of birth, address, city,
+     * state, zip, and phone number) and initializes the customer's details. If the user
+     * cancels at any prompt, the method exits without creating a customer.
+     *
+     * @return true if user creation is successful or canceled by the user.
+     */
+    private static boolean createUser(){
         System.out.println("You will be prompted on the information needed to create a new user");
 
         String name = verifyNewCustomerInput("name"); //get name
@@ -652,22 +732,22 @@ private static boolean createUser(){
         if (phone == null) return true; //exit or main menu
 
         totalCustomers++;
-        
+
         //create user.
         Dictionary <String, Account> accounts = new Hashtable<>(); //create accounts
-        Customer customer = new Customer();
+        Customer customer = new Customer(); //create customer
+        //create checking account and add to accounts list
         int accountNum = totalCustomers + 999;
         Account checking = new Checking(accountNum, 0, customer);
         accounts.put("checking", checking);
         accountList.put(accountNum, customer);
-
+        //create savings account and add to accounts list
         accountNum = totalCustomers + 1999;
         Account saving = new Saving(accountNum, 0, customer);
         accounts.put("saving", saving);
         accountList.put(accountNum, customer);
-
+        //create credit account and add to accounts list
         int creditScore = (int)(Math.random()* 440) +  380; 
-
         accountNum = totalCustomers + 2999;
         Credit credit = new Credit(accountNum, 0, customer, 0);
         accounts.put("credit", credit);
@@ -679,11 +759,10 @@ private static boolean createUser(){
         else if(creditScore<= 799) credit.setMax((int) (Math.random()*8500) + 7500);
         else credit.setMax((int) (Math.random()*9001) + 1600);
         
-
+        //set the user information
         int id = totalCustomers;
         String firstName = name.split(" ")[0];
         String lastName = name.split(" ")[1];
-
 
         customer.setId(id);
         customer.setAccounts(accounts);
@@ -693,21 +772,22 @@ private static boolean createUser(){
         customer.setAddress(fullAddress);
         customer.setPhoneNumber(phone);
         customer.setCreditScore(creditScore);
-
+        //add customer to corresponding lists
         customerList.put(name, customer);
         names.add(name);
         
         return true;
     }
 
-    private static int generateAccountNumber(){
-        int num;
-        while (true){
-            num = (int)(Math.random()*8999) + 1000; //FIX find the range of account numbers
-            if (accountList.get(num) == null) return num;
-        }
-    }
 
+    /**
+     * Prompts the user to enter information for a specified input type and verifies the input.
+     * 
+     * Allows the user to exit or return to the main menu by entering specific commands.
+     * 
+     * @param inputType the type of information requested (e.g., "name", "address")
+     * @return the verified input as a String, or null if the user chooses to exit or go to the main menu
+     */
     private static String verifyNewCustomerInput(String inputType){
         String input = "";
         while (input == ""){ //verify we get an input
@@ -770,7 +850,6 @@ private static boolean createUser(){
      * validates the input and returns the account number if valid. 
      * If not, the user is prompted to enter the number again.
      *
-     * @param f An instance of the Files class used for logging transactions.
      * @return The valid account number entered by the user, or 0 if the user 
      * chooses to exit or return to the main menu.
      */
