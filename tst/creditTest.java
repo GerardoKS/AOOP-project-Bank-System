@@ -41,7 +41,7 @@ public class CreditTest {
     @Test
     public void testChangeBalanceNegativeInfinity(){
     //try a condition that should always fail
-        assertFalse(testCreditAccount.changeBalance(Double.NEGATIVE_INFINITY, testFile));
+        assertFalse(testCreditAccount.changeBalance(Double.NEGATIVE_INFINITY));
     }  
 
     /**
@@ -50,7 +50,7 @@ public class CreditTest {
     @Test
     public void testChangeBalanceZero(){
         //try 0
-        assertTrue(testCreditAccount.changeBalance(0, testFile));
+        assertTrue(testCreditAccount.changeBalance(0));
     }    
 
     /**
@@ -61,7 +61,7 @@ public class CreditTest {
         //try valeus with decimals
         //balance == 0
         testCreditAccount.setMax(0.5);
-        assertTrue(testCreditAccount.changeBalance(-0.5, testFile));
+        assertTrue(testCreditAccount.changeBalance(-0.5));
     }    
 
     /**
@@ -72,7 +72,7 @@ public class CreditTest {
         //try valeus with decimals
         //balance == 0
         //max == 0
-        assertFalse(testCreditAccount.changeBalance(-0.5, testFile));
+        assertFalse(testCreditAccount.changeBalance(-0.5));
     }    
 
     /**
@@ -82,7 +82,7 @@ public class CreditTest {
     public void testChangeBalanceWholeValuesPass(){
         //change value for whole valued numbers
         testCreditAccount.setMax(1);
-        assertTrue(testCreditAccount.changeBalance(-1, testFile));
+        assertTrue(testCreditAccount.changeBalance(-1));
     }   
 
     /**
@@ -92,7 +92,7 @@ public class CreditTest {
     public void testChangeBalanceWholeValuesFail(){
         //change balance exceeds max
         //max == 0
-        assertFalse(testCreditAccount.changeBalance(-1, testFile));
+        assertFalse(testCreditAccount.changeBalance(-1));
     }   
 
     /**
@@ -102,7 +102,7 @@ public class CreditTest {
     public void testChangeBalanceDecimalValuePayOffCreditDebtPass(){
         //pay off debt on your credit 
         testCreditAccount.setBalance(-0.5);
-        assertTrue(testCreditAccount.changeBalance(0.5, testFile));
+        assertTrue(testCreditAccount.changeBalance(0.5));
     }  
 
     /**
@@ -112,7 +112,7 @@ public class CreditTest {
     public void testChangeBalanceDecimalValuePayOffCreditDebtFail(){
         //try to pay more than you owe
         //balance == 0
-        assertFalse(testCreditAccount.changeBalance(0.5, testFile));
+        assertFalse(testCreditAccount.changeBalance(0.5));
     } 
 
     /**
@@ -122,7 +122,7 @@ public class CreditTest {
     public void testChangeBalanceWholeValuePayOffCreditDebtPass(){
         //pay off debt on your credit 
         testCreditAccount.setBalance(-1);
-        assertTrue(testCreditAccount.changeBalance(1, testFile));
+        assertTrue(testCreditAccount.changeBalance(1));
     }  
 
 
@@ -133,6 +133,6 @@ public class CreditTest {
     public void testChangeBalanceWholeValuePayOffCreditDebtFail(){
         //try to pay more than you owe
         //balance == 0
-        assertFalse(testCreditAccount.changeBalance(1, testFile));
+        assertFalse(testCreditAccount.changeBalance(1));
     } 
 }

@@ -3,15 +3,11 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Scanner;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.time.LocalDate;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.util.Hashtable;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Random;
 
 
 
@@ -40,12 +36,12 @@ protected static Dictionary<Integer, Customer> IDList = new Hashtable<>();
 /** 
  * A flag indicating whether the customer wants to exit the application.
  */
-private static boolean exit = false; 
+public static boolean exit = false; 
 
 /** 
  * A flag indicating whether the customer wants to return to the main menu.
  */
-private static boolean mainMenu = false; 
+public static boolean mainMenu = false; 
 
 /** 
  * A flag indicating whether a customer's deposit was successful.
@@ -893,6 +889,5 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
         while(type.equals ("")) type = sc.nextLine();
         return type;
     }
-    
 }
 

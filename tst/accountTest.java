@@ -38,7 +38,7 @@ public class AccountTest {
     @Test
     public void testChangeBalanceNegativeInfinity(){
          //try a condition that should always fail
-        assertFalse(testAccount.changeBalance(Double.NEGATIVE_INFINITY, testFile));
+        assertFalse(testAccount.changeBalance(Double.NEGATIVE_INFINITY));
     }
 
     /**
@@ -47,7 +47,7 @@ public class AccountTest {
     @Test
     public void testChangeBalanceZero(){
        //try 0
-        assertTrue(testAccount.changeBalance(0, testFile));
+        assertTrue(testAccount.changeBalance(0));
     }   
     
     /**
@@ -57,7 +57,7 @@ public class AccountTest {
     public void testChangeBalanceDecimalValuesPass(){
         //try decimal values
         testAccount.setBalance(0.5);
-        assertTrue(testAccount.changeBalance(-0.5, testFile));
+        assertTrue(testAccount.changeBalance(-0.5));
     }   
     
     /**
@@ -67,7 +67,7 @@ public class AccountTest {
     public void testChangeBalanceDecimalValuesFail(){
         //try decimal values
         //balance == 0
-        assertFalse(testAccount.changeBalance(-0.5, testFile));
+        assertFalse(testAccount.changeBalance(-0.5));
     }    
     
     /**
@@ -77,7 +77,7 @@ public class AccountTest {
     public void testChangeBalanceWholeValuePass(){
         //try decimal values
         testAccount.setBalance(1);
-        assertTrue(testAccount.changeBalance(-1, testFile));
+        assertTrue(testAccount.changeBalance(-1));
     }    
 
     /**
@@ -87,7 +87,7 @@ public class AccountTest {
     public void testChangeBalanceWholeValueFail(){
         //try decimal values
         //balance == 0
-        assertFalse(testAccount.changeBalance(-1, testFile));
+        assertFalse(testAccount.changeBalance(-1));
     } 
 
     /**
@@ -96,7 +96,7 @@ public class AccountTest {
     @Test
     public void testChangeBalanceDeposit(){
         //try decimal values
-        assertTrue(testAccount.changeBalance(1, testFile));
+        assertTrue(testAccount.changeBalance(1));
     } 
 
     /**

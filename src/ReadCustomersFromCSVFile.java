@@ -141,7 +141,7 @@ public class ReadCustomersFromCSVFile implements FileUsage {
                 currentAccountHolder.setTransactions(transactions);
                 //Store Customer in Dictionary of Customers with the key as the ID
                 //wrote with the getter to be more readable
-                RunBank.IDList.put(currentAccountHolder.getID(), currentAccountHolder);
+                RunBank.IDList.put(currentAccountHolder.getId(), currentAccountHolder);
                 RunBank.accountList.put(checkingAccountNumber, currentAccountHolder);
                 RunBank.accountList.put(savingAccountNumber, currentAccountHolder);
                 RunBank.accountList.put(creditAccountNumber, currentAccountHolder);
