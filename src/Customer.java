@@ -151,13 +151,16 @@ public class Customer extends Person{
         switch (input.toLowerCase()){ //input could be account number, account type, action, or invalid
             case("e"):
             case("exit"):
+                sc.close();
                 return -1;
             case("m"):
             case("main menu"):
+                sc.close();
                 return -2;
             case("u"):
             case("user"):
             case("user menu"): //deal with the actions
+                sc.close();
                 return -3;
             case ("checking"):
             case ("saving"):
@@ -167,13 +170,19 @@ public class Customer extends Person{
             default: //not an action or account type, must be either an account number or invalid input
                 try {
                     String type = findAccountType(Integer.parseInt(input)); //if not an int, throw error
-                    if (type == null) throw new Exception(); //if int but not an account of this customer, throw error
+                    if (type == null) {//if int but not an account of this customer, throw error
+                        sc.close();
+                        throw new Exception();
+                    } 
+                    sc.close();
                     return getBalance(type); //is an account of this customer
                 } catch (Exception e) {
                     System.out.println("No such account found");
+                    sc.close();
                     return getBalance(); //try again or give the option to leave
                 }
         }  
+        sc.close();
         return 0;   
     }
     
