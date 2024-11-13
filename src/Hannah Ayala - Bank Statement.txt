@@ -1,0 +1,20 @@
+Date: 2024-11-12
+
+Customer Details:
+Name: Hannah Ayala
+Date of Birth: 10-11-2993
+Address: "124 streeet, el paso, tx 79928"
+Phone Number: 8923904
+
+Account Details:
+Checking (1102)
+Starting Balance: 0.0
+Ending/Current Balance: 0.0
+Saving (2102)
+Starting Balance: 0.0
+Ending/Current Balance: 0.0
+Credit (0)
+Starting Balance: 0.0
+Ending/Current Balance: 0.0
+
+All transactions: 

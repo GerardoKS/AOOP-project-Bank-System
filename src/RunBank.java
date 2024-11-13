@@ -641,9 +641,13 @@ private static boolean createUser(){
         String zip = verifyNewCustomerInput("zip code"); //get zip
         if (zip == null) return true; //exit or main menu
 
+        String fullAddress = "\"" + address + ", " + city + ", " + state + " " + zip + "\"";
+
         String phone = verifyNewCustomerInput("phone number"); //get phone number
         if (phone == null) return true; //exit or main menu
 
+        totalCustomers++;
+        
         //create user.
         Dictionary <String, Account> accounts = new Hashtable<>(); //create accounts
         Customer customer = new Customer();
@@ -657,25 +661,31 @@ private static boolean createUser(){
         accounts.put("saving", saving);
         accountList.put(accountNum, customer);
 
+        int creditScore = (int)(Math.random()* 440) +  380; 
+
         accountNum = totalCustomers + 2999;
-        Account credit = new Credit();
+        Credit credit = new Credit(accountNum, 0, customer, 0);
         accounts.put("credit", credit);
         accountList.put(accountNum, customer);
 
+        if(creditScore <= 580) credit.setMax((int) (Math.random()*600) + 100);
+        else if(creditScore<= 669) credit.setMax((int) (Math.random()*4300) + 700);
+        else if(creditScore<= 739) credit.setMax((int) (Math.random()*2500) + 5000);
+        else if(creditScore<= 799) credit.setMax((int) (Math.random()*8500) + 7500);
+        else credit.setMax((int) (Math.random()*9001) + 1600);
+        
 
         int id = totalCustomers;
-        totalCustomers++;
         String firstName = name.split(" ")[0];
         String lastName = name.split(" ")[1];
 
-        int creditScore = (int)(Math.random()* 440) +  380; 
 
         customer.setId(id);
         customer.setAccounts(accounts);
         customer.setFirstName(firstName);
         customer.setLastName(lastName);
         customer.setDOB(dob);
-        customer.setAddress(address);
+        customer.setAddress(fullAddress);
         customer.setPhoneNumber(phone);
         customer.setCreditScore(creditScore);
 
