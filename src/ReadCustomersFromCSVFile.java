@@ -10,15 +10,14 @@ import java.util.Random;
 
 /**
  * This class implements the FileUsage interface
- * The class takes an input filePath and reads the CSV file given. It then populateds the customerList and accountList which are used for quick look up during the program
+ * The class takes an input filePath and reads the CSV file given. It then populateds the customerList, accountList and IDList, which are used for quickly look up customers throughout the programs life span.
  * @author Gerardo Sillas
  */
 public class ReadCustomersFromCSVFile implements FileUsage {
       /**
      * In this method every input line read is converted into Customer with fully set attributes and Account attributes. They are then returned for use in the system
-     * The last dictionary is used as a way of sorting the list when you update the CSV file. CSV file can overwrite original but we decided not to just in case it is needed.
+     * The names list is used as a way of sorting the list when you update the CSV file. There are no returns since the varibales that would have been returned are static variables in the RunBank class taht are being refrenced in this method. 
      * @param filePath String that shows the location of the file. Put as a parameter for flexibility if needed in a future project.
-     * @return List<Map<?, Customer>> the list of all "Customer" objects fully constructed with all their information and their accounts created as well.The diffrent maps are for quickly looking up the customer based on their name or on their account number. The last dictionary is used for keeping track of the order for later use when updating the CSV file
      */
     public void Use(String filePath){
         Random random = new Random();
@@ -29,12 +28,13 @@ public class ReadCustomersFromCSVFile implements FileUsage {
             RunBank.titles = line;
             //Get the categories so you can set the attributes of the customer and accounts properly
             String[] categories = line.split(",");
-            //read each line until no more lines
+            //in case the ID is not given in the input CSV file
             int currentID = 1;
+            //read each line until no more lines
             while((line = br.readLine())!= null){
                 //split line by the commas and store in a String array
                 String[] customerData = line.split(",");
-                // Create customer and set all its attributes
+                // Create cutsomer and account objects and set the attibute account holder for each account
                 Customer currentAccountHolder = new Customer();
                 Account checkingAccount = new Checking();
                 checkingAccount.setAccountHolder(currentAccountHolder);
@@ -42,7 +42,7 @@ public class ReadCustomersFromCSVFile implements FileUsage {
                 savingAccount.setAccountHolder(currentAccountHolder);
                 Credit creditAccount = new Credit();
                 creditAccount.setAccountHolder(currentAccountHolder);
-
+                // set the account numbers if the account numbers were not given in the input CSV file
                 int checkingAccountNumber = 0;
                 int savingAccountNumber = 0;
                 int creditAccountNumber = 0;
@@ -52,8 +52,12 @@ public class ReadCustomersFromCSVFile implements FileUsage {
                 savingAccount.setAccountNumber(savingAccountNumber);
                 creditAccountNumber = currentID + 2999;
                 creditAccount.setAccountNumber(creditAccountNumber);
-
+                // set accountHolder ID in case it wasnt given in the input CSV
+                currentAccountHolder.setId(currentID);
+                currentID++;
+                // current index to get the value in the customerData array to set the attributes
                 int customerDataCurrentIndex = 0;
+                // iterate through the categories and the customerData arrays to set the attributes
                 for(String category: categories){
                     switch (category){
                         case "Identification Number":
@@ -125,8 +129,7 @@ public class ReadCustomersFromCSVFile implements FileUsage {
                     }
                     customerDataCurrentIndex++;
                 }
-                currentAccountHolder.setId(currentID);
-                currentID++;
+                // create array of accounts to set the attribute in the customer object
                 Dictionary<String,Account> accounts = new Hashtable<>();
                 accounts.put("checking", checkingAccount);
                 accounts.put("saving", savingAccount);
@@ -139,12 +142,19 @@ public class ReadCustomersFromCSVFile implements FileUsage {
                 transactions.setInformation(currentAccountHolder);
                 //put the Transaction object in the customer object
                 currentAccountHolder.setTransactions(transactions);
+<<<<<<< HEAD
                 //Store Customer in Dictionary of Customers with the key as the ID
                 //wrote with the getter to be more readable
                 RunBank.IDList.put(currentAccountHolder.getId(), currentAccountHolder);
+=======
+                //Store Customer in a Dictionary of Customers with the key as the ID
+                RunBank.IDList.put(currentAccountHolder.getID(), currentAccountHolder);
+                // Strore the customers in a Dictionary of Customers with the key as the account numbers of the their 3 accounts
+>>>>>>> e811ae4693822020eb2019ae89bd5a5e8061c19d
                 RunBank.accountList.put(checkingAccountNumber, currentAccountHolder);
                 RunBank.accountList.put(savingAccountNumber, currentAccountHolder);
                 RunBank.accountList.put(creditAccountNumber, currentAccountHolder);
+                // Store the customers int a Dictioanry of Customers with the key as their name
                 RunBank.customerList.put(currentAccountHolder.getName(),currentAccountHolder);
                 //create a list storing all the names so that when you update your CSV file you can keep the order
                 RunBank.names.add(currentAccountHolder.getName());
