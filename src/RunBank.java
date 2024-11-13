@@ -428,8 +428,21 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      * @throws NullPointerException if a customer's account information is missing.
      */
     private static boolean generateStatement(){
-        String name = getCustomer();
-        if (name == null) return true;
+        System.out.println("(A) for creating bank statment based on name\n(B) for creating bank statement based on id");
+        String option = sc.next();
+        while (option.equals("")) option = sc.next();
+        option = option.toLowerCase();
+
+        String name;
+        if (option.equals("b")){
+            System.out.println("Please input the id of the user");
+            int id = sc.nextInt();
+            name = IDList.get(id).getName();
+        }
+        else{
+            name = getCustomer();
+            if (name == null) return true;
+        }
 
         Logger statement = Logger.getInstance();
         statement.setUp(name + " - Bank Statement"); //set up the file for the user
