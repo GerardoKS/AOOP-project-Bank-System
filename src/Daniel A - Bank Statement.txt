@@ -1,21 +1,21 @@
-Date: 2024-11-11
+Date: 2024-11-12
+
 Customer Details:
 Name: Daniel A
 Date of Birth: 5-Mar-39
 Address: "500 W. University Ave, El Paso, TX 79968"
 Phone Number: (915) 747-5042
-Account Details:
 
-Checking(1078)
+Account Details:
+Checking (1078)
 Starting Balance: 857.56
-Ending/Current Balance: 897.56
-Saving(2078)
+Ending/Current Balance: 857.56
+Saving (2078)
 Starting Balance: 3364.79
 Ending/Current Balance: 3364.79
-Credit(3078)
+Credit (3078)
 Starting Balance: -786.93
 Ending/Current Balance: -786.93
+
 All transactions: 
 Daniel A displayed balance 1078 account
-(Derek Aguirre paid 40.0 from checking account to Daniel A's checking account)
-Daniel A Deposited 40.0 into 1078 account

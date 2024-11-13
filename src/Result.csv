@@ -1,6 +1,6 @@
 Identification Number,First Name,Last Name,Date of Birth,Address,Phone Number,Checking Account Number,Checking Starting Balance,Savings Account Number,Savings Starting Balance,Credit Account Number,Credit Max,Credit Starting Balance
-1,Daniel,A,5-Mar-39,"500 W. University Ave, El Paso, TX 79968",(915) 747-5042,1078,897.56,2078,3364.79,3078,7985.0,-786.93
-2,Derek,Aguirre,5-May-41,"500 W. University Ave, El Paso, TX 79968",(915) 747-5012,1048,1805.56,2048,3352.49,3048,8899.0,-58.57
+1,Daniel,A,5-Mar-39,"500 W. University Ave, El Paso, TX 79968",(915) 747-5042,1078,857.56,2078,3364.79,3078,7985.0,-786.93
+2,Derek,Aguirre,5-May-41,"500 W. University Ave, El Paso, TX 79968",(915) 747-5012,1048,1845.56,2048,3352.49,3048,8899.0,-58.57
 3,Jafar,Aladdin,20-Jan-83,"1313 Disneyland Dr, Anaheim, CA 92802",(714) 781-4636,1017,518.07,2017,2220.54,3017,3029.0,-406.48
 4,Nathan,Aun,6-Aug-94,"500 W. University Ave, El Paso, TX 79968",(915) 747-5039,1075,1352.3,2075,132.29,3075,8789.0,-1240.71
 5,Alex,Avila,19-Oct-65,"500 W. University Ave, El Paso, TX 79968",(915) 747-5001,1037,85.09,2037,516.33,3037,3484.0,-1827.58
@@ -102,3 +102,4 @@ Identification Number,First Name,Last Name,Date of Birth,Address,Phone Number,Ch
 101,Daniel,Y,12-Mar-84,"500 W. University Ave, El Paso, TX 79968",(915) 747-5065,1101,738.93,2101,3810.87,3101,6534.0,-199.91
 102,Daniel,Z,9-Aug-56,"500 W. University Ave, El Paso, TX 79968",(915) 747-5066,1102,1825.29,2102,4635.0,3102,5697.0,-649.08
 103,Arae,Zarzosa,20-Sep-14,"500 W. University Ave, El Paso, TX 79968",(915) 747-5006,1042,1994.56,2042,4248.79,3042,8629.0,-268.92
+103,Hannah,Ayala,10/28/3045,123 steret,80324980,1102,0.0,2102,0.0,0,0.0,0.0

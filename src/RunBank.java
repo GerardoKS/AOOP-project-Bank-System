@@ -623,8 +623,6 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
 private static boolean createUser(){
         System.out.println("You will be prompted on the information needed to create a new user");
 
-
-        // FIX CHECK IF IT SHOULD RETURN TRUE OR FALSE IF THE USER INPUTS EXIT OR MAIN MENU
         String name = verifyNewCustomerInput("name"); //get name
         if (name == null) return true; //exit or main menu
 
@@ -649,17 +647,17 @@ private static boolean createUser(){
         //create user.
         Dictionary <String, Account> accounts = new Hashtable<>(); //create accounts
         Customer customer = new Customer();
-        int accountNum = generateAccountNumber();
+        int accountNum = totalCustomers + 999;
         Account checking = new Checking(accountNum, 0, customer);
         accounts.put("checking", checking);
         accountList.put(accountNum, customer);
 
-        accountNum = generateAccountNumber();
+        accountNum = totalCustomers + 1999;
         Account saving = new Saving(accountNum, 0, customer);
         accounts.put("saving", saving);
         accountList.put(accountNum, customer);
 
-        accountNum = generateAccountNumber();
+        accountNum = totalCustomers + 2999;
         Account credit = new Credit();
         accounts.put("credit", credit);
         accountList.put(accountNum, customer);
@@ -669,7 +667,8 @@ private static boolean createUser(){
         totalCustomers++;
         String firstName = name.split(" ")[0];
         String lastName = name.split(" ")[1];
-        int creditScore = (int)(Math.random()* 420) +  380; 
+
+        int creditScore = (int)(Math.random()* 440) +  380; 
 
         customer.setId(id);
         customer.setAccounts(accounts);
@@ -681,6 +680,7 @@ private static boolean createUser(){
         customer.setCreditScore(creditScore);
 
         customerList.put(name, customer);
+        names.add(name);
         
         return true;
     }
