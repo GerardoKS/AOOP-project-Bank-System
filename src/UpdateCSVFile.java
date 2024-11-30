@@ -17,8 +17,9 @@ public class UpdateCSVFile implements FileUsage{
      * We decided to create a seperate file path for the updated CSV file rather than overwriting the original. If needed the file path can be changed to the original file so that the updates end up there. 
      * @param List<Dictionary<?,Customer>> list of Customers that are going to have there attributes and account attributes convereted into strings and updated in the CSV file
      * @param filePath to increase flexibility, filePath added incase needed again for future project
+     * @throws CSVException 
      */
-    public void Use(String filePath){
+    public void Use(String filePath) throws CSVException{
         //try to update CSV
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))){
             //write the titles before the data
@@ -96,8 +97,8 @@ public class UpdateCSVFile implements FileUsage{
             }
         }
         //catch if update fails
-        catch(IOException ex){
-            ex.printStackTrace();
+        catch(IOException e0){
+            throw new CSVException("Reading the CSV File failed", e0);
         }
     }
 
