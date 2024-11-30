@@ -1,4 +1,5 @@
 package src;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Scanner;
@@ -74,7 +75,7 @@ private static boolean successU = true;
 private static Scanner sc = new Scanner(System.in);
 
 /**
- * List of names to maintain the order of the users, so that when the updatingCSVFile method is invoked, it can update the CSV file based on the order they were read
+ * List of names to maintain the order of the users, so that when the updatingCSVFile method  is invoked, it can update the CSV file based on the order they were read
  */
 protected static List<String> names = new ArrayList<>();
 	
@@ -118,9 +119,20 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      */
     public static void main(String args[]){
         //declare file location (file path)
-        String filePath = "./resources/CS 3331 - Bank Users.csv";
+        String filePath =  "./src/resources/CS 3331 - Bank Users.csv";
         //read CSV file and create a list of "Customer"s from the entreis in the file
+        try{
         readCustomersFromCSVFile.Use(filePath);
+        }catch(CSVException readCSVFileException){
+            System.out.println(readCSVFileException.getMessage());
+            if(readCSVFileException.getCause() != null){
+                System.out.println("Would you like to trace the error? Y/N");
+                String response = sc.nextLine();
+                if(response.equals("Y") || response.equals("Yes") || response.equals("yes") || response.equals("YES")){
+                    readCSVFileException.printStackTrace();
+                }
+            }
+        }
         totalCustomers = names.size();
         //get the log ready for input
         log.setUp("log");
@@ -133,11 +145,22 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
         System.out.println("Thank you for choosing us!");
         //ends
 
-        filePath = "./Result.csv";
+        filePath = "./src/resources/Result.csv";
         //Update the CSV with any changes made the to the list of "Customer"s
-        updateCSVFile.Use(filePath);
+        try{
+            updateCSVFile.Use(filePath);
+    
+        }catch(CSVException updateCSVFileException){
+            System.out.println(updateCSVFileException.getMessage());
+            if(updateCSVFileException.getCause() != null){
+                System.out.println("Would you like to trace the error? Y/N");
+                String response = sc.nextLine();
+                if(response.equals("Y") || response.equals("Yes") || response.equals("yes") || response.equals("YES")){
+                    updateCSVFileException.printStackTrace();
+                }
+            }
+        }
     }
-
     /** 
      * Displays the main menu for the banking application, allowing access 
      * based on the type of user (manager or regular customer). It manages 

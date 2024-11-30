@@ -14,12 +14,13 @@ import java.util.Random;
  * @author Gerardo Sillas
  */
 public class ReadCustomersFromCSVFile implements FileUsage {
-      /**
+    /**
      * In this method every input line read is converted into Customer with fully set attributes and Account attributes. They are then returned for use in the system
      * The names list is used as a way of sorting the list when you update the CSV file. There are no returns since the varibales that would have been returned are static variables in the RunBank class taht are being refrenced in this method. 
      * @param filePath String that shows the location of the file. Put as a parameter for flexibility if needed in a future project.
+     * @throws CSVException  Exception thrown if Reading the file creates an error
      */
-    public void Use(String filePath){
+    public void Use(String filePath) throws CSVException{
         Random random = new Random();
         String line;
         //try to read CSV file
@@ -155,8 +156,11 @@ public class ReadCustomersFromCSVFile implements FileUsage {
             }
         }
         //catch if reading failed
-        catch(IOException e){
-            e.printStackTrace();
+        catch(IOException IOEXCEPTION){
+            throw new CSVException("Reading the CSV File failed", IOEXCEPTION);
+        }
+        catch(NullPointerException NULLPOINTEXCEPTION){
+            throw new CSVException("File path was NULL!", null);
         }
     }
 }
