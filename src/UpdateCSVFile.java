@@ -18,7 +18,9 @@ public class UpdateCSVFile implements FileUsage{
      * @param List<Dictionary<?,Customer>> list of Customers that are going to have there attributes and account attributes convereted into strings and updated in the CSV file
      * @param filePath to increase flexibility, filePath added incase needed again for future project
      * @throws CSVException 
+     * @throws CSVException 
      */
+    public void Use(String filePath) throws CSVException{
     public void Use(String filePath) throws CSVException{
         //try to update CSV
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))){
