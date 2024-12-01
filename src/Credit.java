@@ -65,7 +65,7 @@ package src;
      * @return boolean that tells if the sum of balance and amount will exceeed the max
      */
     public boolean canWithdraw(double amount){
-        if((balance + amount) < (max*-1)){
+        if((balance + amount) < (max*-1) || lock){
             return false;
         }
         return true;
@@ -76,7 +76,7 @@ package src;
     * @return boolean to show if the amount was less than equal to what was owed
     */
     public boolean canDeposit(double amount){
-        if((balance + amount) <= 0 && (balance + amount) >= (max*-1)){
+        if((balance + amount) <= 0 && (balance + amount) >= (max*-1) ||lock ){
             return true;
         }
         return false;
