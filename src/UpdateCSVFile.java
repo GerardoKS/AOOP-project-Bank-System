@@ -1,158 +1,99 @@
 package src;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.Random;
 
 
 /**
- * This class implements the FileUsage interface
- * The class takes an input filePath and reads the CSV file given. It then populateds the customerList, accountList and IDList, which are used for quickly look up customers throughout the programs life span.
- * @author Gerardo Sillas
+ * this file implements the FileUsage interface
+ * this fille takes an filePath as input and writes down/ updates the file with the updated current information of each customer
+ * the format is dependent on the format of the input CSV file
+ * @autor Gerardo Sillas
  */
-public class ReadCustomersFromCSVFile implements FileUsage {
+public class UpdateCSVFile implements FileUsage{
     /**
-     * In this method every input line read is converted into Customer with fully set attributes and Account attributes. They are then returned for use in the system
-     * The names list is used as a way of sorting the list when you update the CSV file. There are no returns since the varibales that would have been returned are static variables in the RunBank class taht are being refrenced in this method. 
-     * @param filePath String that shows the location of the file. Put as a parameter for flexibility if needed in a future project.
-     * @throws CSVException  Exception thrown if Reading the file creates an error
+     * Update the CSV File with the new entries and any altered entry that happened throughout the life cycle of the program. 
+     * We decided to create a seperate file path for the updated CSV file rather than overwriting the original. If needed the file path can be changed to the original file so that the updates end up there. 
+     * @param List<Dictionary<?,Customer>> list of Customers that are going to have there attributes and account attributes convereted into strings and updated in the CSV file
+     * @param filePath to increase flexibility, filePath added incase needed again for future project
+     * @throws CSVException  Exception thrown if Updating the file creates an error
      */
     public void Use(String filePath) throws CSVException{
-        Random random = new Random();
-        String line;
-        //try to read CSV file
-        try(BufferedReader br = new BufferedReader(new FileReader(filePath))){
-            line = br.readLine();
-            RunBank.titles = line;
-            //Get the categories so you can set the attributes of the customer and accounts properly
-            String[] categories = line.split(",");
-            //in case the ID is not given in the input CSV file
-            int currentID = 1;
-            //read each line until no more lines
-            while((line = br.readLine())!= null){
-                //split line by the commas and store in a String array
-                String[] customerData = line.split(",");
-                // Create cutsomer and account objects and set the attibute account holder for each account
-                Customer currentAccountHolder = new Customer();
-                Account checkingAccount = new Checking();
-                checkingAccount.setAccountHolder(currentAccountHolder);
-                Account savingAccount = new Saving();
-                savingAccount.setAccountHolder(currentAccountHolder);
-                Credit creditAccount = new Credit();
-                creditAccount.setAccountHolder(currentAccountHolder);
-                // set the account numbers if the account numbers were not given in the input CSV file
-                int checkingAccountNumber = 0;
-                int savingAccountNumber = 0;
-                int creditAccountNumber = 0;
-                checkingAccountNumber = currentID + 999;
-                checkingAccount.setAccountNumber(checkingAccountNumber);
-                savingAccountNumber = currentID + 1999;
-                savingAccount.setAccountNumber(savingAccountNumber);
-                creditAccountNumber = currentID + 2999;
-                creditAccount.setAccountNumber(creditAccountNumber);
-                // set accountHolder ID in case it wasnt given in the input CSV
-                currentAccountHolder.setId(currentID);
-                currentID++;
-                // current index to get the value in the customerData array to set the attributes
-                int customerDataCurrentIndex = 0;
-                // iterate through the categories and the customerData arrays to set the attributes
-                for(String category: categories){
+        //try to update CSV
+        try(BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))){
+            //write the titles before the data
+            writer.write(RunBank.titles);
+            writer.newLine();
+            //Update each customer one by one
+            //iterate through every customer and write their data in the CSV
+            String[] categories = RunBank.titles.split(",");
+            for(String name : RunBank.names){
+                Customer currentAccountHolder = RunBank.customerList.get(name);
+                Account checkingAccount = currentAccountHolder.getAccounts().get("checking");
+                Account savingAccount = currentAccountHolder.getAccounts().get("saving");
+                Credit creditAccount = (Credit) currentAccountHolder.getAccounts().get("credit");
+                boolean addComma = false;
+                for(String category : categories){
+                    if(addComma)
+                        writer.write(",");
+                    else
+                        addComma = true;
                     switch (category){
                         case "Identification Number":
-                            currentAccountHolder.setId(Integer.parseInt(customerData[customerDataCurrentIndex]));
-
+                            writer.write(Integer.toString(currentAccountHolder.getId()));
+                            break;
+                        
                         case "First Name":
-                            currentAccountHolder.setFirstName(customerData[customerDataCurrentIndex]);
+                            writer.write(currentAccountHolder.getFirstName());
                             break;
                         case "Last Name":
-                            currentAccountHolder.setLastName(customerData[customerDataCurrentIndex]);
+                            writer.write(currentAccountHolder.getLastName());
                             break;
                         case "Date of Birth":
-                            currentAccountHolder.setDOB(customerData[customerDataCurrentIndex]);
+                            writer.write(currentAccountHolder.getDOB());
                             break;
                         case "Address":
-                            currentAccountHolder.setAddress(customerData[customerDataCurrentIndex]+","+customerData[customerDataCurrentIndex+ 1]+","+ customerData[customerDataCurrentIndex+2]);
-                            customerDataCurrentIndex += 2;
+                            writer.write(currentAccountHolder.getAddress());
                             break;
                         case "Phone Number":
-                            currentAccountHolder.setPhoneNumber(customerData[customerDataCurrentIndex]);
+                            writer.write(currentAccountHolder.getPhoneNumber());
                             break;
 
                         case "Checking Account Number":
-                            checkingAccountNumber = Integer.parseInt(customerData[customerDataCurrentIndex]);
-                            checkingAccount.setAccountNumber(checkingAccountNumber);
+                            writer.write(Integer.toString(checkingAccount.getAccountNumber()));
                             break;
 
                         case "Checking Starting Balance":
-                            checkingAccount.setBalance(Double.parseDouble(customerData[customerDataCurrentIndex]));
+                            writer.write(Double.toString(checkingAccount.getBalance()));
                             break;
 
                         case "Savings Account Number":
-                            savingAccountNumber = Integer.parseInt(customerData[customerDataCurrentIndex]);
-                            savingAccount.setAccountNumber(savingAccountNumber);
+                            writer.write(Integer.toString(savingAccount.getAccountNumber()));
                             break;
 
                         case "Savings Starting Balance":
-                            savingAccount.setBalance(Double.parseDouble(customerData[customerDataCurrentIndex]));
+                            writer.write(Double.toString(savingAccount.getBalance()));
                             break;
 
                         case "Credit Account Number":
-                            creditAccountNumber = Integer.parseInt(customerData[customerDataCurrentIndex]);
-                            creditAccount.setAccountNumber(creditAccountNumber);
+                            writer.write(Integer.toString(creditAccount.getAccountNumber()));
                             break;
 
                         case "Credit Max":
-                            creditAccount.setMax(Double.parseDouble(customerData[customerDataCurrentIndex]));
+                            writer.write(Double.toString(creditAccount.getMax()));
                             break;
 
                         case "Credit Starting Balance":
-                            creditAccount.setBalance(Double.parseDouble(customerData[customerDataCurrentIndex]));
+                            writer.write(Double.toString(creditAccount.getBalance()));
                             break;
 
                         case "Credit Score":
-                            int creditScore = Integer.parseInt(customerData[customerDataCurrentIndex]);
-                            currentAccountHolder.setCreditScore(creditScore);
-                            if(creditScore <= 580)
-                                creditAccount.setMax(random.nextDouble() + random.nextInt(599) + 100);
-                            else if(581<= creditScore && creditScore<= 669)
-                                creditAccount.setMax(random.nextDouble() + random.nextInt(4299) + 700);
-                            else if(670<= creditScore && creditScore<= 739)
-                                creditAccount.setMax(random.nextDouble() + random.nextInt(2499) + 5000);
-                            else if(740<= creditScore && creditScore<= 799)
-                                creditAccount.setMax(random.nextDouble() + random.nextInt(8499) + 7500);
-                            else
-                                creditAccount.setMax(random.nextDouble() + random.nextInt(9000) + 16000);
+                            writer.write(Integer.toString(currentAccountHolder.getCreditScore()));
                             break;
-                                
-                    }
-                    customerDataCurrentIndex++;
+                    }  
                 }
-                // create array of accounts to set the attribute in the customer object
-                Dictionary<String,Account> accounts = new Hashtable<>();
-                accounts.put("checking", checkingAccount);
-                accounts.put("saving", savingAccount);
-                accounts.put("credit", creditAccount);
-                //put accoounts in the Customers accounts Dictionary
-                currentAccountHolder.setAccounts(accounts);
-                //create the object that will store the transactions
-                Transaction transactions = new Transaction();
-                //set the information in the Transaction object, informaiton is retrieved from object
-                transactions.setInformation(currentAccountHolder);
-                //put the Transaction object in the customer object
-                currentAccountHolder.setTransactions(transactions);
-                //Store Customer in a Dictionary of Customers with the key as the ID
-                RunBank.IDList.put(currentAccountHolder.getId(), currentAccountHolder);
-                // Strore the customers in a Dictionary of Customers with the key as the account numbers of the their 3 accounts
-                RunBank.accountList.put(checkingAccountNumber, currentAccountHolder);
-                RunBank.accountList.put(savingAccountNumber, currentAccountHolder);
-                RunBank.accountList.put(creditAccountNumber, currentAccountHolder);
-                // Store the customers int a Dictioanry of Customers with the key as their name
-                RunBank.customerList.put(currentAccountHolder.getName(),currentAccountHolder);
-                //create a list storing all the names so that when you update your CSV file you can keep the order
-                RunBank.names.add(currentAccountHolder.getName());
+                writer.newLine();
             }
         }
         //catch if reading failed
@@ -163,4 +104,5 @@ public class ReadCustomersFromCSVFile implements FileUsage {
             throw new CSVException("File path was NULL!", null);
         }
     }
+
 }
