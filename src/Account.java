@@ -18,6 +18,10 @@ public class Account{
      * lock is a new feature to lock your account
      */
     protected boolean lock = false;
+    /**
+     * lock is a new feature to lock your account
+     */
+    protected boolean lock = false;
 
  
     public Account(){}
@@ -112,6 +116,7 @@ public class Account{
     public boolean canWithdraw(double amount){
         double checkIfValidBalance = balance + amount;
         if(checkIfValidBalance < 0 || lock){
+        if(checkIfValidBalance < 0 || lock){
             return false;
         }
         return true;
@@ -120,6 +125,9 @@ public class Account{
      * The Deposit should always be true for this method since you dont have a max amount of money you can have
      */
     public boolean canDeposit(double amount){
+        if(lock){
+            return false;
+        }
         if(lock){
             return false;
         }
