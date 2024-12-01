@@ -18,6 +18,7 @@ public class Customer extends Person{
     private int id;
     private int creditScore;
     private Transaction transactions;
+    private int password;
 
     /**
      * Default constructor for the Customer class.
@@ -39,11 +40,12 @@ public class Customer extends Person{
      * @param address The customer's address.
      * @param phone The customer's phone number.
      */
-    public Customer(Dictionary <String, Account> accounts, int id, String firstName, String lastName, String dob, String address, String phone, int creditScore){
+    public Customer(Dictionary <String, Account> accounts, int id, String firstName, String lastName, String dob, String address, String phone, int creditScore, int password){
         super(firstName, lastName, dob, address, phone);
         this.accounts = accounts;
         this.id = id;
         this.creditScore = creditScore;
+        this.password = password;
     }
 
     /**
@@ -83,6 +85,15 @@ public class Customer extends Person{
     }
 
     /**
+     * Sets the customer's password.
+     * 
+     * @param password The password for the customer.
+     */
+    public void setPassword(int password){
+        this.password = password;
+    }
+
+    /**
      * Returns the customer's accounts.
      * 
      * @return A dictionary of the customer's accounts.
@@ -98,6 +109,16 @@ public class Customer extends Person{
      */
     public int getId(){
         return id;
+    }
+
+
+    /**
+     * Returns the customer's password.
+     * 
+     * @return The password of the customer.
+     */
+    public int getPassword(){
+        return password;
     }
 
     

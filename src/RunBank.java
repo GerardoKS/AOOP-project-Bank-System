@@ -182,6 +182,36 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
                     System.out.println("You have chosen regular user.");
                     mainMenu = false;
                     String customerName = getCustomer(); //will get name of customer and validate it
+                    if (customerName != null){
+                        boolean check = true;
+                        while(check){
+                            System.out.println("Please enter the password related to " + customerName  + " (main menu (m) or exit (e))");
+                            String input = sc.next();
+                            while (input.equals("")) input = sc.next();
+                            switch (input.toLowerCase()){
+                                case "exit":
+                                case "e":
+                                    mainMenu = true;
+                                    exit = true;
+                                    check = false;
+                                    break;
+                                case "m":
+                                case "main menu":
+                                case "main":
+                                    mainMenu = true;
+                                    check = false;
+                                    break;
+                            }
+                            int password;
+                            try{
+                                password = Integer.parseInt(input);
+                                if (password != customerList.get(customerName).getPassword()) throw new Exception();
+                                check = false;
+                            }catch (Exception e){
+                                System.out.println("Incorrect password, try again");
+                            }
+                        }
+                    } 
                     while (!mainMenu && !exit){ //while they do not choose to go back to the main menu
                         userMenu(customerName); //provide the user with transaction options
                     }
