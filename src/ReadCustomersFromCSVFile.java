@@ -63,6 +63,8 @@ public class ReadCustomersFromCSVFile implements FileUsage {
                     switch (category){
                         case "Identification Number":
                             currentAccountHolder.setId(Integer.parseInt(customerData[customerDataCurrentIndex]));
+                            //customer password is going to be their id
+                            currentAccountHolder.setPassword(Integer.parseInt(customerData[customerDataCurrentIndex]));
 
                         case "First Name":
                             currentAccountHolder.setFirstName(customerData[customerDataCurrentIndex]);
