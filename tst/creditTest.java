@@ -135,4 +135,17 @@ public class CreditTest {
         //balance == 0
         assertFalse(testCreditAccount.changeBalance(1));
     } 
+
+
+    @Test
+    public void testWithdrawFalse(){
+        testCreditAccount.setMax(0);
+        assertFalse(testCreditAccount.canWithdraw(-1));
+    }
+ 
+    @Test
+    public void testWithdrawTrue(){
+        testCreditAccount.setBalance(1);
+        assertTrue(testCreditAccount.canWithdraw(1));
+    }
 }

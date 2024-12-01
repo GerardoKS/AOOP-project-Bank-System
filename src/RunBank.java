@@ -743,7 +743,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
         String name = verifyNewCustomerInput("name"); //get name
         if (name == null) return true; //exit or main menu
 
-        String dob = verifyNewCustomerInput("date of birth"); //get dob
+        String dob = verifyNewCustomerInput("dob"); //get dob
         if (dob == null) return true; //exit or main menu
 
         String address = verifyNewCustomerInput("address"); //get address
@@ -755,12 +755,12 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
         String state = verifyNewCustomerInput("state"); //get state
         if (state == null) return true; //exit or main menu
 
-        String zip = verifyNewCustomerInput("zip code"); //get zip
+        String zip = verifyNewCustomerInput("zip"); //get zip
         if (zip == null) return true; //exit or main menu
 
         String fullAddress = "\"" + address + ", " + city + ", " + state + " " + zip + "\"";
 
-        String phone = verifyNewCustomerInput("phone number"); //get phone number
+        String phone = verifyNewCustomerInput("phone"); //get phone number
         if (phone == null) return true; //exit or main menu
 
         totalCustomers++;
@@ -836,9 +836,71 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
                 case("main menu"): //action
                     mainMenu = true;
                     return null;
+
+                case "name":
+                    // Validate name format (first and last name with letters and optional space between)
+                    if (input.matches("[A-Za-z]+(\\s[A-Za-z]+)*")) {
+                        return input; // Valid name format (e.g., "John Doe")
+                    } else {
+                        System.out.println("Invalid name format. Please enter a valid name.");
+                    }
+                    break;
+
+                case "dob":
+                    // format = 05-Mar-1990
+                    if (input.matches("\\d{2}-[A-Za-z]{3}-\\d{4}")) {
+                        return input; // Valid DOB format
+                    } else {
+                        System.out.println("Invalid date of birth format. Please use dd-MMM-yyyy (e.g., 05-Mar-1990).");
+                    }
+                    break;
+
+                case "address":
+                    if (input.matches("\\d+\\s+\\w+(\\s\\w+)*")) {
+                        return input; // Valid street address
+                    } else {
+                        System.out.println("Invalid street address format. Please try again.");
+                    }
+                    break;
+
+                case "city":
+                    if (input.matches("[A-Za-z]+(\\s[A-Za-z]+)*")) {
+                        return input; // Valid city
+                    } else {
+                        System.out.println("Invalid city format. Please try again.");
+                    }
+                    break;
+
+                case "state":
+                    if (input.matches("[A-Z]{2}")) {
+                        return input; // Valid state
+                    } else {
+                        System.out.println("Invalid state format. Please enter a two-letter state abbreviation.");
+                    }
+                    break;
+
+                case "zip":
+                    if (input.matches("\\d{5}(-\\d{4})?")) {
+                        return input; // Valid ZIP code
+                    } else {
+                        System.out.println("Invalid ZIP code format. Please try again.");
+                    }
+                    break;
+
+                case "phone":
+                    if (input.matches("\\(\\d{3}\\) \\d{3}-\\d{4}")) {
+                        return input; // Valid phone number
+                    } else {
+                        System.out.println("Invalid phone number format. Please try again.");
+                    }
+                    break;
+
+                default:
+                    System.out.println("Unknown input type. Please try again.");
+                    break;
             }
         }
-        return input; //else return input
+        return null;
     }
 
     /**
