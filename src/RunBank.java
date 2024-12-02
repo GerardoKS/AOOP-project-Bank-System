@@ -163,6 +163,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
     }
     /** 
      * Displays the main menu for the banking application, allowing access 
+     * 
      * based on the type of user (manager or regular customer). It manages 
      * the flow of the application, directing users to the appropriate menu 
      * options based on their selection.
@@ -231,7 +232,9 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
         exit = false;
         mainMenu = false; 
         boolean managerMenu = false; //reset flags
-        System.out.println("\nPlease input what transaction you would like to do.\nInquire by name (a)\nInquire by account number: (b)\nGenerate Bank Statement (g)\nPerform Transactions (t)\n(exit (e) or main menu (m))"); //options
+        String name;
+        boolean loop;
+        System.out.println("\nPlease input what transaction you would like to do.\nInquire by name (a)\nInquire by account number: (b)\nGenerate Bank Statement (g)\nPerform Transactions (t)\nLock (l) /Unlock an Account (u)\n(exit (e) or main menu (m))"); //options
         String option = sc.nextLine();
         while(option.equals("")) option = sc.nextLine();
         switch (option.toLowerCase()){ //based on option
@@ -277,6 +280,47 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
                 TransactionsAccess managerAccess = new TransactionsAccessProxy("Manager"); //proxy for the transactions file
                 managerAccess.performConfidentialTransactions();
                 break;
+            case("l"):
+            case("lock"):
+                name = getCustomer();
+                loop = true;
+                while (loop){
+                    System.out.println("Please input the type of the account you wish to lock for customer " + name);
+                    String type = sc.next();
+                    switch (type.toLowerCase()){
+                        case("checking"):
+                        case("saving"):
+                        case("credit"):
+                            customerList.get(name).getAccounts().get(type).lockAccount();
+                            System.out.println("Account of type " + type + " is now locked for customer " + name);
+                            loop = false;
+                            break;
+                        default:
+                            System.out.println("Input type incorrect, please input checking, saving, or credit");
+                    }
+                }
+                break;
+            case("u"):
+            case("unlock"):
+                name = getCustomer();
+                loop = true;
+                while (loop){
+                    System.out.println("Please input the type of the account you wish to unlock for customer " + name);
+                    String type = sc.next();
+                    switch (type.toLowerCase()){
+                        case("checking"):
+                        case("saving"):
+                        case("credit"):
+                            customerList.get(name).getAccounts().get(type).unlockAccount();
+                            System.out.println("Account of type " + type + " is now unlocked for customer " + name);
+                            loop = false;
+                            break;
+                        default:
+                            System.out.println("Input type incorrect, please input checking, saving, or credit");
+                    }
+                }
+                break;
+                
             case("e"):
             case("exit"): //actions
                 mainMenu = true;
@@ -293,31 +337,6 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
         }
     }
 
-
-    /**
-     * Processes transactions for multiple customers from a CSV file.
-     * This method reads each line of the specified CSV file, parses the transaction
-     * details, and performs the appropriate action (e.g., transfers, deposits, withdrawals).
-     *
-     * @param filePath the path to the CSV file containing transaction data
-     * 
-     * The CSV file is expected to have the following format for each line:
-     * "fromFirstName,fromLastName,fromAccount,action,toFirstName,toLastName,toAccount,amount".
-     * The method reads these details, then performs the action based on the "action" field:
-     * - "pays" or "transfers": Transfers funds between accounts
-     * - "inquires": Checks the balance for a customer's account
-     * - "withdraws": Withdraws an amount from a customer's account
-     * - "deposits": Deposits an amount into a customer's account
-     * 
-     * The method uses helper methods and accesses `customerList` to perform actions.
-     *
-     * @throws IOException if there is an issue reading the file
-     * @throws NumberFormatException if the amount in the CSV is not a valid number
-     * @throws NullPointerException if a customer or account is not found in `customerList`
-     */
-    private static void managerTransactions(String filePath){
-        
-    }
 
     /**
      * Displays the user menu for the banking application, allowing 
@@ -380,6 +399,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
             case("transactions"):
             case("user transactions"):
                 generateStatementHelper(customerName);
+                break;
             case("l"):
             case("logout"):
             case("m"):
