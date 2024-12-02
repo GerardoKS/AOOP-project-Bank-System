@@ -811,6 +811,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
         customer.setAddress(fullAddress);
         customer.setPhoneNumber(phone);
         customer.setCreditScore(creditScore);
+        customer.setPassword(id);
         //add customer to corresponding lists
         customerList.put(name, customer);
         names.add(name);
