@@ -119,7 +119,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      */
     public static void main(String args[]){
         //declare file location (file path)
-        String filePath =  "resources/CS 3331 - Bank Users.csv";
+        String filePath =  "./src/resources/CS 3331 - Bank Users.csv";
         //read CSV file and create a list of "Customer"s from the entreis in the file
         try{
         readCustomersFromCSVFile.Use(filePath);
@@ -145,7 +145,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
         System.out.println("Thank you for choosing us!");
         //ends
 
-        filePath = "resources/Result.csv";
+        filePath = "./src/resources/Result.csv";
         //Update the CSV with any changes made the to the list of "Customer"s
         try{
             updateCSVFile.Use(filePath);

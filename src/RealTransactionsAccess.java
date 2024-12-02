@@ -21,7 +21,7 @@ class RealTransactionsAccess implements TransactionsAccess {
      * pays, transfers, inquires, withdraws, deposits
      */
     public void performConfidentialTransactions() {
-        String transactionsPath = "./resources/Transactions(1).csv";
+        String transactionsPath = "./src/resources/Transactions(1).csv";
         System.out.println("Transactions started");
 
         try(BufferedReader br = new BufferedReader(new FileReader(transactionsPath))){
