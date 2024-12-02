@@ -110,7 +110,7 @@ public class Account{
  
     /**
      * Checks if the withdrawl should be approved based on the uses balance
-     * @peram amount amount that is wan ted to be withdrawn
+     * @param amount amount that is wan ted to be withdrawn
      * @return boolean returning true if the customer has eenough money in their balance to 2
      */
     public boolean canWithdraw(double amount){
