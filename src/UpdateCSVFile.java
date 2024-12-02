@@ -98,7 +98,7 @@ public class UpdateCSVFile implements FileUsage{
         }
         //catch if reading failed
         catch(IOException IOEXCEPTION){
-            throw new CSVException("Reading the CSV File failed", IOEXCEPTION);
+            throw new CSVException("Writing the CSV File failed", IOEXCEPTION);
         }
         catch(NullPointerException NULLPOINTEXCEPTION){
             throw new CSVException("File path was NULL!", null);
