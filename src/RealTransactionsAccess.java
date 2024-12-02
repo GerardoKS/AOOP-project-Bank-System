@@ -8,6 +8,7 @@ import java.io.FileReader;
  * Implements the TransactionsAccess interface to perform confidential transactions.
  * This class handles operations such as payments, transfers, inquiries, withdrawals,
  * and deposits by reading transaction data from a CSV file and processing it.
+ *  @author Hannah Ayala
  */
 class RealTransactionsAccess implements TransactionsAccess {
 

@@ -4,6 +4,7 @@ package src;
  * Represents an interface for accessing and performing confidential transactions.
  * This interface defines a method that must be implemented by any class
  * wishing to perform sensitive or confidential transactional operations.
+ * @author Hannah Ayala
  */
 public interface TransactionsAccess {
     
