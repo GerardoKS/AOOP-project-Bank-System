@@ -119,7 +119,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      */
     public static void main(String args[]){
         //declare file location (file path)
-        String filePath =  "./src/resources/CS 3331 - Bank Users.csv";
+        String filePath =  "resources/CS 3331 - Bank Users.csv";
         //read CSV file and create a list of "Customer"s from the entreis in the file
         try{
         readCustomersFromCSVFile.Use(filePath);
@@ -145,7 +145,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
         System.out.println("Thank you for choosing us!");
         //ends
 
-        filePath = "./src/resources/Result.csv";
+        filePath = "resources/Result.csv";
         //Update the CSV with any changes made the to the list of "Customer"s
         try{
             updateCSVFile.Use(filePath);
@@ -271,10 +271,8 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
                 break;
             case("t"):
             case("transactions"):
-                String transactionsPath = "./resources/Transactions(1).csv";
-                System.out.println("Transactions started");
-                managerTransactions(transactionsPath); //transactions from csv
-                System.out.println("Transactions ended");
+                TransactionsAccess managerAccess = new TransactionsAccessProxy("Manager");
+                managerAccess.performConfidentialTransactions();
                 break;
             case("e"):
             case("exit"): //actions
@@ -315,60 +313,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      * @throws NullPointerException if a customer or account is not found in `customerList`
      */
     private static void managerTransactions(String filePath){
-        try(BufferedReader br = new BufferedReader(new FileReader(filePath))){
-            String line = br.readLine();
-            while((line = br.readLine())!= null){ //conitnue reading until the line is empty
-                String[] input = new String[8];
-                for(int i = 0; i<7; i++){
-                    input[i] = line.substring(0, line.indexOf(",")); //populate the list
-                    line = line.substring(line.indexOf(",") + 1);
-                }
-                input[7] = line;
-
-                //get from first and last name
-                String fromFirst = input[0];
-                String fromLast = input[1];
-                String fromName = fromFirst + " " + fromLast;
-                //get from account name/number
-                String fromAccount = input[2];
-                fromAccount = fromAccount.toLowerCase();
-                if (fromAccount.equals("savings")) fromAccount = "saving";
-                //get action
-                String action = input[3];
-                //get to first and last name
-                String toFirst = input[4];
-                String toLast = input[5];
-                String toName = toFirst + " " + toLast;
-                //get to account
-                String toAccount = input[6];
-                toAccount = toAccount.toLowerCase();
-                if (toAccount.equals("savings")) toAccount = "saving";
-                //get amount
-                double amount = 0;
-                if (!input[7].equals("")) amount = Double.parseDouble(input[7]);
-                
-                switch (action.toLowerCase()){
-                    case("pays"):
-                        transferHelper(fromName, toName, fromAccount, toAccount, amount);
-                        break;
-                    case("transfers"):
-                        transferHelper(fromName, toName, fromAccount, toAccount, amount);
-                        break;
-                    case("inquires"):
-                        customerList.get(fromName).getBalance(fromAccount);
-                        break;
-                    case("withdraws"):
-                        customerList.get(fromName).deposit(fromAccount, amount);
-                        break;
-
-                    case("deposits"):
-                        customerList.get(toName).deposit(toAccount, amount);
-                        break;
-                }
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        
     }
 
     /**
@@ -591,7 +536,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      * @param amount        the amount to be transferred or paid
      * @return true if the transaction is successful; false otherwise
      */
-    private static boolean transferHelper(String customerName, String customerName2, String fromAccount, String toAccount, double amount){
+    public static boolean transferHelper(String customerName, String customerName2, String fromAccount, String toAccount, double amount){
         if (customerName.equals(customerName2)) return customerList.get(customerName).transfer(fromAccount, toAccount, amount);
         return customerList.get(customerName).pay(customerList.get(customerName2), fromAccount, toAccount, amount);
     }
@@ -609,7 +554,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
      * @param amount        the amount to be transferred or paid
      * @return true if the transaction is successful; false otherwise
      */
-    private static boolean transferHelper(String customerName, String customerName2, int fromAccount, int toAccount, double amount){
+    public static boolean transferHelper(String customerName, String customerName2, int fromAccount, int toAccount, double amount){
         if(customerName.equals(customerName2)) return customerList.get(customerName).transfer(fromAccount, toAccount, amount);
         return customerList.get(customerName).pay(customerList.get(customerName2), fromAccount, toAccount, amount);
     }
