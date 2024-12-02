@@ -9,7 +9,7 @@ import java.io.IOException;
  * this file implements the FileUsage interface
  * this fille takes an filePath as input and writes down/ updates the file with the updated current information of each customer
  * the format is dependent on the format of the input CSV file
- * @autor Gerardo Sillas
+ * @author Gerardo Sillas
  */
 public class UpdateCSVFile implements FileUsage{
     /**
