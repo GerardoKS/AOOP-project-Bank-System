@@ -284,7 +284,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
             case("lock"):
                 name = getCustomer();
                 loop = true;
-                while (loop){
+                while (name != null && loop){
                     System.out.println("Please input the type of the account you wish to lock for customer " + name);
                     String type = sc.next();
                     switch (type.toLowerCase()){
@@ -304,7 +304,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
             case("unlock"):
                 name = getCustomer();
                 loop = true;
-                while (loop){
+                while (name != null && loop){
                     System.out.println("Please input the type of the account you wish to unlock for customer " + name);
                     String type = sc.next();
                     switch (type.toLowerCase()){
