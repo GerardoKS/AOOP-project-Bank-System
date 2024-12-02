@@ -203,12 +203,15 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
                                     break;
                             }
                             int password;
-                            try{
-                                password = Integer.parseInt(input);
-                                if (password != customerList.get(customerName).getPassword()) throw new Exception();
-                                check = false;
-                            }catch (Exception e){
-                                System.out.println("Incorrect password, try again");
+                            if (check){
+                                try{
+                                    password = Integer.parseInt(input);
+                                    if (password != customerList.get(customerName).getPassword()) throw new Exception();
+                                    check = false;
+                                    System.out.println("Correct password, proceed");
+                                }catch (Exception e){
+                                    System.out.println("Incorrect password, try again");
+                                }
                             }
                         }
                     } 
@@ -783,6 +786,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
         customerList.put(name, customer);
         names.add(name);
         
+        System.out.println("User " + customer.getName() + " added");
         return true;
     }
 
