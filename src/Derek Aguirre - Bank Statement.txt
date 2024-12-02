@@ -1,0 +1,25 @@
+Date: 2024-12-01
+
+Customer Details:
+Name: Derek Aguirre
+Date of Birth: 5-May-41
+Address: "500 W. University Ave, El Paso, TX 79968"
+Phone Number: (915) 747-5012
+
+Account Details:
+Checking (1048)
+Starting Balance: 1845.56
+Ending/Current Balance: 1845.56
+Saving (2048)
+Starting Balance: 3352.49
+Ending/Current Balance: 3352.49
+Credit (3048)
+Starting Balance: -58.57
+Ending/Current Balance: -58.57
+
+All transactions: 
+Derek Aguirre Deposited 5000.0 into 1048 account
+(Derek Aguirre paid 1000.0 from checking account to Daniel Mejia's checking account)
+Derek Aguirre Withdrew 1000.0 from 1048 account
+(Aurora Disney paid 34.47 from checking account to Derek Aguirre's checking account)
+Derek Aguirre Deposited 34.47 into 1048 account

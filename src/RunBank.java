@@ -334,7 +334,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
         successT = true;
         successW = true; //reset flags
         String customerName2 = "";
-        System.out.println("\nPlease input what transaction you would like to do.\nCheck Balance (B)\nDeposit (D)\nwithdraw (W)\nTransfer (T)\nPay someone (P)\nCreate User (U)\nLogout/Return to Main Menu (L/M)\nExit (E)"); //options for the customer
+        System.out.println("\nPlease input what transaction you would like to do.\nCheck Balance (B)\nDeposit (D)\nwithdraw (W)\nTransfer (T)\nPay someone (P)\nCreate User (U)\nUser Transactions File (R)\nLogout/Return to Main Menu (L/M)\nExit (E)"); //options for the customer
         String input = sc.nextLine(); //stores the transaction (or action)
 
         while(input.equals("")) input = sc.nextLine();
@@ -376,6 +376,10 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
                 //create user
                 successU = createUser();
                 break;
+            case("r"):
+            case("transactions"):
+            case("user transactions"):
+                generateStatementHelper(customerName);
             case("l"):
             case("logout"):
             case("m"):
@@ -412,21 +416,12 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
     }
 
     /**
-     * Generates a bank statement for a specific customer, logging account details,
-     * balances, and transaction history.
-     *
-     * This method retrieves the customer's name and, if found, creates a detailed bank
-     * statement using the `Logger` instance. The statement includes:
-     * - Current date
-     * - Customer details
-     * - Account details for checking, savings, and credit accounts
-     * - All transactions involving the customer
+     * Prompts the user to generate a bank statement based on a customer's name or ID.
+     * If the user chooses to generate the statement by ID, the method retrieves the
+     * customer's name using the provided ID. If the user chooses to generate the statement
+     * by name, the method prompts the user to input a valid customer name.
      * 
-     * @return true if the statement is successfully generated, or if the customer
-     *         name is null; false if an error occurs during statement generation.
-     *
-     * @throws IOException if there is an issue reading the transaction log file.
-     * @throws NullPointerException if a customer's account information is missing.
+     * @return true if the bank statement is successfully generated; false otherwise.
      */
     private static boolean generateStatement(){
         System.out.println("(A) for creating bank statment based on name\n(B) for creating bank statement based on id");
@@ -445,6 +440,20 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
             if (name == null) return true;
         }
 
+        return generateStatementHelper(name);
+        
+    }
+
+
+    /**
+     * Generates a detailed bank statement for the specified customer.
+     * The statement includes:
+     * Current date, Customer details, Account details for checking, saving, and credit accounts, All transactions involving the customer
+     * 
+     * @param name The name of the customer for whom the bank statement is generated.
+     * @return true if the bank statement is successfully created; false if an error occurs.
+     */
+    private static boolean generateStatementHelper(String name){
         Logger statement = Logger.getInstance();
         statement.setUp(name + " - Bank Statement"); //set up the file for the user
 
