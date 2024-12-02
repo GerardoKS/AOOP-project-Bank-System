@@ -3,7 +3,22 @@ package src;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
+
+/**
+ * Implements the TransactionsAccess interface to perform confidential transactions.
+ * This class handles operations such as payments, transfers, inquiries, withdrawals,
+ * and deposits by reading transaction data from a CSV file and processing it.
+ */
 class RealTransactionsAccess implements TransactionsAccess {
+
+    /**
+     * Performs confidential transactions by reading data from a CSV file
+     * and executing the specified operations.
+     * The CSV file should be formatted with the following columns:
+     * From First Name, From Last Name, From Account, Action, To First Name, To Last Name, To Account, Amount
+     * Actions supported:
+     * pays, transfers, inquires, withdraws, deposits
+     */
     public void performConfidentialTransactions() {
         String transactionsPath = "./resources/Transactions(1).csv";
         System.out.println("Transactions started");

@@ -274,7 +274,7 @@ static UpdateCSVFile updateCSVFile = new UpdateCSVFile();
                 break;
             case("t"):
             case("transactions"):
-                TransactionsAccess managerAccess = new TransactionsAccessProxy("Manager");
+                TransactionsAccess managerAccess = new TransactionsAccessProxy("Manager"); //proxy for the transactions file
                 managerAccess.performConfidentialTransactions();
                 break;
             case("e"):
